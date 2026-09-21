@@ -1,0 +1,121 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Custom CSS Variables ───────────────────────────────── */
+:root {
+  --color-midnight-950: #0f172a;
+  --color-midnight-900: #1e1b4b;
+  --color-neon-purple-500: #7c3aed;
+  --color-neon-purple-600: #6d28d9;
+  --color-neon-cyan-400: #22d3ee;
+  --color-neon-lavender-400: #a78bfa;
+  --color-canvas: #ede9fe;
+  --color-card: #1e1b4b;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #9ca3af;
+}
+
+/* ─── Base Styles ─────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  background-color: #0f172a; /* Midnight Navy */
+  color: #ffffff;
+  min-height: 100vh;
+}
+
+/* ─── Typography Scale ────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+/* ─── Custom Scrollbar ────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1e1b4b;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #7c3aed;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #6d28d9;
+}
+
+/* ─── Selection ───────────────────────────────────────────── */
+::selection {
+  background-color: #7c3aed;
+  color: #fff;
+}
+
+/* ─── Focus Visible ───────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid #7c3aed;
+  outline-offset: 2px;
+}
+
+/* ─── Utility: GH₵ currency display ───────────────────────── */
+.currency-ghs {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── Tailwind Extension: Content Area ────────────────────── */
+.content-card {
+  @apply bg-white rounded-nexify shadow-card-sm border border-slate-100;
+}
+
+.content-card-hover {
+  @apply content-card hover:shadow-card-lg transition-shadow duration-200;
+}
+
+/* ─── Nexa FAB ─────────────────────────────────────────────── */
+.nexa-fab {
+  @apply fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full flex items-center justify-center
+         bg-[#7c3aed] text-white shadow-nexa-fab cursor-pointer
+         hover:bg-[#6d28d9] hover:scale-105 active:scale-95 transition-all duration-150
+         focus:outline-none focus:ring-2 focus:ring-[#7c3aed] focus:ring-offset-2 focus:ring-offset-[#0f172a];
+}
+
+/* ─── Checkout Modal Overlay ──────────────────────────────── */
+.checkout-overlay {
+  @apply fixed inset-0 z-50 flex items-end sm:items-center justify-center;
+}
+
+.checkout-backdrop {
+  @apply absolute inset-0 bg-slate-900/60 backdrop-blur-sm;
+}
+
+.checkout-panel {
+  @apply relative w-full sm:max-w-lg max-h-[90vh] overflow-y-auto
+         bg-white rounded-t-2xl sm:rounded-2xl shadow-card-lg p-6;
+}
+
+/* ─── Skeleton Shimmer ─────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(90deg, #1E1B4B 25%, #2D2A5E 50%, #1E1B4B 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}

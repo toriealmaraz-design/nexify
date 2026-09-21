@@ -1,0 +1,337 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ─── Core Entities ───────────────────────────────────────
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  fullName     String
+  // Role stored as string (SQLite doesn't support enums)
+  // Values: ADMIN, CREATOR, AFFILIATE, STUDENT
+  role         String   @default("STUDENT")
+  phone        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  createdCourses  Course[]        @relation("CreatorCourses")
+  studentOrders   Order[]         @relation("StudentOrders")
+  affiliateLinks  AffiliateLink[] @relation("AffiliateUserLinks")
+  commissions     Commission[]    @relation("AffiliateCommissions")
+  enrollments     Enrollment[]
+  reviews         Review[]
+  subscriptions   Subscription[]
+  subAffiliates   SubAffiliate[]  @relation("RecruiterSubAffiliates")
+  recruitedBy     SubAffiliate[]  @relation("SubAffiliateRecruitedBy")
+
+  @@map("users")
+}
+
+model Course {
+  id                 String   @id @default(uuid())
+  creatorId          String
+  title              String
+  slug               String   @unique
+  description        String
+  // Type stored as string: DIGITAL, IN_PERSON_LAB
+  type               String   @default("DIGITAL")
+  // Status stored as string: DRAFT, PENDING_APPROVAL, PUBLISHED, REJECTED
+  status             String   @default("DRAFT")
+  priceGhs           Float
+  affiliateRate      Float    @default(0.30)
+
+  teaserUrl          String  // Required 30-90s trailer
+  coverImageUrl      String?
+
+  // Checkout & Funnels — Order Bump
+  hasOrderBump       Boolean  @default(false)
+  orderBumpTitle     String?
+  orderBumpPriceGhs  Float?   @default(0.0)
+
+  // Physical Lab fields
+  maxSeats           Int?     @default(0)
+  bookedSeats        Int?     @default(0)
+  venueLocation      String?  // Deprecated — use Venue relation
+  labDates           String?
+
+  // September 2026 additions
+  depositGhs         Float?
+  balanceDueDays     Int?
+  platformFeeOverride Float?   // Per-course fee override
+  rejectionReason    String?
+
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  // Relations
+  creator        User          @relation("CreatorCourses", fields: [creatorId], references: [id], onDelete: Cascade)
+  modules        Module[]
+  orders         Order[]
+  affiliateLinks AffiliateLink[]
+  swipeAssets    SwipeAsset[]
+  venue          Venue?       @relation(fields: [venueId], references: [id])
+  instructor     Instructor?  @relation(fields: [instructorId], references: [id])
+  venueId        String?
+  instructorId   String?
+  // Reverse relations for September 2026 additions
+  enrollments    Enrollment[]
+  reviews        Review[]
+
+  @@map("courses")
+}
+
+model Module {
+  id         String   @id @default(uuid())
+  courseId   String
+  title      String
+  orderIndex Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  course  Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessons Lesson[]
+
+  @@map("modules")
+}
+
+model Lesson {
+  id          String   @id @default(uuid())
+  moduleId    String
+  title       String
+  videoUrl    String?
+  content     String?  // Markdown formatted
+  orderIndex  Int      @default(0)
+  isFreePreview Boolean @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  module Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  @@map("lessons")
+}
+
+model AffiliateLink {
+  id            String   @id @default(uuid())
+  affiliateId   String
+  courseId      String
+  affiliateCode String   @unique
+  clickCount    Int      @default(0)
+  sourceTag     String?  // September 2026: channel attribution
+  createdAt     DateTime @default(now())
+
+  affiliate User     @relation("AffiliateUserLinks", fields: [affiliateId], references: [id], onDelete: Cascade)
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  orders    Order[]
+  subAffiliates SubAffiliate[] @relation("RecruitedLink")
+
+  @@map("affiliate_links")
+}
+
+model Order {
+  id               String   @id @default(uuid())
+  studentId        String
+  courseId         String
+  affiliateLinkId  String?
+
+  // Financials (GH₵)
+  basePriceGhs     Float
+  includedBump     Boolean  @default(false)
+  bumpPriceGhs     Float    @default(0.0)
+  totalAmountGhs   Float
+  platformFeeGhs   Float
+  creatorShareGhs  Float
+  affiliateShareGhs Float   @default(0.0)
+
+  // Payment channel stored as string: MOMO_MTN, MOMO_TELECEL, MOMO_AT, CARD_SIMULATED
+  paymentChannel   String   @default("MOMO_MTN")
+  // Payment status stored as string: PENDING, SUCCESSFUL, FAILED, REFUNDED
+  paymentStatus    String   @default("PENDING")
+
+  // September 2026 additions
+  // Seat status stored as string: LOCKED, WAITLISTED, CONFIRMED, RELEASED
+  seatStatus       String?  @default("CONFIRMED")
+  idempotencyKey   String?  @unique // MoMo idempotency
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relations
+  student       User        @relation("StudentOrders", fields: [studentId], references: [id], onDelete: Cascade)
+  course        Course      @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  affiliateLink AffiliateLink? @relation(fields: [affiliateLinkId], references: [id], onDelete: SetNull)
+  commission    Commission?
+  paymentLog    PaymentLog?
+  enrollment    Enrollment?
+
+  @@map("orders")
+}
+
+model Commission {
+  id          String   @id @default(uuid())
+  orderId     String   @unique
+  affiliateId String
+  amountGhs   Float
+  // Status stored as string: PENDING, CLEARED, FLAGGED
+  status      String   @default("PENDING")
+  createdAt   DateTime @default(now())
+
+  order     Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  affiliate User   @relation("AffiliateCommissions", fields: [affiliateId], references: [id], onDelete: Cascade)
+
+  @@map("commissions")
+}
+
+model PaymentLog {
+  id             String   @id @default(uuid())
+  orderId        String   @unique
+  transactionRef String   @unique
+  channel        String   // MOMO_MTN, MOMO_TELECEL, MOMO_AT, CARD_SIMULATED
+  amountGhs      Float
+  status         String   @default("PENDING") // PENDING, SUCCESSFUL, FAILED, REFUNDED
+  rawPayload     String?  // JSON log
+  createdAt      DateTime @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("payment_logs")
+}
+
+model SwipeAsset {
+  id          String   @id @default(uuid())
+  courseId    String
+  title       String
+  // Type stored as string: WHATSAPP_SCRIPT, TIKTOK_SCRIPT, EMAIL_COPY, BANNER_IMAGE, DOCUMENT
+  assetType   String   @default("WHATSAPP_SCRIPT")
+  contentText String?
+  fileUrl     String?
+  createdAt   DateTime @default(now())
+
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@map("swipe_assets")
+}
+
+model SystemAsset {
+  id        String   @id @default(uuid())
+  key       String   @unique // e.g. "LOGO_MAIN", "PLACEHOLDER_COURSE"
+  fileUrl   String
+  mimeType  String?
+  updatedAt DateTime @updatedAt
+
+  @@map("system_assets")
+}
+
+// ─── September 2026 Additions ────────────────────────────
+
+model Venue {
+  id          String   @id @default(uuid())
+  name        String
+  city        String
+  address     String
+  capacity    Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  courses Course[]
+
+  @@map("venues")
+}
+
+model Instructor {
+  id          String   @id @default(uuid())
+  fullName    String
+  bio         String?
+  phone       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  courses Course[]
+
+  @@map("instructors")
+}
+
+model Enrollment {
+  id          String    @id @default(uuid())
+  studentId   String
+  courseId    String
+  accessGranted Boolean @default(false)
+  progress    Int       @default(0) // Percentage
+  streakCount Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  student  User   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  order    Order? @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  orderId  String? @unique
+
+  @@unique([studentId, courseId])
+  @@map("enrollments")
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  courseId  String
+  studentId String
+  rating    Int      // 1-5 stars
+  body      String?
+  createdAt DateTime @default(now())
+
+  course  Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  student User   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([courseId, studentId])
+  @@map("reviews")
+}
+
+model Subscription {
+  id         String   @id @default(uuid())
+  userId     String
+  planId     String
+  name       String
+  status      String   @default("ACTIVE") // ACTIVE, CANCELLED, EXPIRED
+  amountGhs  Float
+  renewsAt   DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("subscriptions")
+}
+
+model SubAffiliate {
+  id            String   @id @default(uuid())
+  recruiterId   String   // The affiliate who recruited
+  recruitId     String   // The recruited affiliate
+  overrideRate  Float    @default(0.05) // Smaller override commission
+  createdAt     DateTime @default(now())
+
+  recruiter   User @relation("RecruiterSubAffiliates", fields: [recruiterId], references: [id], onDelete: Cascade)
+  recruitedBy User @relation("SubAffiliateRecruitedBy", fields: [recruitId], references: [id], onDelete: Cascade)
+  link        AffiliateLink? @relation("RecruitedLink", fields: [linkId], references: [id], onDelete: SetNull)
+  linkId      String?
+
+  @@map("sub_affiliates")
+}
+
+model SystemAuditLog {
+  id         String   @id @default(uuid())
+  action     String
+  details    String?
+  performedBy String?
+  createdAt  DateTime @default(now())
+
+  @@map("system_audit_log")
+}

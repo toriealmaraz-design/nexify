@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Nexify Light Logo: White background with Navy N -->
+  <rect width="100" height="100" rx="20" fill="#FFFFFF"/>
+  <text x="50" y="68" font-family="Inter, system-ui, sans-serif" font-size="56" font-weight="800" fill="#0D223A" text-anchor="middle">N</text>
+</svg>

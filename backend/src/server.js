@@ -90,7 +90,7 @@ app.use((err, req, res, next) => {
 });
 
 // ─── Server Startup ───────────────────────────────────────
-const server = app.listen(config.port, () => {
+const server = app.listen(config.port, '127.0.0.1', () => {
   console.log(`
 ╔══════════════════════════════════════════════╗
 ║                                            ║

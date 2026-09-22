@@ -8,7 +8,7 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 
-const API_BASE = '/api/v1';
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000/api/v1';
 
 // Configure axios base URL and auth interceptor
 axios.defaults.baseURL = API_BASE;

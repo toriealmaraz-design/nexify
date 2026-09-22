@@ -3,8 +3,13 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && node --watch src/server.js",
+    "dev:frontend": "cd frontend && vite --port 5173",
     "build": "cd frontend && npm run build",
-    "dev": "cd frontend && vite --port 5173",
     "preview": "cd frontend && vite preview"
+  },
+  "dependencies": {
+    "concurrently": "^10.0.5"
   }
 }

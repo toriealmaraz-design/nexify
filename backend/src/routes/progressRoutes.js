@@ -7,8 +7,11 @@ const router = express.Router({ mergeParams: true });
 const { authenticate } = require('../middleware/auth');
 const progressController = require('../controllers/progressController');
 
-// All routes require authentication
-router.get('/', authenticate, progressController.getEnrollmentProgress);
-router.put('/:lessonId', authenticate, progressController.updateLessonProgress);
+// List all enrollments for the current user
+router.get('/', authenticate, progressController.getEnrollments);
+
+// All other routes require enrollment ID
+router.get('/:enrollmentId/progress', authenticate, progressController.getEnrollmentProgress);
+router.put('/:enrollmentId/progress/:lessonId', authenticate, progressController.updateLessonProgress);
 
 module.exports = router;

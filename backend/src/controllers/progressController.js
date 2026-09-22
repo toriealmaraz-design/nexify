@@ -5,7 +5,53 @@
 
 const { prisma } = require('../config/prisma');
 
-// ─── GET ENROLLMENT PROGRESS ───────────────────────────────
+// ─── GET USER ENROLLMENTS ────────────────────────────
+async function getEnrollments(req, res) {
+  try {
+    const enrollments = await prisma.enrollment.findMany({
+      where: { studentId: req.user.userId },
+      include: {
+        course: {
+          select: {
+            id: true, title: true, slug: true, coverImageUrl: true,
+            type: true, priceGhs: true, hasOrderBump: true, orderBumpTitle: true,
+            creator: { select: { fullName: true } },
+          },
+        },
+        _count: { select: { lessonProgress: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const data = enrollments.map(e => ({
+      id: e.id,
+      courseId: e.courseId,
+      course: e.course,
+      progress: e.progress,
+      streakCount: e.streakCount,
+      accessGranted: e.accessGranted,
+      createdAt: e.createdAt,
+      totalLessons: e._count.lessonProgress,
+    }));
+
+    return res.status(200).json({
+      success: true,
+      statusCode: 200,
+      message: 'Enrollments retrieved.',
+      data,
+    });
+  } catch (error) {
+    console.error('[GET ENROLLMENTS ERROR]', error.message);
+    return res.status(500).json({
+      success: false,
+      statusCode: 500,
+      error: 'INTERNAL_SERVER_ERROR',
+      message: 'Failed to retrieve enrollments.',
+    });
+  }
+}
+
+// ─── GET ENROLLMENT PROGRESS ─────────────────────────
 async function getEnrollmentProgress(req, res) {
   try {
     const { enrollmentId } = req.params;
@@ -179,6 +225,7 @@ async function updateLessonProgress(req, res) {
 }
 
 module.exports = {
+  getEnrollments,
   getEnrollmentProgress,
   updateLessonProgress,
 };

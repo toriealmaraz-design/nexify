@@ -32,8 +32,13 @@ export default function StudentDashboard() {
       axios.get('/api/v1/orders/my-orders', {
         headers: { Authorization: `Bearer ${token}` },
       }).then(res => setOrders(res.data.data || [])).catch(() => {});
+      // Fetch enrollments with progress data
+      axios.get('/api/v1/enrollments', {
+        headers: { Authorization: `Bearer ${token}` },
+      }).then(res => setEnrollments(res.data.data || [])).catch(() => {});
     } else {
       setOrders([]);
+      setEnrollments([]);
     }
     setLoading(false);
   }, []);
@@ -60,21 +65,29 @@ export default function StudentDashboard() {
         <SkeletonStats />
       ) : (
         <div data-tour="student-stats-grid" className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {[
-            { label: 'Enrolled Courses', value: enrolledCourses.length?.toString() || '0', icon: BookOpen, color: 'text-[#7C3AED]' },
-            { label: 'Total Spent', value: `GH₵ ${(orders.reduce((s, o) => s + o.totalAmountGhs, 0)).toFixed(2)}`, icon: DollarSign, color: 'text-emerald-400' },
-            { label: 'Avg. Progress', value: '0%', icon: TrendingUp, color: 'text-blue-400' },
-            { label: 'Current Streak', value: '0 days', icon: Flame, color: 'text-amber-400' },
-          ].map(stat => {
+          {(() => {
+            const avgProgress = enrollments.length > 0
+              ? Math.round(enrollments.reduce((s, e) => s + e.progress, 0) / enrollments.length)
+              : 0;
+            const maxStreak = enrollments.length > 0
+              ? Math.max(...enrollments.map(e => e.streakCount || 0))
+              : 0;
+            return [
+              { label: 'Enrolled Courses', value: enrollments.length?.toString() || '0', icon: BookOpen, color: 'text-[#7C3AED]' },
+              { label: 'Total Spent', value: `GH₵ ${(orders.reduce((s, o) => s + o.totalAmountGhs, 0)).toFixed(2)}`, icon: DollarSign, color: 'text-emerald-400' },
+              { label: 'Avg. Progress', value: `${avgProgress}%`, icon: TrendingUp, color: 'text-blue-400' },
+              { label: 'Current Streak', value: `${maxStreak} days`, icon: Flame, color: 'text-amber-400' },
+            ];
+          })().map(stat => {
             const Icon = stat.icon;
             return (
-            <div key={stat.label} className="bg-[#1E1B4B] border border-white/10 rounded-xl p-4 hover:border-white/20 transition-colors">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-white/60"><Icon className="w-5 h-5" /></span>
-                <span className="text-xs font-medium text-white/40 uppercase tracking-wider">{stat.label}</span>
+              <div key={stat.label} className="bg-[#1E1B4B] border border-white/10 rounded-xl p-4 hover:border-white/20 transition-colors">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-white/60"><Icon className="w-5 h-5" /></span>
+                  <span className="text-xs font-medium text-white/40 uppercase tracking-wider">{stat.label}</span>
+                </div>
+                <p className={`text-xl font-bold text-white ${stat.color}`}>{stat.value}</p>
               </div>
-              <p className={`text-xl font-bold text-white ${stat.color}`}>{stat.value}</p>
-            </div>
             );
           })}
         </div>
@@ -218,58 +231,61 @@ export default function StudentDashboard() {
       {/* Enrolled Courses / Learning Portal */}
       <section className="mb-8">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold text-white">Recent Activity</h2>
-          <Link to="/student/orders" className="text-sm text-[#7C3AED] font-medium hover:underline">Manage →</Link>
-        </div>
-        {enrolledCourses.length === 0 ? (
-          <div className="bg-[#1E1B4B] border border-white/10 rounded-xl p-8 text-center">
-            <div className="mb-3 flex justify-center">
-              <svg className="w-10 h-10 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
-            </div>
-            <h3 className="text-base font-semibold text-white mb-1">No courses enrolled yet</h3>
-            <p className="text-sm text-white/40 mb-4">Browse the marketplace and enroll in a course.</p>
-            <Link to="/marketplace" className="inline-block bg-[#7C3AED] text-black px-4 py-2 rounded-xl text-sm font-semibold hover:brightness-110 active:scale-[0.98] transition-all duration-150">
-              Browse Courses
-            </Link>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {enrolledCourses.map(course => (
-              <div key={course.id} className="bg-[#1E1B4B] border border-white/10 rounded-xl p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4 hover:border-white/20 transition-colors">
-                <div>
-                  <h3 className="text-base font-bold text-white">{course.title}</h3>
-                  <p className="text-sm text-white/40 mt-1">
-                    GH₵ {((course.priceGhs || 0) + (course.hasOrderBump ? course.orderBumpPriceGhs || 0 : 0)).toFixed(2)} · Paid
-                  </p>
-                  <div className="mt-3">
-                    <div className="flex items-center justify-between text-xs text-white/30 mb-1">
-                      <span>Progress</span>
-                      <span>0%</span>
-                    </div>
-                    <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                      <div className="h-full bg-emerald-500 rounded-full" style={{ width: '0%' }} />
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Link
-                    to={`/student/course/${course.id}`}
-                    className="bg-[#0F172A] text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-[#0F172A] transition-colors"
-                  >
-                    Continue Learning
-                  </Link>
-                  <Link
-                    to={`/student/course/${course.id}/review`}
-                    className="border border-white/10 text-white/60 px-3 py-2 rounded-xl text-sm hover:bg-white/5 transition-colors"
-                  >
-                    Review
-                  </Link>
-                </div>
+                <h2 className="text-lg font-bold text-white">Recent Activity</h2>
+                <Link to="/student/courses" className="text-sm text-[#7C3AED] font-medium hover:underline">Manage →</Link>
               </div>
-            ))}
-          </div>
-        )}
-      </section>
+              {enrollments.length === 0 ? (
+                <div className="bg-[#1E1B4B] border border-white/10 rounded-xl p-8 text-center">
+                  <div className="mb-3 flex justify-center">
+                    <svg className="w-10 h-10 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
+                  </div>
+                  <h3 className="text-base font-semibold text-white mb-1">No courses enrolled yet</h3>
+                  <p className="text-sm text-white/40 mb-4">Browse the marketplace and enroll in a course.</p>
+                  <Link to="/marketplace" className="inline-block bg-[#7C3AED] text-black px-4 py-2 rounded-xl text-sm font-semibold hover:brightness-110 active:scale-[0.98] transition-all duration-150">
+                    Browse Courses
+                  </Link>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {enrollments.map(e => (
+                    <div key={e.id} className="bg-[#1E1B4B] border border-white/10 rounded-xl p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4 hover:border-white/20 transition-colors">
+                      <div>
+                        <h3 className="text-base font-bold text-white">{e.course?.title}</h3>
+                        <p className="text-sm text-white/40 mt-1">
+                          GH₵ {e.course?.priceGhs?.toFixed(2) || '0.00'} · Progress {e.progress}%
+                        </p>
+                        <div className="mt-3">
+                          <div className="flex items-center justify-between text-xs text-white/30 mb-1">
+                            <span>Progress</span>
+                            <span>{e.progress}%</span>
+                          </div>
+                          <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                            <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${e.progress}%` }} />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-amber-400 bg-amber-500/10 px-2 py-1 rounded-full">
+                          🔥 {e.streakCount || 0} day streak
+                        </span>
+                        <Link
+                          to={`/student/course/${e.courseId}`}
+                          className="bg-[#0F172A] text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-[#0F172A] transition-colors"
+                        >
+                          Continue Learning
+                        </Link>
+                        <Link
+                          to={`/student/course/${e.courseId}/review`}
+                          className="border border-white/10 text-white/60 px-3 py-2 rounded-xl text-sm hover:bg-white/5 transition-colors"
+                        >
+                          Review
+                        </Link>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
 
       {/* Receipts / Order History */}
       <section className="bg-[#1E1B4B] border border-white/10 rounded-xl p-6 mb-6">

@@ -1,0 +1,10 @@
+{
+  "name": "nexify",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "build": "cd frontend && npm run build",
+    "dev": "cd frontend && vite --port 5173",
+    "preview": "cd frontend && vite preview"
+  }
+}

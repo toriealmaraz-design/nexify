@@ -6,7 +6,9 @@
  * Reference: PRD 6.5, SRS Persona D
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { BookOpen, DollarSign, TrendingUp, Flame } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { SkeletonStats, SkeletonGrid, SkeletonRow } from '../../components/Skeleton';
@@ -21,15 +23,18 @@ export default function StudentDashboard() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useState(() => {
-    axios.get('http://localhost:5000/api/v1/courses')
+  useEffect(() => {
+    axios.get('/api/v1/courses')
       .then(res => setCourses(res.data.data))
       .catch(() => {});
-    axios.get('http://localhost:5000/api/v1/orders/my-orders')
-      .then(res => setOrders(res.data.data))
-      .catch(() => {});
-    axios.get('http://localhost:5000/api/v1/enrollments')
-      .catch(() => {});
+    const token = localStorage.getItem('nexify_token');
+    if (token) {
+      axios.get('/api/v1/orders/my-orders', {
+        headers: { Authorization: `Bearer ${token}` },
+      }).then(res => setOrders(res.data.data || [])).catch(() => {});
+    } else {
+      setOrders([]);
+    }
     setLoading(false);
   }, []);
 
@@ -54,21 +59,24 @@ export default function StudentDashboard() {
       {loading ? (
         <SkeletonStats />
       ) : (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div data-tour="student-stats-grid" className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {[
-            { label: 'Enrolled Courses', value: enrolledCourses.length?.toString() || '0', icon: '📚', color: 'text-[#7C3AED]' },
-            { label: 'Total Spent', value: `GH₵ ${(orders.reduce((s, o) => s + o.totalAmountGhs, 0)).toFixed(2)}`, icon: '💰', color: 'text-emerald-400' },
-            { label: 'Avg. Progress', value: '0%', icon: '📈', color: 'text-blue-400' },
-            { label: 'Current Streak', value: '0 days', icon: '🔥', color: 'text-amber-400' },
-          ].map(stat => (
+            { label: 'Enrolled Courses', value: enrolledCourses.length?.toString() || '0', icon: BookOpen, color: 'text-[#7C3AED]' },
+            { label: 'Total Spent', value: `GH₵ ${(orders.reduce((s, o) => s + o.totalAmountGhs, 0)).toFixed(2)}`, icon: DollarSign, color: 'text-emerald-400' },
+            { label: 'Avg. Progress', value: '0%', icon: TrendingUp, color: 'text-blue-400' },
+            { label: 'Current Streak', value: '0 days', icon: Flame, color: 'text-amber-400' },
+          ].map(stat => {
+            const Icon = stat.icon;
+            return (
             <div key={stat.label} className="bg-[#1E1B4B] border border-white/10 rounded-xl p-4 hover:border-white/20 transition-colors">
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-xl">{stat.icon}</span>
+                <span className="text-white/60"><Icon className="w-5 h-5" /></span>
                 <span className="text-xs font-medium text-white/40 uppercase tracking-wider">{stat.label}</span>
               </div>
               <p className={`text-xl font-bold text-white ${stat.color}`}>{stat.value}</p>
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
@@ -76,13 +84,15 @@ export default function StudentDashboard() {
       <section className="mb-8">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold text-white">Browse Marketplace</h2>
-          <a href="/marketplace" className="text-sm text-[#7C3AED] font-medium hover:underline">View All →</a>
+          <Link to="/marketplace" className="text-sm text-[#7C3AED] font-medium hover:underline">View All →</Link>
         </div>
         {loading ? (
           <SkeletonGrid cols={2} count={2} />
         ) : courses.length === 0 ? (
           <div className="bg-[#1E1B4B] border border-white/10 rounded-xl p-8 text-center">
-            <div className="text-4xl mb-3">📚</div>
+            <div className="mb-3 flex justify-center">
+              <svg className="w-10 h-10 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.24 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.759 18 7.5 18s3.332.477 4.5 1.253m0-13C13.832 5.477 15.423 5 17.144 5c1.722 0 3.314.477 4.936 1.253v13C21.314 18.477 19.724 18 18.144 18c-1.581 0-3.172.477-4.754 1.253"/></svg>
+            </div>
             <h3 className="text-base font-semibold text-white mb-1">No courses available</h3>
             <p className="text-sm text-white/40">Check back later for new course listings.</p>
           </div>
@@ -99,8 +109,18 @@ export default function StudentDashboard() {
                       <span className="text-3xl text-white/30">{course.title.charAt(0)}</span>
                     </div>
                   )}
-                  <span className="absolute top-2 left-2 bg-white/10 text-white/80 text-xs font-medium px-2 py-0.5 rounded-full capitalize">
-                    {course.type === 'IN_PERSON_LAB' ? '🏫 Lab' : '💻 Digital'}
+                  <span className="absolute top-2 left-2 bg-white/10 text-white/80 text-xs font-medium px-2 py-0.5 rounded-full capitalize flex items-center gap-1">
+                    {course.type === 'IN_PERSON_LAB' ? (
+                      <>
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>
+                        Lab
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                        Digital
+                      </>
+                    )}
                   </span>
                 </div>
                 {/* Content */}
@@ -163,20 +183,54 @@ export default function StudentDashboard() {
         )}
       </section>
 
+      {/* My Learning */}
+      <section className="mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-bold text-white">My Learning</h2>
+          <Link to="/student/courses" className="text-sm text-[#7C3AED] font-medium hover:underline">View All Courses →</Link>
+        </div>
+        <Link
+          to="/student/courses"
+          className="group block bg-gradient-to-r from-[#1E1B4B] to-[#0F172A] border border-white/10 rounded-2xl p-6 hover:border-[#7C3AED]/40 transition-all duration-200"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-[#7C3AED]/20 rounded-xl flex items-center justify-center group-hover:bg-[#7C3AED]/30 transition-colors">
+                <BookOpen className="w-6 h-6 text-[#7C3AED]" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-white group-hover:text-[#7C3AED] transition-colors">My Courses</h3>
+                <p className="text-sm text-white/40 mt-0.5">
+                  {enrolledCourses.length > 0
+                    ? `${enrolledCourses.length} enrolled course${enrolledCourses.length === 1 ? '' : 's'} — track progress and continue learning`
+                    : 'Browse and enroll in courses'}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 text-[#7C3AED]">
+              <span className="text-sm font-medium">Go to Courses</span>
+              <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+            </div>
+          </div>
+        </Link>
+      </section>
+
       {/* Enrolled Courses / Learning Portal */}
       <section className="mb-8">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold text-white">My Courses</h2>
-          <a href="/student/enrolled" className="text-sm text-[#7C3AED] font-medium hover:underline">Manage →</a>
+          <h2 className="text-lg font-bold text-white">Recent Activity</h2>
+          <Link to="/student/orders" className="text-sm text-[#7C3AED] font-medium hover:underline">Manage →</Link>
         </div>
         {enrolledCourses.length === 0 ? (
           <div className="bg-[#1E1B4B] border border-white/10 rounded-xl p-8 text-center">
-            <div className="text-4xl mb-3">🎓</div>
+            <div className="mb-3 flex justify-center">
+              <svg className="w-10 h-10 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
+            </div>
             <h3 className="text-base font-semibold text-white mb-1">No courses enrolled yet</h3>
             <p className="text-sm text-white/40 mb-4">Browse the marketplace and enroll in a course.</p>
-            <a href="/marketplace" className="inline-block bg-[#7C3AED] text-black px-4 py-2 rounded-xl text-sm font-semibold hover:brightness-110 active:scale-[0.98] transition-all duration-150">
+            <Link to="/marketplace" className="inline-block bg-[#7C3AED] text-black px-4 py-2 rounded-xl text-sm font-semibold hover:brightness-110 active:scale-[0.98] transition-all duration-150">
               Browse Courses
-            </a>
+            </Link>
           </div>
         ) : (
           <div className="space-y-3">
@@ -198,12 +252,18 @@ export default function StudentDashboard() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <button className="bg-[#0F172A] text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-[#0F172A] transition-colors">
+                  <Link
+                    to={`/student/course/${course.id}`}
+                    className="bg-[#0F172A] text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-[#0F172A] transition-colors"
+                  >
                     Continue Learning
-                  </button>
-                  <button className="border border-white/10 text-white/60 px-3 py-2 rounded-xl text-sm hover:bg-white/5 transition-colors">
+                  </Link>
+                  <Link
+                    to={`/student/course/${course.id}/review`}
+                    className="border border-white/10 text-white/60 px-3 py-2 rounded-xl text-sm hover:bg-white/5 transition-colors"
+                  >
                     Review
-                  </button>
+                  </Link>
                 </div>
               </div>
             ))}
@@ -215,7 +275,7 @@ export default function StudentDashboard() {
       <section className="bg-[#1E1B4B] border border-white/10 rounded-xl p-6 mb-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold text-white">Order Receipts</h2>
-          <a href="/student/receipts" className="text-sm text-[#7C3AED] font-medium hover:underline">View All →</a>
+          <Link to="/student/receipts" className="text-sm text-[#7C3AED] font-medium hover:underline">View All →</Link>
         </div>
         {orders.length === 0 ? (
           <div className="text-center py-4 text-white/30 text-sm">No orders yet.</div>
@@ -278,7 +338,10 @@ export default function StudentDashboard() {
             {user?.role}
           </span>
         </div>
-        <button className="text-sm text-white/40 hover:text-white transition-colors">
+        <button
+          onClick={logout}
+          className="text-sm text-white/40 hover:text-white transition-colors"
+        >
           Sign Out
         </button>
       </div>

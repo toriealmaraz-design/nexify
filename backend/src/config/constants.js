@@ -62,4 +62,25 @@ module.exports = {
 
   // certs explicitly out of scope per PRD Section 3.2
   CERTIFICATES_ENABLED: false,
+
+  // Nexa LLM Providers
+  NEXA_LLM_PROVIDERS: {
+    OPENAI: 'OPENAI',
+    OLLAMA: 'OLLAMA',
+    GROQ: 'GROQ',
+    LMSTUDIO: 'LMSTUDIO',
+    AZURE: 'AZURE',
+    GEMINI: 'GEMINI',
+    CLAUDE: 'CLAUDE',
+  },
+
+  NEXA_PROVIDER_DEFAULTS: {
+    OPENAI:  { baseUrl: 'https://api.openai.com/v1', model: 'gpt-4o-mini' },
+    OLLAMA:  { baseUrl: 'http://localhost:11434', model: 'llama3' },
+    GROQ:    { baseUrl: 'https://api.groq.com/openai/v1', model: 'llama-3.1-70b-versatile' },
+    LMSTUDIO:{ baseUrl: 'http://localhost:1234/v1', model: '' },
+    AZURE:   { baseUrl: '', model: '' },
+    GEMINI:  { baseUrl: 'https://generativelanguage.googleapis.com', model: 'gemini-1.5-flash' },
+    CLAUDE:  { baseUrl: 'https://api.anthropic.com/v1', model: 'claude-3-5-haiku-20241107' },
+  },
 };

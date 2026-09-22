@@ -12,6 +12,8 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { SkeletonGrid } from '../../components/Skeleton';
 import axios from 'axios';
+import { Sparkles, X, BookOpen } from 'lucide-react';
+import AdBanner from '../../components/AdBanner';
 
 // ─── Nexa Chat Bubble Component ──────────────────────────────
 function NexaChatBubble() {
@@ -40,10 +42,10 @@ function NexaChatBubble() {
       {/* Chat Toggle Button */}
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-6 z-40 w-12 h-12 bg-[#7C3AED] text-white rounded-full shadow-lg hover:bg-[#6D28D9] transition-colors flex items-center justify-center text-2xl"
+        className="fixed bottom-6 right-6 z-40 w-12 h-12 bg-[#7C3AED] text-white rounded-full shadow-lg hover:bg-[#6D28D9] transition-colors flex items-center justify-center"
         aria-label="Open Nexa chat"
       >
-        ✨
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z"/></svg>
       </button>
 
       {/* Chat Window */}
@@ -52,7 +54,7 @@ function NexaChatBubble() {
           {/* Header */}
           <div className="bg-[#0F172A] text-white px-4 py-3 rounded-t-2xl flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="text-lg">✨</span>
+              <svg className="w-4 h-4 text-[#7C3AED]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z"/></svg>
               <span className="font-semibold">Nexa</span>
               <span className="text-xs bg-white/10 px-2 py-0.5 rounded-full">AI Assistant</span>
             </div>
@@ -156,11 +158,15 @@ export default function Landing() {
             </div>
           </div>
           <nav className="flex items-center gap-4">
-            <a href="/login" className="text-sm text-white/70 hover:text-white transition-colors">Sign In</a>
-            <a href="/register" className="text-sm bg-[#7C3AED] text-white px-4 py-2 rounded-nexify hover:bg-[#6D28D9] transition-colors inline-flex items-center gap-1">
+            <Link to="/nexa" className="flex items-center gap-1.5 text-sm text-white/70 hover:text-white transition-colors">
+              <Sparkles className="w-4 h-4 text-[#7C3AED]" />
+              Nexa
+            </Link>
+            <Link to="/login" className="text-sm text-white/70 hover:text-white transition-colors">Sign In</Link>
+            <Link to="/register" className="text-sm bg-[#7C3AED] text-white px-4 py-2 rounded-nexify hover:bg-[#6D28D9] transition-colors inline-flex items-center gap-1">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/></svg>
               Get Started
-            </a>
+            </Link>
           </nav>
         </div>
       </header>
@@ -172,7 +178,7 @@ export default function Landing() {
             {/* Left: Text & CTAs */}
             <div>
               <span className="inline-block bg-[#7C3AED]/20 text-[#7C3AED] text-sm font-semibold px-3 py-1 rounded-full mb-4">
-                🇬🇭 Ghana's #1 E-Learning Platform
+                Ghana's #1 E-Learning Platform
               </span>
               <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
                 Learn. Create. Earn.
@@ -188,44 +194,52 @@ export default function Landing() {
               <div className="flex items-center gap-6 mb-6">
                 <div className="flex items-center gap-2 text-sm text-white/60">
                   <svg className="w-5 h-5 text-[#7C3AED]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                  <span>32,400+ learners</span>
+                  <span>Sample data: 32,400+ learners</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-white/60">
                   <svg className="w-5 h-5 text-[#7C3AED]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                  <span>4.9/5 average rating</span>
+                  <span>Sample data: 4.9/5 average rating</span>
                 </div>
               </div>
 
               {/* Feature badges */}
               <div className="flex flex-wrap gap-2 mb-6">
-                <span className="bg-white/10 text-white/80 text-xs font-medium px-3 py-1 rounded-full">🎓 Certified Courses</span>
-                <span className="bg-white/10 text-white/80 text-xs font-medium px-3 py-1 rounded-full">🏫 Physical Labs in Accra &amp; Kumasi</span>
-                <span className="bg-white/10 text-white/80 text-xs font-medium px-3 py-1 rounded-full">📱 Mobile Money payments</span>
+                <span className="inline-flex items-center gap-1.5 bg-white/10 text-white/80 text-xs font-medium px-3 py-1 rounded-full">
+                  <svg className="w-3.5 h-3.5 text-[#7C3AED]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.24 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.759 18 7.5 18s3.332.477 4.5 1.253m0-13C13.832 5.477 15.423 5 17.144 5c1.722 0 3.314.477 4.936 1.253v13C21.314 18.477 19.724 18 18.144 18c-1.581 0-3.172.477-4.754 1.253"/></svg>
+                  Certified Courses
+                </span>
+                <span className="inline-flex items-center gap-1.5 bg-white/10 text-white/80 text-xs font-medium px-3 py-1 rounded-full">
+                  <svg className="w-3.5 h-3.5 text-[#7C3AED]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0H5m14 0h2m-16 0H3"/><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M9 7H3m6 0H3m6 0H9m6 0h2m-6 0H3"/></svg>
+                  Physical Labs in Accra &amp; Kumasi
+                </span>
+                <span className="inline-flex items-center gap-1.5 bg-white/10 text-white/80 text-xs font-medium px-3 py-1 rounded-full">
+                  <svg className="w-3.5 h-3.5 text-[#7C3AED]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                  Mobile Money Payments
+                </span>
               </div>
 
               {/* CTAs */}
               <div className="flex flex-wrap gap-3">
-                <a href="/register?role=CREATOR" className="bg-[#7C3AED] text-white px-6 py-3 rounded-nexify font-semibold hover:bg-[#6D28D9] transition-colors inline-flex items-center gap-2 shadow-lg shadow-[#7C3AED]/20">
+                <Link to="/register?role=CREATOR" className="bg-[#7C3AED] text-white px-6 py-3 rounded-nexify font-semibold hover:bg-[#6D28D9] transition-colors inline-flex items-center gap-2 shadow-lg shadow-[#7C3AED]/20">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/></svg>
                   Create a Course
-                </a>
-                <a href="/register?role=AFFILIATE" className="border border-white/30 text-white px-6 py-3 rounded-nexify font-semibold hover:bg-white/10 transition-colors inline-flex items-center gap-2">
+                </Link>
+                <Link to="/register?role=AFFILIATE" className="border border-white/30 text-white px-6 py-3 rounded-nexify font-semibold hover:bg-white/10 transition-colors inline-flex items-center gap-2">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M18 17.5c-3.388-1.24-10.628-5.56-13.5-6.5C4.56 5.5 5.658 2 9 2c3.342 0 6.422 2.209 9.25 4.25C19.564 7.2 22 12 22 17.5z"/></svg>
                   Become an Affiliate
-                </a>
-                <a href="/register?role=STUDENT" className="border border-white/30 text-white px-6 py-3 rounded-nexify font-semibold hover:bg-white/10 transition-colors inline-flex items-center gap-2">
+                </Link>
+                <Link to="/register?role=STUDENT" className="border border-white/30 text-white px-6 py-3 rounded-nexify font-semibold hover:bg-white/10 transition-colors inline-flex items-center gap-2">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.24 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.759 18 7.5 18s3.332.477 4.5 1.253m0-13C13.832 5.477 15.423 5 17.144 5c1.722 0 3.314.477 4.936 1.253v13C21.314 18.477 19.724 18 18.144 18c-1.581 0-3.172.477-4.754 1.253"/></svg>
                   Start Learning
-                </a>
+                </Link>
               </div>
             </div>
 
             {/* Right: Visual panel */}
             <div className="relative">
               <div className="bg-gradient-to-br from-[#7C3AED]/10 via-[#0F172A] to-[#0F172A] rounded-2xl p-8 min-h-[320px] md:min-h-[360px] flex items-center justify-center border border-white/5">
-                <div className="relative w-full h-full">
-                  <span className="absolute top-8 right-8 text-5xl font-black text-white/5 select-none">EDUCATION</span>
-                  <div className="absolute top-1/2 right-1/4 w-56 h-56 rounded-full bg-[#7C3AED]/20 blur-3xl" />
+              <div className="relative w-full h-full">
+                <div className="absolute top-1/2 right-1/4 w-56 h-56 rounded-full bg-[#7C3AED]/20 blur-3xl" />
                   {/* Course preview card */}
                   <div className="bg-white/[0.07] backdrop-blur-sm rounded-xl p-6 border border-white/10 w-full max-w-xs">
                     <div className="flex items-center gap-3 mb-4">
@@ -252,15 +266,14 @@ export default function Landing() {
                       </span>
                     </div>
                   </div>
-                  {/* Learner avatar stack */}
+                  {/* Social proof — learner group */}
                   <div className="absolute bottom-8 left-8">
-                    <div className="flex -space-x-2">
-                      <div className="w-8 h-8 bg-[#7C3AED] rounded-full border-2 border-[#0F172A] flex items-center justify-center text-white text-xs font-bold">A</div>
-                      <div className="w-8 h-8 bg-[#22D3EE] rounded-full border-2 border-[#0F172A] flex items-center justify-center text-white text-xs font-bold">K</div>
-                      <div className="w-8 h-8 bg-[#A78BFA] rounded-full border-2 border-[#0F172A] flex items-center justify-center text-white text-xs font-bold">M</div>
-                      <div className="w-8 h-8 bg-[#7C3AED] rounded-full border-2 border-[#0F172A] flex items-center justify-center text-white text-xs font-bold">E</div>
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center justify-center w-9 h-9 bg-[#7C3AED]/20 border border-[#7C3AED]/30 rounded-full">
+                        <svg className="w-5 h-5 text-[#7C3AED]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/></svg>
+                      </div>
                     </div>
-                    <p className="text-white/40 text-xs mt-2">Join 32,400+ learners</p>
+                    <p className="text-white/40 text-xs mt-2">Sample data: 32,400+ learners</p>
                   </div>
                 </div>
               </div>
@@ -269,33 +282,44 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* ─── Hero Ad Banner ─── */}
+      <AdBanner placement="LANDING_HERO" />
+
       {/* ─── Course Marketplace ─── */}
-      <section className="bg-white py-16">
+      <section className="bg-[#0F172A] py-16">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-4">
             <div>
-              <h2 className="text-2xl font-bold text-[#0F172A]">Browse Courses</h2>
-              <p className="text-slate-500 text-sm mt-1">Expert-led courses from Ghana's top creators</p>
+              <h2 className="text-2xl font-bold text-white">Browse Courses</h2>
+              <p className="text-white/50 text-sm mt-1">Expert-led courses from Ghana's top creators</p>
             </div>
-            <div className="relative w-full md:w-64">
-              <input
-                type="text"
-                placeholder="Search courses..."
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-nexify bg-[#EDE9FE] text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#7C3AED] focus:border-transparent"
-              />
-              <svg className="absolute left-3 top-3 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <circle cx="11" cy="11" r="8" strokeWidth="2" />
-                <path d="m21 21-4.35-4.35" strokeWidth="2" strokeLinecap="round" />
-              </svg>
+            <div className="flex items-center gap-3">
+              <div className="relative w-full md:w-64">
+                <input
+                  type="text"
+                  placeholder="Search courses..."
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 border border-white/10 rounded-nexify bg-white/5 text-white text-sm placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-[#7C3AED] focus:border-transparent"
+                />
+                <svg className="absolute left-3 top-3 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <circle cx="11" cy="11" r="8" strokeWidth="2" />
+                  <path d="m21 21-4.35-4.35" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </div>
+              <Link
+                to="/courses"
+                className="bg-[#7C3AED] text-white text-sm font-semibold px-4 py-2.5 rounded-nexify hover:bg-[#6D28D9] transition-colors whitespace-nowrap"
+              >
+                Browse Catalog
+              </Link>
             </div>
           </div>
 
         {loading ? (
           <SkeletonGrid cols={3} count={3} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" />
         ) : filtered.length === 0 ? (
-          <div className="text-center py-12 text-slate-500">
+          <div className="text-center py-12 text-white/40">
             <p>No courses found matching "{search}".</p>
           </div>
         ) : (
@@ -326,9 +350,9 @@ function CourseCard({ course }) {
   const [showCheckout, setShowCheckout] = useState(false);
 
   return (
-    <div className="bg-white rounded-nexify shadow-card-sm border border-slate-100 overflow-hidden hover:shadow-card-lg transition-shadow duration-200">
+    <div className="bg-[#1E293B] rounded-nexify shadow-card-sm border border-white/10 overflow-hidden hover:shadow-card-lg transition-shadow duration-200">
       {/* Cover / Thumbnail */}
-      <div className="aspect-video bg-slate-900 relative">
+      <div className="aspect-video bg-[#0F172A] relative">
         {course.coverImageUrl ? (
           <img src={course.coverImageUrl} alt={course.title} className="w-full h-full object-cover" />
         ) : (
@@ -338,11 +362,21 @@ function CourseCard({ course }) {
             </div>
           </div>
         )}
-        <span className="absolute top-3 left-3 bg-white/90 text-slate-900 text-xs font-semibold px-2 py-1 rounded-full capitalize">
-          {course.type === 'IN_PERSON_LAB' ? '🏫 Physical Lab' : '💻 Digital'}
-        </span>
+        <span className="absolute top-3 left-3 bg-white/10 text-white/80 text-xs font-semibold px-2 py-1 rounded-full capitalize backdrop-blur-sm flex items-center gap-1">
+                  {course.type === 'IN_PERSON_LAB' ? (
+                    <>
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>
+                      In-Person
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                      Digital
+                    </>
+                  )}
+                </span>
         {course.type === 'IN_PERSON_LAB' && course.maxSeats && (
-          <span className="absolute top-3 right-3 bg-emerald-500 text-white text-xs font-semibold px-2 py-1 rounded-full">
+          <span className="absolute top-3 right-3 bg-emerald-500/20 text-emerald-400 text-xs font-semibold px-2 py-1 rounded-full">
             {course.bookedSeats || 0} / {course.maxSeats} seats
           </span>
         )}
@@ -350,18 +384,18 @@ function CourseCard({ course }) {
 
       {/* Content */}
       <div className="p-5">
-        <h3 className="text-lg font-bold text-slate-900 mb-1 line-clamp-2">{course.title}</h3>
-        <p className="text-sm text-slate-500 mb-3 line-clamp-2">{course.description}</p>
+        <h3 className="text-lg font-bold text-white mb-1 line-clamp-2">{course.title}</h3>
+        <p className="text-sm text-white/50 mb-3 line-clamp-2">{course.description}</p>
 
         <div className="flex items-center justify-between mb-3">
-          <span className="text-sm text-slate-600">by {course.creator?.fullName || 'Unknown'}</span>
+          <span className="text-sm text-white/50">by {course.creator?.fullName || 'Unknown'}</span>
           <span className="text-[#7C3AED] font-bold text-lg currency-ghs">
             GH₵ {(course.priceGhs || 0).toFixed(2)}
           </span>
         </div>
 
         {/* Social proof: students + rating */}
-        <div className="flex items-center gap-4 mb-3 text-xs text-slate-500">
+        <div className="flex items-center gap-4 mb-3 text-xs text-white/40">
           <span className="flex items-center gap-1">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
             {(course._count?.orders || 0) + (course.type === 'IN_PERSON_LAB' ? (course.bookedSeats || 0) : 0)} enrolled
@@ -382,7 +416,7 @@ function CourseCard({ course }) {
 
         {/* Order Bump indicator */}
         {course.hasOrderBump && course.orderBumpTitle && (
-          <div className="flex items-center gap-2 mb-3 text-xs text-amber-700 bg-amber-50 p-2 rounded-nexify border border-amber-200">
+          <div className="flex items-center gap-2 mb-3 text-xs text-amber-400 bg-amber-500/10 p-2 rounded-nexify border border-amber-500/20">
             <span className="text-lg">+</span>
             <span>Add: {course.orderBumpTitle} (GH₵ {course.orderBumpPriceGhs?.toFixed(2)})</span>
           </div>
@@ -454,9 +488,9 @@ function CheckoutModal({ course, onClose }) {
             {course.type === 'IN_PERSON_LAB' ? 'Check your email for venue details and lab dates.' : 'Start learning in your Student Dashboard.'}
           </p>
           <div className="flex flex-col gap-2">
-            <a href={`/student`} className="bg-[#7C3AED] text-white text-center py-2.5 rounded-nexify font-semibold hover:bg-[#6D28D9] transition-colors">
+            <Link to="/student" className="bg-[#7C3AED] text-white text-center py-2.5 rounded-nexify font-semibold hover:bg-[#6D28D9] transition-colors">
               Go to Student Dashboard
-            </a>
+            </Link>
             <button onClick={onClose} className="text-sm text-slate-500 hover:text-slate-700 transition-colors">
               Close
             </button>

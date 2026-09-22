@@ -1,0 +1,477 @@
+{
+  "communities": {
+    "0": [
+      "backend_src_middleware_auth",
+      "backend_src_middleware_auth_authenticate",
+      "backend_src_middleware_auth_config",
+      "backend_src_middleware_auth_jwt",
+      "backend_src_middleware_auth_optionalauth",
+      "backend_src_middleware_nexascope",
+      "backend_src_middleware_nexascope_authenticate",
+      "backend_src_middleware_nexascope_nexascopemiddleware",
+      "backend_src_middleware_nexascope_prisma",
+      "backend_src_middleware_nexascope_prismaclient",
+      "backend_src_middleware_rbac",
+      "backend_src_middleware_rbac_constants",
+      "backend_src_middleware_rbac_requirepermission",
+      "backend_src_middleware_rbac_requirerole",
+      "backend_src_middleware_rbac_role_permissions",
+      "backend_src_routes_adminroutes",
+      "backend_src_routes_adminroutes_admincontroller",
+      "backend_src_routes_adminroutes_authenticate",
+      "backend_src_routes_adminroutes_express",
+      "backend_src_routes_adminroutes_requirerole",
+      "backend_src_routes_adminroutes_router",
+      "backend_src_routes_affiliateroutes",
+      "backend_src_routes_affiliateroutes_affiliatecontroller",
+      "backend_src_routes_affiliateroutes_authenticate",
+      "backend_src_routes_affiliateroutes_express",
+      "backend_src_routes_affiliateroutes_requirepermission_requirerole",
+      "backend_src_routes_affiliateroutes_router",
+      "backend_src_routes_authroutes",
+      "backend_src_routes_authroutes_authcontroller",
+      "backend_src_routes_authroutes_authenticate",
+      "backend_src_routes_authroutes_express",
+      "backend_src_routes_authroutes_router",
+      "backend_src_routes_courseroutes",
+      "backend_src_routes_courseroutes_authenticate_optionalauth",
+      "backend_src_routes_courseroutes_coursecontroller",
+      "backend_src_routes_courseroutes_express",
+      "backend_src_routes_courseroutes_requirepermission_requirerole",
+      "backend_src_routes_courseroutes_router",
+      "backend_src_routes_nexaroutes",
+      "backend_src_routes_nexaroutes_express",
+      "backend_src_routes_nexaroutes_nexacontroller",
+      "backend_src_routes_nexaroutes_nexascopemiddleware",
+      "backend_src_routes_nexaroutes_requirerole",
+      "backend_src_routes_nexaroutes_router",
+      "backend_src_routes_orderroutes",
+      "backend_src_routes_orderroutes_authenticate_optionalauth",
+      "backend_src_routes_orderroutes_express",
+      "backend_src_routes_orderroutes_ordercontroller",
+      "backend_src_routes_orderroutes_requirepermission",
+      "backend_src_routes_orderroutes_router",
+      "ref_express",
+      "ref_jsonwebtoken"
+    ],
+    "1": [
+      "frontend_src_app",
+      "frontend_src_app_admindashboard",
+      "frontend_src_app_adminlayout",
+      "frontend_src_app_affiliatedashboard",
+      "frontend_src_app_affiliatelayout",
+      "frontend_src_app_app",
+      "frontend_src_app_coursedetail",
+      "frontend_src_app_creatordashboard",
+      "frontend_src_app_creatorlayout",
+      "frontend_src_app_loginpage",
+      "frontend_src_app_navitem",
+      "frontend_src_app_pageloader",
+      "frontend_src_app_protectedroute",
+      "frontend_src_app_publiclanding",
+      "frontend_src_app_registerpage",
+      "frontend_src_app_studentdashboard",
+      "frontend_src_app_studentlayout",
+      "frontend_src_context_authcontext",
+      "frontend_src_context_authcontext_authcontext",
+      "frontend_src_context_authcontext_authprovider",
+      "frontend_src_context_authcontext_authprovider_fetchuser",
+      "frontend_src_context_authcontext_useauth",
+      "frontend_src_context_cartcontext",
+      "frontend_src_context_cartcontext_cartcontext",
+      "frontend_src_context_cartcontext_cartprovider",
+      "frontend_src_context_cartcontext_usecart",
+      "frontend_src_index",
+      "frontend_src_main",
+      "frontend_src_pages_admin_dashboard",
+      "frontend_src_pages_admin_dashboard_admindashboard",
+      "frontend_src_pages_affiliate_dashboard",
+      "frontend_src_pages_affiliate_dashboard_affiliatedashboard",
+      "frontend_src_pages_creator_dashboard",
+      "frontend_src_pages_creator_dashboard_creatordashboard",
+      "frontend_src_pages_public_coursedetail",
+      "frontend_src_pages_public_coursedetail_coursedetail",
+      "frontend_src_pages_public_landing",
+      "frontend_src_pages_public_landing_checkoutmodal",
+      "frontend_src_pages_public_landing_coursecard",
+      "frontend_src_pages_public_landing_landing",
+      "frontend_src_pages_public_login",
+      "frontend_src_pages_public_login_login",
+      "frontend_src_pages_public_register",
+      "frontend_src_pages_public_register_register",
+      "frontend_src_pages_student_dashboard",
+      "frontend_src_pages_student_dashboard_studentdashboard",
+      "ref_axios",
+      "ref_react",
+      "ref_react_dom",
+      "ref_react_router_dom"
+    ],
+    "2": [
+      "backend_src_config_constants",
+      "backend_src_config_constants_platform",
+      "backend_src_config_env",
+      "backend_src_config_env_envpath",
+      "backend_src_config_env_fs",
+      "backend_src_config_env_missing",
+      "backend_src_config_env_path",
+      "backend_src_config_env_platform",
+      "backend_src_config_env_required",
+      "backend_src_controllers_nexacontroller",
+      "backend_src_controllers_nexacontroller_chat",
+      "backend_src_controllers_nexacontroller_constants",
+      "backend_src_controllers_nexacontroller_getsystempromptforrole",
+      "backend_src_server",
+      "backend_src_server_app",
+      "backend_src_server_config",
+      "backend_src_server_constants",
+      "backend_src_server_cors",
+      "backend_src_server_express",
+      "backend_src_server_prisma",
+      "backend_src_server_prismaclient",
+      "backend_src_server_server",
+      "backend_src_server_shutdown",
+      "backend_src_utils_seatmanager",
+      "backend_src_utils_seatmanager_checkseatavailability",
+      "backend_src_utils_seatmanager_constants",
+      "backend_src_utils_seatmanager_formatseatstatus",
+      "backend_src_utils_seatmanager_getseatcolorthreshold",
+      "backend_src_utils_seatmanager_getseatholdexpiration",
+      "backend_src_utils_seatmanager_isseatholdexpired",
+      "ref_cors",
+      "ref_fs"
+    ],
+    "3": [
+      "backend_prisma_seed",
+      "backend_prisma_seed_bcrypt",
+      "backend_prisma_seed_crypto",
+      "backend_prisma_seed_main",
+      "backend_prisma_seed_prisma",
+      "backend_prisma_seed_prismaclient",
+      "backend_src_controllers_affiliatecontroller",
+      "backend_src_controllers_affiliatecontroller_constants",
+      "backend_src_controllers_affiliatecontroller_crypto",
+      "backend_src_controllers_affiliatecontroller_generateaffiliatecode",
+      "backend_src_controllers_affiliatecontroller_generatelink",
+      "backend_src_controllers_affiliatecontroller_getdashboard",
+      "backend_src_controllers_affiliatecontroller_getswipes",
+      "backend_src_controllers_affiliatecontroller_listlinks",
+      "backend_src_controllers_affiliatecontroller_prisma",
+      "backend_src_controllers_affiliatecontroller_prismaclient",
+      "backend_src_controllers_affiliatecontroller_trackclick",
+      "backend_src_controllers_ordercontroller",
+      "backend_src_controllers_ordercontroller_checkidempotency",
+      "backend_src_controllers_ordercontroller_checkout",
+      "backend_src_controllers_ordercontroller_constants",
+      "backend_src_controllers_ordercontroller_crypto",
+      "backend_src_controllers_ordercontroller_generateidempotencykey",
+      "backend_src_controllers_ordercontroller_getorder",
+      "backend_src_controllers_ordercontroller_getstudentorders",
+      "backend_src_controllers_ordercontroller_prisma",
+      "backend_src_controllers_ordercontroller_prismaclient",
+      "bcryptjs",
+      "ref_bcryptjs",
+      "ref_crypto",
+      "ref_prisma_client"
+    ],
+    "4": [
+      "backend_package",
+      "backend_package_dependencies",
+      "backend_package_dependencies_bcryptjs",
+      "backend_package_dependencies_cors",
+      "backend_package_dependencies_dotenv",
+      "backend_package_dependencies_express",
+      "backend_package_dependencies_express_rate_limit",
+      "backend_package_dependencies_jsonwebtoken",
+      "backend_package_dependencies_prisma_client",
+      "backend_package_dependencies_slugify",
+      "backend_package_description",
+      "backend_package_devdependencies",
+      "backend_package_devdependencies_prisma",
+      "backend_package_main",
+      "backend_package_name",
+      "backend_package_prisma",
+      "backend_package_prisma_seed",
+      "backend_package_scripts",
+      "backend_package_scripts_db_push",
+      "backend_package_scripts_dev",
+      "backend_package_scripts_prisma_generate",
+      "backend_package_scripts_prisma_migrate",
+      "backend_package_scripts_prisma_seed",
+      "backend_package_scripts_start",
+      "backend_package_version",
+      "ref_dotenv",
+      "ref_express_rate_limit",
+      "ref_prisma",
+      "ref_slugify"
+    ],
+    "5": [
+      "frontend_package",
+      "frontend_package_dependencies",
+      "frontend_package_dependencies_axios",
+      "frontend_package_dependencies_react",
+      "frontend_package_dependencies_react_dom",
+      "frontend_package_dependencies_react_router_dom",
+      "frontend_package_name",
+      "frontend_package_private",
+      "frontend_package_scripts",
+      "frontend_package_scripts_build",
+      "frontend_package_scripts_dev",
+      "frontend_package_scripts_lint",
+      "frontend_package_scripts_preview",
+      "frontend_package_type",
+      "frontend_package_version",
+      "frontend_vite_config",
+      "ref_autoprefixer",
+      "ref_path",
+      "ref_postcss",
+      "ref_tailwindcss",
+      "ref_types_react",
+      "ref_types_react_dom",
+      "ref_vite",
+      "ref_vitejs_plugin_react"
+    ],
+    "6": [
+      "backend_src_controllers_admincontroller",
+      "backend_src_controllers_admincontroller_constants",
+      "backend_src_controllers_admincontroller_createswipeasset",
+      "backend_src_controllers_admincontroller_crypto",
+      "backend_src_controllers_admincontroller_fs",
+      "backend_src_controllers_admincontroller_getglobalmetrics",
+      "backend_src_controllers_admincontroller_getstagingqueue",
+      "backend_src_controllers_admincontroller_getsystemassets",
+      "backend_src_controllers_admincontroller_getusergrid",
+      "backend_src_controllers_admincontroller_path",
+      "backend_src_controllers_admincontroller_prisma",
+      "backend_src_controllers_admincontroller_prismaclient",
+      "backend_src_controllers_admincontroller_updatecoursestatus",
+      "backend_src_controllers_admincontroller_updatesystemasset",
+      "backend_src_controllers_admincontroller_updateuserrole"
+    ],
+    "7": [
+      "backend_src_controllers_authcontroller",
+      "backend_src_controllers_authcontroller_bcrypt",
+      "backend_src_controllers_authcontroller_changepassword",
+      "backend_src_controllers_authcontroller_config",
+      "backend_src_controllers_authcontroller_constants",
+      "backend_src_controllers_authcontroller_generatetoken",
+      "backend_src_controllers_authcontroller_generateuuid",
+      "backend_src_controllers_authcontroller_getme",
+      "backend_src_controllers_authcontroller_jwt",
+      "backend_src_controllers_authcontroller_login",
+      "backend_src_controllers_authcontroller_prisma",
+      "backend_src_controllers_authcontroller_prismaclient",
+      "backend_src_controllers_authcontroller_register",
+      "backend_src_controllers_authcontroller_updateprofile"
+    ],
+    "8": [
+      "backend_src_controllers_coursecontroller",
+      "backend_src_controllers_coursecontroller_constants",
+      "backend_src_controllers_coursecontroller_createcourse",
+      "backend_src_controllers_coursecontroller_createlesson",
+      "backend_src_controllers_coursecontroller_createmodule",
+      "backend_src_controllers_coursecontroller_generateslug",
+      "backend_src_controllers_coursecontroller_getcourse",
+      "backend_src_controllers_coursecontroller_getcreatorcoursestats",
+      "backend_src_controllers_coursecontroller_listcourses",
+      "backend_src_controllers_coursecontroller_prisma",
+      "backend_src_controllers_coursecontroller_prismaclient",
+      "backend_src_controllers_coursecontroller_slugify",
+      "backend_src_controllers_coursecontroller_updatecourse",
+      "backend_src_controllers_coursecontroller_validateteaserurl"
+    ],
+    "9": [
+      "frontend_package_devdependencies",
+      "frontend_package_devdependencies_autoprefixer",
+      "frontend_package_devdependencies_postcss",
+      "frontend_package_devdependencies_tailwindcss",
+      "frontend_package_devdependencies_types_react",
+      "frontend_package_devdependencies_types_react_dom",
+      "frontend_package_devdependencies_vite",
+      "frontend_package_devdependencies_vitejs_plugin_react"
+    ],
+    "10": [
+      "frontend_src_config_branding",
+      "frontend_src_config_branding_api_base",
+      "frontend_src_config_branding_brand_assets",
+      "frontend_src_config_branding_payment_channels",
+      "frontend_src_config_branding_platform_fees"
+    ],
+    "11": [
+      "backend_src_utils_revenuesplitter",
+      "backend_src_utils_revenuesplitter_calculaterevenuesplit",
+      "backend_src_utils_revenuesplitter_formatghs",
+      "backend_src_utils_revenuesplitter_getplatformfeerate"
+    ],
+    "12": [
+      "frontend_postcss_config",
+      "frontend_postcss_config_config",
+      "postcss_load_config"
+    ],
+    "13": [
+      "frontend_tailwind_config",
+      "tailwindcss"
+    ]
+  },
+  "cohesion": {
+    "0": 0.058069381598793365,
+    "1": 0.08897959183673469,
+    "2": 0.06451612903225806,
+    "3": 0.07741935483870968,
+    "4": 0.06896551724137931,
+    "5": 0.08695652173913043,
+    "6": 0.13333333333333333,
+    "7": 0.17582417582417584,
+    "8": 0.1978021978021978,
+    "9": 0.25,
+    "10": 0.4,
+    "11": 0.5,
+    "12": 0.6666666666666666,
+    "13": 1.0
+  },
+  "gods": [
+    {
+      "id": "frontend_src_context_authcontext_useauth",
+      "label": "useAuth()",
+      "degree": 15
+    },
+    {
+      "id": "ref_react",
+      "label": "react",
+      "degree": 13
+    },
+    {
+      "id": "ref_prisma_client",
+      "label": "@prisma/client",
+      "degree": 9
+    },
+    {
+      "id": "ref_express",
+      "label": "express",
+      "degree": 8
+    },
+    {
+      "id": "backend_src_middleware_auth_authenticate",
+      "label": "authenticate()",
+      "degree": 7
+    },
+    {
+      "id": "frontend_src_context_cartcontext_usecart",
+      "label": "useCart()",
+      "degree": 7
+    },
+    {
+      "id": "ref_axios",
+      "label": "axios",
+      "degree": 7
+    },
+    {
+      "id": "backend_package_scripts",
+      "label": "scripts",
+      "degree": 7
+    },
+    {
+      "id": "ref_react_router_dom",
+      "label": "react-router-dom",
+      "degree": 6
+    },
+    {
+      "id": "backend_src_middleware_rbac_requirerole",
+      "label": "requireRole()",
+      "degree": 5
+    }
+  ],
+  "surprises": [
+    {
+      "source": "ProtectedRoute()",
+      "target": "useAuth()",
+      "source_files": [
+        "frontend/src/App.jsx",
+        "frontend/src/context/AuthContext.jsx"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "peripheral node `ProtectedRoute()` unexpectedly reaches hub `useAuth()`"
+    },
+    {
+      "source": "AdminDashboard()",
+      "target": "useAuth()",
+      "source_files": [
+        "frontend/src/pages/admin/Dashboard.jsx",
+        "frontend/src/context/AuthContext.jsx"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "peripheral node `AdminDashboard()` unexpectedly reaches hub `useAuth()`"
+    },
+    {
+      "source": "AffiliateDashboard()",
+      "target": "useAuth()",
+      "source_files": [
+        "frontend/src/pages/affiliate/Dashboard.jsx",
+        "frontend/src/context/AuthContext.jsx"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "peripheral node `AffiliateDashboard()` unexpectedly reaches hub `useAuth()`"
+    },
+    {
+      "source": "Login()",
+      "target": "useAuth()",
+      "source_files": [
+        "frontend/src/pages/public/Login.jsx",
+        "frontend/src/context/AuthContext.jsx"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "peripheral node `Login()` unexpectedly reaches hub `useAuth()`"
+    },
+    {
+      "source": "Register()",
+      "target": "useAuth()",
+      "source_files": [
+        "frontend/src/pages/public/Register.jsx",
+        "frontend/src/context/AuthContext.jsx"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "peripheral node `Register()` unexpectedly reaches hub `useAuth()`"
+    }
+  ],
+  "questions": [
+    {
+      "type": "bridge_node",
+      "question": "Why does `@prisma/client` connect `affiliateController.js` to `courseRoutes.js`, `server.js`, `backend/package.json`, `adminController.js`, `authController.js`, `courseController.js`?",
+      "why": "High betweenness centrality (0.202) - this node is a cross-community bridge."
+    },
+    {
+      "type": "isolated_nodes",
+      "question": "What connects `config`, `jwt`, `{ authenticate }` to the rest of the system?",
+      "why": "133 weakly-connected nodes found - possible documentation gaps or missing edges."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `courseRoutes.js` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.058069381598793365 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `App.jsx` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.08897959183673469 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `server.js` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.06451612903225806 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `affiliateController.js` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.07741935483870968 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `backend/package.json` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.06896551724137931 - nodes in this community are weakly interconnected."
+    }
+  ]
+}

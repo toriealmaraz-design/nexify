@@ -183,13 +183,62 @@ async function getGlobalMetrics(req, res) {
     });
 
   } catch (error) {
-    console.error('[GLOBAL METRICS ERROR]', error.message);
-    return res.status(500).json({
-      success: false,
-      statusCode: 500,
-      error: 'INTERNAL_SERVER_ERROR',
-      message: 'Failed to retrieve global metrics.',
+    console.error('getGlobalMetrics error:', error);
+    return res.status(500).json({ success: false, statusCode: 500, message: 'Internal server error' });
+  }
+}
+
+// ─── AFFILIATE LEADERBOARD ───────────────────────────────────────
+async function getAffiliateLeaderboard(req, res) {
+  try {
+    const affiliates = await prisma.user.findMany({
+      where: { role: 'AFFILIATE' },
+      select: {
+        id: true,
+        fullName: true,
+        email: true,
+        createdAt: true,
+        _count: { select: { affiliateLinks: { where: { clickCount: { gt: 0 } } } } },
+        affiliateLinks: {
+          select: {
+            clickCount: true,
+            orders: { where: { paymentStatus: 'SUCCESSFUL' } },
+          },
+        },
+        commissions: {
+          where: { status: 'CLEARED' },
+          select: { amountGhs: true },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 20,
     });
+
+    const enriched = affiliates
+      .map(a => {
+        const totalClicks = a.affiliateLinks.reduce((sum, l) => sum + (l.clickCount || 0), 0);
+        const totalConversions = a.affiliateLinks.reduce((sum, l) => sum + (l.orders?.length || 0), 0);
+        const totalEarnedGhs = a.commissions.reduce((sum, c) => sum + parseFloat(c.amountGhs || 0), 0);
+        return {
+          id: a.id,
+          fullName: a.fullName,
+          email: a.email,
+          totalClicks,
+          totalConversions,
+          totalEarnedGhs,
+        };
+      })
+      .sort((a, b) => b.totalEarnedGhs - a.totalEarnedGhs);
+
+    return res.status(200).json({
+      success: true,
+      statusCode: 200,
+      message: 'Affiliate leaderboard retrieved.',
+      data: enriched,
+    });
+  } catch (error) {
+    console.error('getAffiliateLeaderboard error:', error);
+    return res.status(500).json({ success: false, statusCode: 500, message: 'Internal server error' });
   }
 }
 
@@ -419,10 +468,141 @@ async function createSwipeAsset(req, res) {
   }
 }
 
+// ─── COURSE DETAIL ─────────────────────────────────────────
+async function getCourseDetail(req, res) {
+  try {
+    const { courseId } = req.params;
+
+    const course = await prisma.course.findUnique({
+      where: { id: courseId },
+      include: {
+        creator: {
+          select: {
+            id: true,
+            fullName: true,
+            email: true,
+            _count: {
+              select: {
+                createdCourses: { where: { status: 'PUBLISHED' } },
+              },
+            },
+          },
+        },
+        modules: {
+          include: { lessons: { orderBy: { orderIndex: 'asc' } } },
+          orderBy: { orderIndex: 'asc' },
+        },
+      },
+    });
+
+    if (!course) {
+      return res.status(404).json({
+        success: false,
+        statusCode: 404,
+        error: 'NOT_FOUND',
+        message: 'Course not found.',
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      statusCode: 200,
+      message: 'Course detail retrieved.',
+      data: course,
+    });
+
+  } catch (error) {
+    console.error('[GET COURSE DETAIL ERROR]', error.message);
+    return res.status(500).json({
+      success: false,
+      statusCode: 500,
+      error: 'INTERNAL_SERVER_ERROR',
+      message: 'Failed to retrieve course detail.',
+    });
+  }
+}
+
+// ─── APPROVE COURSE ────────────────────────────────────────
+async function approveCourse(req, res) {
+  try {
+    const { courseId } = req.params;
+    const { note } = req.body;
+
+    const course = await prisma.course.update({
+      where: { id: courseId },
+      data: {
+        status: 'PUBLISHED',
+        rejectionReason: null,
+      },
+    });
+
+    return res.status(200).json({
+      success: true,
+      statusCode: 200,
+      message: 'Course approved.',
+      data: { id: course.id, status: course.status },
+    });
+
+  } catch (error) {
+    console.error('[APPROVE COURSE ERROR]', error.message);
+    return res.status(500).json({
+      success: false,
+      statusCode: 500,
+      error: 'INTERNAL_SERVER_ERROR',
+      message: 'Failed to approve course.',
+    });
+  }
+}
+
+// ─── REJECT COURSE ─────────────────────────────────────────
+async function rejectCourse(req, res) {
+  try {
+    const { courseId } = req.params;
+    const { reason } = req.body;
+
+    if (!reason?.trim()) {
+      return res.status(400).json({
+        success: false,
+        statusCode: 400,
+        error: 'BAD_REQUEST',
+        message: 'reason is required.',
+      });
+    }
+
+    const course = await prisma.course.update({
+      where: { id: courseId },
+      data: {
+        status: 'REJECTED',
+        rejectionReason: reason,
+      },
+    });
+
+    return res.status(200).json({
+      success: true,
+      statusCode: 200,
+      message: 'Course rejected.',
+      data: { id: course.id, status: course.status },
+    });
+
+  } catch (error) {
+    console.error('[REJECT COURSE ERROR]', error.message);
+    return res.status(500).json({
+      success: false,
+      statusCode: 500,
+      error: 'INTERNAL_SERVER_ERROR',
+      message: 'Failed to reject course.',
+    });
+  }
+}
+
 module.exports = {
   getStagingQueue,
+  getCourseDetail,
+  approveCourse,
+  rejectCourse,
   updateCourseStatus,
   getGlobalMetrics,
+  getAffiliateLeaderboard,
   getUserGrid,
   updateUserRole,
   getSystemAssets,

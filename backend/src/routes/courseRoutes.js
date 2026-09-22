@@ -7,6 +7,7 @@ const router = express.Router();
 const { authenticate, optionalAuth } = require('../middleware/auth');
 const { requirePermission, requireRole } = require('../middleware/rbac');
 const courseController = require('../controllers/courseController');
+const reviewController = require('../controllers/reviewController');
 
 // Public: Browse published courses
 router.get('/', courseController.listCourses);
@@ -24,5 +25,14 @@ router.post('/modules/:moduleId/lessons', authenticate, requirePermission('cours
 
 // Creator stats
 router.get('/stats/creator', authenticate, requireRole('CREATOR', 'ADMIN'), courseController.getCreatorCourseStats);
+
+// Reviews (nested under courses)
+router.get('/:courseId/reviews', reviewController.getCourseReviews);
+router.post('/:courseId/reviews', authenticate, reviewController.createOrUpdateReview);
+
+// Payout request stub
+router.post('/payout-request', authenticate, requireRole('CREATOR', 'ADMIN'), (req, res) => {
+  res.status(201).json({ success: true, message: 'Payout request submitted' });
+});
 
 module.exports = router;

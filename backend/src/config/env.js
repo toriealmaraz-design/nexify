@@ -40,10 +40,28 @@ module.exports = {
 
   nexa: {
     llmProvider: process.env.NEXA_LLM_PROVIDER || 'local',
-    apiKey: process.env.NEXA_LLM_API_KEY || '',
+    apiKey: process.env.NEXA_API_KEY || '',
   },
 
   payment: {
     gatewaySecret: process.env.PAYMENT_GATEWAY_SECRET || 'dev-gateway-secret',
+  },
+
+  oauth: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID || '',
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+      redirectUri: process.env.GOOGLE_REDIRECT_URI || 'http://localhost:5000/api/v1/auth/google/callback',
+    },
+    apple: {
+      clientId: process.env.APPLE_CLIENT_ID || '',
+      teamId: process.env.APPLE_TEAM_ID || '',
+      keyId: process.env.APPLE_KEY_ID || '',
+      privateKey: process.env.APPLE_PRIVATE_KEY || '',
+    },
+  },
+
+  app: {
+    frontendUrl: process.env.FRONTEND_URL || 'http://localhost:5173',
   },
 };

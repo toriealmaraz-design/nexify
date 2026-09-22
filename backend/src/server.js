@@ -48,9 +48,24 @@ app.use('/api/v1/courses', require('./routes/courseRoutes'));
 app.use('/api/v1/orders', require('./routes/orderRoutes'));
 app.use('/api/v1/affiliates', require('./routes/affiliateRoutes'));
 app.use('/api/v1/nexa', require('./routes/nexaRoutes'));
+app.use('/api/v1/nexa-config', require('./routes/nexaConfigRoutes'));
+app.use('/api/v1/nexa-global-config', require('./routes/nexaGlobalConfigRoutes'));
+app.use('/api/v1/chatbot-replies', require('./routes/chatbotReplyRoutes'));
+app.use('/api/v1/advertisements', require('./routes/advertisementRoutes'));
 app.use('/api/v1/admin', require('./routes/adminRoutes'));
+app.use('/api/v1/wishlist', require('./routes/wishlistRoutes'));
+app.use('/api/v1/notifications', require('./routes/notificationRoutes'));
+app.use('/api/v1/creators', require('./routes/creatorRoutes'));
+app.use('/api/v1/enrollments', require('./routes/progressRoutes'));
+app.use('/api/v1/coupons', require('./routes/couponRoutes'));
+app.use('/api/v1/payouts', require('./routes/payoutRoutes'));
+app.use('/api/v1/referrals', require('./routes/referralRoutes'));
+app.use('/api/v1/certificates', require('./routes/certificateRoutes'));
+app.use('/api/v1/questions', require('./routes/questionRoutes'));
+app.use('/api/v1/announcements', require('./routes/announcementRoutes'));
+app.use('/api/v1/nexa-chat', require('./routes/nexaChatRoutes'));
 
-// ─── 404 Handler ──────────────────────────────────────────
+// ─── 404 Handler ────────────────────────────────────────────
 app.use((req, res) => {
   res.status(404).json({
     success: false,

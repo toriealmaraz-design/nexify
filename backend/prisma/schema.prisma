@@ -21,6 +21,10 @@ model User {
   // Values: ADMIN, CREATOR, AFFILIATE, STUDENT
   role         String   @default("STUDENT")
   phone        String?
+  provider     String?  // 'google' | 'apple' | null
+  providerId   String?  // OAuth subject ID
+  avatarUrl    String?
+  emailVerified Boolean @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -34,6 +38,14 @@ model User {
   subscriptions   Subscription[]
   subAffiliates   SubAffiliate[]  @relation("RecruiterSubAffiliates")
   recruitedBy     SubAffiliate[]  @relation("SubAffiliateRecruitedBy")
+  wishlists       Wishlist[]
+  notifications   Notification[]
+  payouts         Payout[]
+  certificates    Certificate[]
+  questions       Question[]
+  answers         Answer[]
+  announcements   Announcement[]
+  nexaConversations NexaConversation[]
 
   @@map("users")
 }
@@ -87,6 +99,9 @@ model Course {
   // Reverse relations for September 2026 additions
   enrollments    Enrollment[]
   reviews        Review[]
+  certificates   Certificate[]
+  wishlists      Wishlist[]
+  announcements  Announcement[]
 
   @@map("courses")
 }
@@ -116,9 +131,96 @@ model Lesson {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  module Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  module     Module     @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  questions  Question[]
 
   @@map("lessons")
+}
+
+// ─── Course Q&A ───────────────────────────────────────────────
+
+model Question {
+  id        String   @id @default(uuid())
+  lessonId  String
+  userId    String
+  body      String   // The question text
+  upvotes   Int      @default(0)
+  resolved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  lesson  Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  answers Answer[]
+
+  @@map("questions")
+}
+
+model Answer {
+  id         String   @id @default(uuid())
+  questionId String
+  userId     String
+  body       String   // The answer text
+  isOfficial Boolean  @default(false)  // Creator's official answer
+  upvotes    Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("answers")
+}
+
+// ─── Course Announcements ──────────────────────────────────────
+
+model Announcement {
+  id        String   @id @default(uuid())
+  courseId  String
+  userId    String   // Creator who posted
+  title     String
+  body      String
+  priority  Int      @default(0)  // 0=normal, 1=important, 2=urgent
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("announcements")
+}
+
+// ─── Nexa Chat History ─────────────────────────────────────────
+
+model NexaConversation {
+  id        String   @id @default(uuid())
+  userId    String
+  courseId  String?  // Optional: if asked within a course context
+  title     String   @default("New conversation")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages NexaMessage[]
+
+  @@map("nexa_conversations")
+}
+
+model NexaMessage {
+  id             String   @id @default(uuid())
+  conversationId String
+  role           String   // "user" | "nexa"
+  content        String
+  provider       String?  // LLM provider used: OPENAI, GEMINI, CLAUDE, etc.
+  model          String?  // model name used
+  usedLLM        Boolean  @default(false)  // true = LLM response, false = keyword match
+  tokensUsed     Int?     // approximate token count
+  createdAt      DateTime @default(now())
+
+  conversation NexaConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@map("nexa_messages")
 }
 
 model AffiliateLink {
@@ -162,6 +264,9 @@ model Order {
   // Seat status stored as string: LOCKED, WAITLISTED, CONFIRMED, RELEASED
   seatStatus       String?  @default("CONFIRMED")
   idempotencyKey   String?  @unique // MoMo idempotency
+  couponId         String?
+  coupon           Coupon?  @relation(fields: [couponId], references: [id])
+  discountGhs      Float    @default(0)
 
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
@@ -275,6 +380,7 @@ model Enrollment {
   course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
   order    Order? @relation(fields: [orderId], references: [id], onDelete: SetNull)
   orderId  String? @unique
+  lessonProgress LessonProgress[]
 
   @@unique([studentId, courseId])
   @@map("enrollments")
@@ -283,16 +389,54 @@ model Enrollment {
 model Review {
   id        String   @id @default(uuid())
   courseId  String
-  studentId String
-  rating    Int      // 1-5 stars
-  body      String?
+  userId    String
+  rating    Int      // 1-5
+  comment   String?
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  course    Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  course  Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  student User   @relation(fields: [studentId], references: [id], onDelete: Cascade)
-
-  @@unique([courseId, studentId])
+  @@unique([courseId, userId])
   @@map("reviews")
+}
+
+model Wishlist {
+  id        String   @id @default(uuid())
+  userId    String
+  courseId  String
+  createdAt DateTime @default(now())
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course    Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+  @@map("wishlists")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String   // ORDER_COMPLETE | COURSE_APPROVED | COURSE_REJECTED | PAYOUT_PROCESSED | AFFILIATE_SALE | NEW_REVIEW
+  title     String
+  message   String
+  read      Boolean  @default(false)
+  metadata  String?  // JSON string for extra data
+  createdAt DateTime @default(now())
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+model LessonProgress {
+  id            String   @id @default(uuid())
+  enrollmentId  String
+  lessonId      String
+  completed     Boolean  @default(false)
+  completedAt   DateTime?
+  enrollment    Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+
+  @@unique([enrollmentId, lessonId])
+  @@map("lesson_progress")
 }
 
 model Subscription {
@@ -334,4 +478,148 @@ model SystemAuditLog {
   createdAt  DateTime @default(now())
 
   @@map("system_audit_log")
+}
+
+// ─── Nexa AI Configuration ───────────────────────────────────
+
+model NexaAIConfig {
+  id          String   @id @default(uuid())
+  key         String   @unique  // e.g. "DEFAULT", "ADMIN_SCOPE"
+  provider    String   @default("OPENAI")  // OPENAI | OLLAMA | GROQ | LMSTUDIO | AZURE | GEMINI | CLAUDE
+  baseUrl     String            // auto-filled from provider defaults; customisable
+  model       String            // e.g. "gpt-4o-mini", "llama3", "gemini-1.5-flash"
+  apiKey      String?           // optional - can be empty for local Ollama
+  systemPrompt String           // Role-aware system prompt
+  enabled     Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("nexa_ai_config")
+}
+
+// ─── Chatbot Predefined Replies ────────────────────────────────
+
+model ChatbotReply {
+  id        String   @id @default(uuid())
+  key       String   @unique  // e.g. "GREETING", "AFFILIATE_HOW_TO"
+  role      String   @default("ALL")  // ADMIN, CREATOR, AFFILIATE, STUDENT, ALL
+  trigger   String            // keywords or pattern (comma-separated)
+  question  String?            // example question (for admin reference)
+  answer    String            // the reply text
+  priority  Int     @default(0)  // higher = matched first
+  enabled   Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("chatbot_replies")
+}
+
+// ─── Nexa Global Config ───────────────────────────────────────
+
+model NexaGlobalConfig {
+  id        String   @id @default(uuid())
+  key       String   @unique  // singleton: "SYSTEM"
+  name      String   @default("Nexa")
+  avatarUrl String?
+  tagline   String   @default("Your AI assistant on Nexify")
+  defaultOfflineMessage String @default("I'm currently offline. Please leave a message and I'll get back to you!")
+  welcomeMessage String @default("Hello! I'm Nexa. How can I help you today?")
+  primaryColor String @default("#7C3AED")
+  widgetPosition String @default("bottom-right")  // "bottom-right" | "bottom-left"
+  enabled   Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@map("nexa_global_config")
+}
+
+// ─── Coupons & Discounts ─────────────────────────────────────
+
+model Coupon {
+  id            String   @id @default(uuid())
+  code          String   @unique
+  discountType  String   // "PERCENTAGE" | "FIXED"
+  discountValue Float
+  minOrderGhs   Float    @default(0)
+  maxUses       Int      @default(0)   // 0 = unlimited
+  usedCount     Int      @default(0)
+  startsAt      DateTime @default(now())
+  expiresAt     DateTime
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+
+  orders Order[]
+
+  @@map("coupons")
+}
+
+// ─── Payouts ─────────────────────────────────────────────────
+
+model Payout {
+  id          String    @id @default(uuid())
+  userId      String
+  amountGhs   Float
+  status      String    @default("PROCESSING") // PROCESSING | COMPLETED | FAILED
+  method      String    @default("MOBILE_MONEY") // MOBILE_MONEY | BANK_TRANSFER
+  reference   String?
+  notes       String?
+  requestedAt DateTime  @default(now())
+  processedAt DateTime?
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("payouts")
+}
+
+// ─── Referrals / Leaderboard ──────────────────────────────────
+
+model Referral {
+  id          String   @id @default(uuid())
+  affiliateId String
+  refereeId   String?
+  courseId    String?
+  conversions Int      @default(0)
+  earningsGhs Float    @default(0)
+  createdAt   DateTime @default(now())
+
+  @@map("referrals")
+}
+
+// ─── Certificates ─────────────────────────────────────────────
+
+model Certificate {
+  id             String    @id @default(uuid())
+  userId         String
+  courseId       String
+  enrolledAt     DateTime
+  completedAt    DateTime?
+  certificateId  String    @unique @default(uuid())
+  createdAt      DateTime  @default(now())
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course         Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+  @@map("certificates")
+}
+
+// ─── Advertisements ───────────────────────────────────────────
+
+model Advertisement {
+  id          String   @id @default(uuid())
+  title       String
+  body        String?   // optional body copy
+  imageUrl    String?
+  linkUrl     String?
+  ctaText     String   @default("Learn More")
+  // Placement: LANDING_HERO, LANDING_BANNER, SIDEBAR, COURSE_CARD, FOOTER, INTERSTITIAL
+  placement   String   @default("LANDING_BANNER")
+  // Targeting: blank = all roles
+  targetRoles String   @default("")  // comma-separated: "STUDENT,CREATOR" or "" for all
+  priority    Int      @default(0)   // higher = shown first
+  active      Boolean  @default(true)
+  startDate   DateTime?
+  endDate     DateTime?
+  impressions Int      @default(0)
+  clicks      Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  @@map("advertisements")
 }

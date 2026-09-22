@@ -6,8 +6,17 @@
  */
 
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import axios from 'axios';
 
 const API_BASE = '/api/v1';
+
+// Configure axios base URL and auth interceptor
+axios.defaults.baseURL = API_BASE;
+axios.interceptors.request.use((config) => {
+  const token = localStorage.getItem('nexify_token');
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
 
 const AuthContext = createContext(null);
 
@@ -119,6 +128,7 @@ export function AuthProvider({ children }) {
     register,
     logout,
     updateProfile,
+    api: axios,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

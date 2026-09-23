@@ -47,6 +47,12 @@ model User {
   announcements   Announcement[]
   nexaConversations NexaConversation[]
   waitlist          Waitlist[]
+  gamification      UserGamification?
+  badges            UserBadge[]
+  pointTransactions PointTransaction[]
+  claimedRewards    ClaimedReward[]
+  communityPosts    CommunityPost[]
+  communityComments CommunityComment[]
 
   @@map("users")
 }
@@ -104,6 +110,7 @@ model Course {
   wishlists      Wishlist[]
   announcements  Announcement[]
   waitlist       Waitlist[]
+  communityPosts CommunityPost[]
 
   @@map("courses")
 }
@@ -638,4 +645,147 @@ model Advertisement {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   @@map("advertisements")
+}
+
+// ─── Gamification System ────────────────────────────────────
+
+model UserGamification {
+  id             String   @id @default(uuid())
+  userId         String   @unique
+  totalPoints    Int      @default(0)
+  currentLevel   Int      @default(1)
+  lastLoginDate  DateTime?
+  loginStreak    Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_gamification")
+}
+
+model PointTransaction {
+  id          String   @id @default(uuid())
+  userId      String
+  points      Int      // Can be positive or negative
+  action      String   // ENROLL, COMPLETE_LESSON, COMPLETE_COURSE, REVIEW, DAILY_LOGIN, REWARD_CLAIM
+  description String
+  referenceId String?  // Optional: courseId, lessonId, etc.
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("point_transactions")
+}
+
+model Badge {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String
+  iconUrl     String?
+  // Category stored as string: MILESTONE, ACHIEVEMENT, STREAK, SPECIAL
+  category    String   @default("ACHIEVEMENT")
+  // Required action count to unlock (e.g., 5 courses completed)
+  requirement Int      @default(0)
+  // Action type that counts toward this badge
+  actionType  String?  // ENROLL, COMPLETE_LESSON, COMPLETE_COURSE, REVIEW, DAILY_LOGIN
+  createdAt   DateTime @default(now())
+
+  userBadges UserBadge[]
+
+  @@map("badges")
+}
+
+model UserBadge {
+  id        String   @id @default(uuid())
+  userId    String
+  badgeId   String
+  earnedAt  DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badge Badge @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, badgeId])
+  @@map("user_badges")
+}
+
+model Reward {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  // Type stored as string: DISCOUNT_COUPON, EXCLUSIVE_BADGE, EARLY_ACCESS, CUSTOM
+  type        String   @default("CUSTOM")
+  // Points cost to claim (0 = free/unlock only)
+  pointsCost  Int      @default(0)
+  // Level required to unlock
+  unlockLevel Int      @default(1)
+  // For DISCOUNT_COUPON type: the coupon code to grant
+  couponCode  String?
+  // For DISCOUNT_COUPON type: percentage value
+  discountPercent Float?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  claimedRewards ClaimedReward[]
+
+  @@map("rewards")
+}
+
+model ClaimedReward {
+  id        String   @id @default(uuid())
+  userId    String
+  rewardId  String
+  pointsSpent Int    @default(0)
+  claimedAt DateTime @default(now())
+  // Status stored as string: CLAIMED, REDEEMED, EXPIRED
+  status    String   @default("CLAIMED")
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reward Reward @relation(fields: [rewardId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, rewardId])
+  @@map("claimed_rewards")
+}
+
+// ─── Community Discussion ────────────────────────────────────
+
+model CommunityPost {
+  id        String   @id @default(uuid())
+  courseId  String
+  userId    String
+  title     String
+  body      String
+  category  String   @default("discussion") // announcement | discussion | question
+  likes     Int      @default(0)
+  pinned    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  course   Course          @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comments CommunityComment[]
+
+  @@index([courseId])
+  @@index([category])
+  @@map("community_posts")
+}
+
+model CommunityComment {
+  id        String   @id @default(uuid())
+  postId    String
+  userId    String
+  body      String
+  parentId  String?  // For nested replies
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  post    CommunityPost   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user    User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent  CommunityComment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies CommunityComment[] @relation("CommentReplies")
+
+  @@index([postId])
+  @@map("community_comments")
 }

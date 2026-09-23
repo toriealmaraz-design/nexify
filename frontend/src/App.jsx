@@ -46,6 +46,8 @@ const StudentWishlist = lazy(() => import('./pages/student/Wishlist'));
 const StudentCertificate = lazy(() => import('./pages/student/Certificate'));
 const StudentReviews = lazy(() => import('./pages/student/CourseReviews'));
 const StudentNexaHistory = lazy(() => import('./pages/student/NexaChatHistory'));
+const StudentCommunity = lazy(() => import('./pages/student/Community'));
+const StudentGamification = lazy(() => import('./pages/student/Gamification'));
 const AffiliateLeaderboard = lazy(() => import('./pages/affiliate/Leaderboard'));
 const AffiliateReferral = lazy(() => import('./pages/affiliate/ReferralProgram'));
 const CreatorPayout = lazy(() => import('./pages/creator/Payout'));
@@ -152,6 +154,7 @@ function StudentLayout({ children }) {
           <NavItem href="/student" icon={Layout} label="Dashboard" />
           <NavItem href="/student/orders" icon={ShoppingBag} label="Orders" />
           <NavItem href="/student/wishlist" icon={BookOpen} label="Wishlist" />
+          <NavItem href="/student/gamification" icon={Trophy} label="Rewards" />
           <NavItem href="/student/profile" icon={User} label="Profile" />
           <NavItem href="/nexa" icon={Brain} label="Nexa AI" />
         </nav>
@@ -309,6 +312,8 @@ export default function App() {
                 <Route path="/student/course/:courseId/review" element={<ProtectedRoute allowedRoles={['STUDENT']}><StudentLayout><StudentReviews /></StudentLayout></ProtectedRoute>} />
                 <Route path="/student/wishlist" element={<ProtectedRoute allowedRoles={['STUDENT']}><StudentLayout><StudentWishlist /></StudentLayout></ProtectedRoute>} />
                 <Route path="/student/nexa-history" element={<ProtectedRoute allowedRoles={['STUDENT']}><StudentLayout><StudentNexaHistory /></StudentLayout></ProtectedRoute>} />
+                <Route path="/student/course/:courseId/community" element={<ProtectedRoute allowedRoles={['STUDENT']}><StudentLayout><StudentCommunity /></StudentLayout></ProtectedRoute>} />
+                <Route path="/student/gamification" element={<ProtectedRoute allowedRoles={['STUDENT']}><StudentLayout><StudentGamification /></StudentLayout></ProtectedRoute>} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
               <NexaWidget />

@@ -5,7 +5,7 @@
  * and auto-injects Authorization header via axios interceptor.
  */
 
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000/api/v1';
@@ -49,10 +49,16 @@ export function AuthProvider({ children }) {
     return data;
   }
 
-  // Fetch current user on mount
+  // Fetch current user on mount (only on initial load, not after login)
+  const isInitialMount = useRef(true);
   useEffect(() => {
     async function fetchUser() {
       if (!token) {
+        setLoading(false);
+        return;
+      }
+      // Skip fetch on initial mount if we already have user data (from login)
+      if (!isInitialMount.current && user) {
         setLoading(false);
         return;
       }
@@ -60,44 +66,38 @@ export function AuthProvider({ children }) {
         const res = await apiCall('GET', '/auth/me');
         setUser(res.data);
       } catch {
-        setToken(null);
-        setUser(null);
+        // Only clear token on initial mount (page refresh with invalid token)
+        if (isInitialMount.current) {
+          setToken(null);
+          setUser(null);
+        }
       } finally {
         setLoading(false);
       }
     }
     fetchUser();
+    isInitialMount.current = false;
   }, [token]);
 
   const login = useCallback(async (email, password) => {
-    return new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.open('POST', '/api/v1/auth/login');
-      xhr.setRequestHeader('Content-Type', 'application/json');
-      xhr.onload = () => {
-        if (xhr.status >= 200 && xhr.status < 300) {
-          try {
-            const data = JSON.parse(xhr.responseText);
-            const { token: newToken, user: userData } = data.data;
-            localStorage.setItem('nexify_token', newToken);
-            setToken(newToken);
-            setUser(userData);
-            resolve(userData);
-          } catch (e) {
-            reject(new Error('Invalid response'));
-          }
-        } else {
-          try {
-            const data = JSON.parse(xhr.responseText);
-            reject(new Error(data.message || 'Login failed'));
-          } catch {
-            reject(new Error('Login failed'));
-          }
-        }
-      };
-      xhr.onerror = () => reject(new Error('Network error'));
-      xhr.send(JSON.stringify({ email, password }));
-    });
+    try {
+      const res = await fetch(API_BASE + '/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || 'Login failed');
+      }
+      const { token: newToken, user: userData } = data.data;
+      localStorage.setItem('nexify_token', newToken);
+      setToken(newToken);
+      setUser(userData);
+      return userData;
+    } catch (err) {
+      throw new Error(err.message || 'Login failed');
+    }
   }, []);
 
   const register = useCallback(async (data) => {

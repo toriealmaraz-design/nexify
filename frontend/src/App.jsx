@@ -11,7 +11,6 @@ import NexaWidget from './components/NexaWidget';
 import NexaAvatar from './components/common/NexaAvatar';
 import NexaIcon from './components/common/NexaIcon';
 import AdBanner from './components/AdBanner';
-import AdSidebar from './components/AdSidebar';
 import OnboardingTour from './components/tour/OnboardingTour';
 
 // ─── Page components ─────────────────────────────────────────
@@ -106,47 +105,22 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-// ─── Portal Logo ──────────────────────────────────────────────
-function PortalLogo({ portal }) {
-  return (
-    <Link to="/" className="flex items-center gap-2">
-      <div className="w-8 h-8 bg-[#7C3AED] rounded-lg flex items-center justify-center flex-shrink-0">
-        <span className="text-black font-bold text-sm">N</span>
-      </div>
-      <div>
-        <span className="font-bold text-white">Nexify</span>
-        <p className="text-xs text-white/40">{portal}</p>
-      </div>
-    </Link>
-  );
-}
+import PortalSidebar from './components/PortalSidebar';
 
 // ─── Creator Layout ────────────────────────────────────────────
 function CreatorLayout({ children }) {
   const { logout } = useAuth();
+  const navItems = [
+    { href: '/creator', icon: Layout, label: 'Dashboard' },
+    { href: '/creator/course/new', icon: PlusCircle, label: 'Create Course' },
+    { href: '/creator/earnings', icon: DollarSign, label: 'Earnings' },
+    { href: '/creator/payout', icon: DollarSign, label: 'Payouts' },
+    { href: '/creator/announcements', icon: Megaphone, label: 'Announcements' },
+    { href: '/creator/profile', icon: User, label: 'Profile' },
+  ];
   return (
     <div className="min-h-screen bg-[#0F172A] text-white flex">
-      <aside className="w-60 min-h-screen bg-[#0B1120] border-r border-white/5 flex flex-col flex-shrink-0">
-        <div className="p-4 border-b border-white/5">
-          <PortalLogo portal="Creator" />
-        </div>
-        <nav className="flex-1 p-3 space-y-1">
-          <NavItem href="/creator" icon={Layout} label="Dashboard" />
-          <NavItem href="/creator/course/new" icon={PlusCircle} label="Create Course" />
-          <NavItem href="/creator/earnings" icon={DollarSign} label="Earnings" />
-          <NavItem href="/creator/payout" icon={DollarSign} label="Payouts" />
-          <NavItem href="/creator/announcements" icon={Megaphone} label="Announcements" />
-          <NavItem href="/creator/profile" icon={User} label="Profile" />
-        </nav>
-        <div className="p-3 border-t border-white/5">
-          <AdSidebar />
-        </div>
-        <div className="p-3 border-t border-white/5">
-          <button onClick={logout} className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-white/60 hover:bg-white/5 hover:text-white transition-all w-full">
-            <LogOut className="w-4 h-4 flex-shrink-0" /><span>Logout</span>
-          </button>
-        </div>
-      </aside>
+      <PortalSidebar portal="Creator" navItems={navItems} onLogout={logout} />
       <main className="flex-1 p-6 overflow-auto">
         <Suspense fallback={<PageLoader />}>{children}</Suspense>
       </main>
@@ -157,31 +131,19 @@ function CreatorLayout({ children }) {
 // ─── Student Layout ───────────────────────────────────────────
 function StudentLayout({ children }) {
   const { logout } = useAuth();
+  const navItems = [
+    { href: '/student', icon: Layout, label: 'Dashboard' },
+    { href: '/student/orders', icon: ShoppingBag, label: 'Orders' },
+    { href: '/student/wishlist', icon: BookOpen, label: 'Wishlist' },
+    { href: '/student/gamification', icon: Trophy, label: 'Rewards' },
+    { href: '/student/announcements', icon: Bell, label: 'Announcements' },
+    { href: '/student/certificates', icon: Award, label: 'Certificates' },
+    { href: '/student/profile', icon: User, label: 'Profile' },
+    { href: '/nexa', icon: NexaIcon, label: 'Nexa AI' },
+  ];
   return (
     <div className="min-h-screen bg-[#0F172A] text-white flex">
-      <aside className="w-60 min-h-screen bg-[#0B1120] border-r border-white/5 flex flex-col flex-shrink-0">
-        <div className="p-4 border-b border-white/5">
-          <PortalLogo portal="Student" />
-        </div>
-        <nav className="flex-1 p-3 space-y-1">
-          <NavItem href="/student" icon={Layout} label="Dashboard" />
-          <NavItem href="/student/orders" icon={ShoppingBag} label="Orders" />
-          <NavItem href="/student/wishlist" icon={BookOpen} label="Wishlist" />
-          <NavItem href="/student/gamification" icon={Trophy} label="Rewards" />
-          <NavItem href="/student/announcements" icon={Bell} label="Announcements" />
-          <NavItem href="/student/certificates" icon={Award} label="Certificates" />
-          <NavItem href="/student/profile" icon={User} label="Profile" />
-          <NavItem href="/nexa" icon={NexaIcon} label="Nexa AI" />
-        </nav>
-        <div className="p-3 border-t border-white/5">
-          <AdSidebar />
-        </div>
-        <div className="p-3 border-t border-white/5">
-          <button onClick={logout} className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-white/60 hover:bg-white/5 hover:text-white transition-all w-full">
-            <LogOut className="w-4 h-4 flex-shrink-0" /><span>Logout</span>
-          </button>
-        </div>
-      </aside>
+      <PortalSidebar portal="Student" navItems={navItems} onLogout={logout} />
       <main className="flex-1 p-6 overflow-auto">
         <Suspense fallback={<PageLoader />}>{children}</Suspense>
       </main>
@@ -189,49 +151,24 @@ function StudentLayout({ children }) {
   );
 }
 
-// ─── Nav Item (updated active detection) ──────────────────────
-function NavItem({ href, icon: Icon, label }) {
-  const location = useLocation();
-  const isActive = location.pathname === href || (href !== '/' && location.pathname.startsWith(href));
-  return (
-    <Link
-      to={href}
-      className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-150
-        ${isActive ? 'bg-white/10 text-white' : 'text-white/60 hover:bg-white/5 hover:text-white'}`}
-    >
-      {Icon && <Icon className="w-4 h-4 flex-shrink-0" />}
-      <span>{label}</span>
-    </Link>
-  );
-}
-
-// ─── Admin Layout (updated logout) ────────────────────────────
+// ─── Admin Layout ──────────────────────────────────────────────
 function AdminLayout({ children }) {
   const { logout } = useAuth();
+  const navItems = [
+    { href: '/admin', icon: Layout, label: 'Dashboard' },
+    { href: '/admin/staging', icon: ClipboardList, label: 'Staging Queue' },
+    { href: '/admin/metrics', icon: BarChart3, label: 'Metrics' },
+    { href: '/admin/users', icon: Users, label: 'Users' },
+    { href: '/admin/assets', icon: FolderOpen, label: 'Assets' },
+    { href: '/admin/nexa-settings', icon: NexaIcon, label: 'Nexa AI' },
+    { href: '/admin/gamification', icon: Trophy, label: 'Gamification' },
+    { href: '/admin/ads', icon: ShoppingBag, label: 'Ad Manager' },
+    { href: '/admin/announcements', icon: Megaphone, label: 'Announcements' },
+    { href: '/profile', icon: User, label: 'Profile' },
+  ];
   return (
     <div className="min-h-screen bg-[#0F172A] text-white flex">
-      <aside className="w-60 min-h-screen bg-[#0B1120] border-r border-white/5 flex flex-col flex-shrink-0">
-        <div className="p-4 border-b border-white/5">
-          <PortalLogo portal="Admin" />
-        </div>
-        <nav className="flex-1 p-3 space-y-1">
-          <NavItem href="/admin" icon={Layout} label="Dashboard" />
-          <NavItem href="/admin/staging" icon={ClipboardList} label="Staging Queue" />
-          <NavItem href="/admin/metrics" icon={BarChart3} label="Metrics" />
-          <NavItem href="/admin/users" icon={Users} label="Users" />
-          <NavItem href="/admin/assets" icon={FolderOpen} label="Assets" />
-          <NavItem href="/admin/nexa-settings" icon={NexaIcon} label="Nexa AI" />
-          <NavItem href="/admin/gamification" icon={Trophy} label="Gamification" />
-          <NavItem href="/admin/ads" icon={ShoppingBag} label="Ad Manager" />
-          <NavItem href="/admin/announcements" icon={Megaphone} label="Announcements" />
-          <NavItem href="/profile" icon={User} label="Profile" />
-        </nav>
-        <div className="p-3 border-t border-white/5">
-          <button onClick={logout} className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-white/60 hover:bg-white/5 hover:text-white transition-all w-full">
-            <LogOut className="w-4 h-4 flex-shrink-0" /><span>Logout</span>
-          </button>
-        </div>
-      </aside>
+      <PortalSidebar portal="Admin" navItems={navItems} onLogout={logout} />
       <main className="flex-1 p-6 overflow-auto">
         <Suspense fallback={<PageLoader />}>{children}</Suspense>
       </main>
@@ -239,31 +176,19 @@ function AdminLayout({ children }) {
   );
 }
 
-// ─── Affiliate Layout (updated logout) ───────────────────────
+// ─── Affiliate Layout ─────────────────────────────────────────
 function AffiliateLayout({ children }) {
   const { logout } = useAuth();
+  const navItems = [
+    { href: '/affiliate', icon: Layout, label: 'Dashboard' },
+    { href: '/affiliate/links', icon: Link2, label: 'My Links' },
+    { href: '/affiliate/leaderboard', icon: Trophy, label: 'Leaderboard' },
+    { href: '/affiliate/referral', icon: Users, label: 'Referral Program' },
+    { href: '/affiliate/profile', icon: User, label: 'Profile' },
+  ];
   return (
     <div className="min-h-screen bg-[#0F172A] text-white flex">
-      <aside className="w-60 min-h-screen bg-[#0B1120] border-r border-white/5 flex flex-col flex-shrink-0">
-        <div className="p-4 border-b border-white/5">
-          <PortalLogo portal="Affiliate" />
-        </div>
-        <nav className="flex-1 p-3 space-y-1">
-          <NavItem href="/affiliate" icon={Layout} label="Dashboard" />
-          <NavItem href="/affiliate/links" icon={Link2} label="My Links" />
-          <NavItem href="/affiliate/leaderboard" icon={Trophy} label="Leaderboard" />
-          <NavItem href="/affiliate/referral" icon={Users} label="Referral Program" />
-          <NavItem href="/affiliate/profile" icon={User} label="Profile" />
-        </nav>
-        <div className="p-3 border-t border-white/5">
-          <AdSidebar />
-        </div>
-        <div className="p-3 border-t border-white/5">
-          <button onClick={logout} className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-white/60 hover:bg-white/5 hover:text-white transition-all w-full">
-            <LogOut className="w-4 h-4 flex-shrink-0" /><span>Logout</span>
-          </button>
-        </div>
-      </aside>
+      <PortalSidebar portal="Affiliate" navItems={navItems} onLogout={logout} />
       <main className="flex-1 p-6 overflow-auto">
         <Suspense fallback={<PageLoader />}>{children}</Suspense>
       </main>

@@ -76,18 +76,19 @@ export default function StudentDashboard() {
               { label: 'Enrolled Courses', value: enrollments.length?.toString() || '0', icon: BookOpen, color: 'text-[#7C3AED]' },
               { label: 'Total Spent', value: `GH₵ ${(orders.reduce((s, o) => s + o.totalAmountGhs, 0)).toFixed(2)}`, icon: DollarSign, color: 'text-emerald-400' },
               { label: 'Avg. Progress', value: `${avgProgress}%`, icon: TrendingUp, color: 'text-blue-400' },
-              { label: 'Current Streak', value: `${maxStreak} days`, icon: Flame, color: 'text-amber-400' },
+              { label: 'Current Streak', value: `${maxStreak} days`, icon: Flame, color: 'text-amber-400', link: '/student/gamification' },
             ];
           })().map(stat => {
             const Icon = stat.icon;
+            const Wrapper = stat.link ? Link : 'div';
             return (
-              <div key={stat.label} className="bg-[#1E1B4B] border border-white/10 rounded-xl p-4 hover:border-white/20 transition-colors">
+              <Wrapper key={stat.label} to={stat.link || undefined} className={`bg-[#1E1B4B] border border-white/10 rounded-xl p-4 hover:border-white/20 transition-colors ${stat.link ? 'cursor-pointer' : ''}`}>
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-white/60"><Icon className="w-5 h-5" /></span>
                   <span className="text-xs font-medium text-white/40 uppercase tracking-wider">{stat.label}</span>
                 </div>
                 <p className={`text-xl font-bold text-white ${stat.color}`}>{stat.value}</p>
-              </div>
+              </Wrapper>
             );
           })}
         </div>
@@ -273,6 +274,12 @@ export default function StudentDashboard() {
                           className="bg-[#0F172A] text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-[#0F172A] transition-colors"
                         >
                           Continue Learning
+                        </Link>
+                        <Link
+                          to={`/student/course/${e.courseId}/community`}
+                          className="border border-white/10 text-white/60 px-3 py-2 rounded-xl text-sm hover:bg-white/5 transition-colors"
+                        >
+                          Community
                         </Link>
                         <Link
                           to={`/student/course/${e.courseId}/review`}

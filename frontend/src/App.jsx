@@ -39,6 +39,7 @@ const AdminMetrics = lazy(() => import('./pages/admin/MetricsDashboard'));
 const AdminUsers = lazy(() => import('./pages/admin/UserGrid'));
 const AdminAssets = lazy(() => import('./pages/admin/AssetsManager'));
 const AdminNexaSettings = lazy(() => import('./pages/admin/NexaSettings'));
+const AdminGamification = lazy(() => import('./pages/admin/Gamification'));
 const AdminAds = lazy(() => import('./pages/admin/AdManager'));
 const CartPage = lazy(() => import('./pages/public/Cart'));
 const CheckoutPage = lazy(() => import('./pages/public/Checkout'));
@@ -203,6 +204,7 @@ function AdminLayout({ children }) {
           <NavItem href="/admin/users" icon={Users} label="Users" />
           <NavItem href="/admin/assets" icon={FolderOpen} label="Assets" />
           <NavItem href="/admin/nexa-settings" icon={Brain} label="Nexa AI" />
+          <NavItem href="/admin/gamification" icon={Trophy} label="Gamification" />
           <NavItem href="/admin/ads" icon={ShoppingBag} label="Ad Manager" />
           <NavItem href="/profile" icon={User} label="Profile" />
         </nav>
@@ -294,6 +296,7 @@ export default function App() {
                 <Route path="/admin/users" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminLayout><AdminUsers /></AdminLayout></ProtectedRoute>} />
                 <Route path="/admin/assets" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminLayout><AdminAssets /></AdminLayout></ProtectedRoute>} />
                 <Route path="/admin/nexa-settings" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminLayout><AdminNexaSettings /></AdminLayout></ProtectedRoute>} />
+                <Route path="/admin/gamification" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminLayout><AdminGamification /></AdminLayout></ProtectedRoute>} />
                 <Route path="/admin/ads" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminLayout><AdminAds /></AdminLayout></ProtectedRoute>} />
                 <Route path="/creator" element={<ProtectedRoute allowedRoles={['CREATOR']}><CreatorLayout><CreatorDashboard /></CreatorLayout></ProtectedRoute>} />
                 <Route path="/creator/earnings" element={<ProtectedRoute allowedRoles={['CREATOR']}><CreatorLayout><CreatorEarnings /></CreatorLayout></ProtectedRoute>} />

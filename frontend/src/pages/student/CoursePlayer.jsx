@@ -52,6 +52,48 @@ function ProgressBar({ completed, total }) {
   );
 }
 
+// ─── Community Preview (embedded in CoursePlayer) ────────────
+function CommunityPreview({ courseId }) {
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchRecent() {
+      try {
+        const res = await fetch(
+          `http://localhost:5000/api/v1/community/posts?courseId=${courseId}&limit=3`,
+          { headers: { Authorization: `Bearer ${localStorage.getItem('nexify_token')}` } }
+        );
+        const data = await res.json();
+        if (data.success) setPosts(data.data.slice(0, 3));
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchRecent();
+  }, [courseId]);
+
+  if (loading) return <div className="text-xs text-white/30 py-2">Loading...</div>;
+  if (posts.length === 0) return <p className="text-xs text-white/30 py-2">No discussions yet. Be the first!</p>;
+
+  return (
+    <div className="space-y-2">
+      {posts.map(post => (
+        <div key={post.id} className="bg-white/5 rounded-lg p-3 hover:bg-white/10 transition-colors cursor-pointer">
+          <p className="text-xs font-medium text-white/80 line-clamp-1">{post.title}</p>
+          <div className="flex items-center gap-2 mt-1">
+            <span className="text-[10px] text-white/40">{post.author?.fullName}</span>
+            <span className="text-[10px] text-white/30">·</span>
+            <span className="text-[10px] text-white/40">❤️ {post.likesCount || 0}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // ─── Module item ────────────────────────────────────────────
 function ModuleItem({ module, completedLessons, currentLessonId, onLessonSelect, onMarkComplete }) {
   const [open, setOpen] = useState(true);
@@ -412,8 +454,9 @@ export default function CoursePlayer() {
           <div className="flex items-center gap-1 bg-[#1E1B4B] border border-white/10 rounded-xl p-1">
             {[
               { key: 'syllabus', label: 'Syllabus', icon: BookOpen },
-              { key: 'qa', label: 'Q&A', icon: MessageCircle },
-              { key: 'announcements', label: 'Announcements', icon: Bell, badge: unreadAnnouncements },
+              { key: 'community', label: 'Community', icon: MessageCircle },
+              { key: 'qa', label: 'Q&A', icon: HelpCircle },
+              { key: 'announcements', label: 'News', icon: Bell, badge: unreadAnnouncements },
             ].map(({ key, label, icon: Icon, badge }) => (
               <button key={key} onClick={() => setActiveTab(key)}
                 className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-medium transition-all ${activeTab === key ? 'bg-[#7C3AED] text-white' : 'text-white/40 hover:text-white/70'}`}>
@@ -443,6 +486,21 @@ export default function CoursePlayer() {
                     ))}
                   </div>
                 </>
+              )}
+
+              {activeTab === 'community' && (
+                <div className="bg-[#1E1B4B] border border-white/10 rounded-xl p-4">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-sm font-semibold text-white">Course Community</h3>
+                    <Link
+                      to={`/student/course/${courseId}/community`}
+                      className="text-xs text-[#7C3AED] hover:text-[#c4b5fd] font-medium"
+                    >
+                      Open Full View →
+                    </Link>
+                  </div>
+                  <CommunityPreview courseId={courseId} />
+                </div>
               )}
 
               {activeTab === 'qa' && currentLesson && (

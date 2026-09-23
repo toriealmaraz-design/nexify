@@ -64,7 +64,7 @@ function GMVChart({ data }) {
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
           <XAxis dataKey="label" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11 }} axisLine={false} tickLine={false} />
-          <YAxis tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `GH\u8373${v}`} />
+          <YAxis tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `GH₵${v}`} />
           <Tooltip content={<CustomTooltip />} />
           <Area type="monotone" dataKey="gmv" stroke="#10B981" strokeWidth={2} fill="url(#gmvGrad)" dot={false} />
         </AreaChart>
@@ -379,8 +379,8 @@ export default function AdminDashboard() {
         <SkeletonStats />
       ) : (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-          <MetricCard label="Total GMV" value={`GH\u8373 ${totalGMV.toFixed(2)}`} icon={Wallet} color="bg-emerald-500/20 text-emerald-400" />
-          <MetricCard label="Platform Fees" value={`GH\u8373 ${platformFees.toFixed(2)}`} icon={Lock} color="bg-[#7C3AED]/20 text-[#7C3AED]" />
+          <MetricCard label="Total GMV" value={`GH₵ ${totalGMV.toFixed(2)}`} icon={Wallet} color="bg-emerald-500/20 text-emerald-400" />
+          <MetricCard label="Platform Fees" value={`GH₵ ${platformFees.toFixed(2)}`} icon={Lock} color="bg-[#7C3AED]/20 text-[#7C3AED]" />
           <MetricCard label="Pending Reviews" value={pendingReviews} icon={ClipboardList} color="bg-amber-500/20 text-amber-400" />
           <MetricCard label="Active Users" value={activeUsers} icon={Users} color="bg-sky-500/20 text-sky-400" />
         </div>

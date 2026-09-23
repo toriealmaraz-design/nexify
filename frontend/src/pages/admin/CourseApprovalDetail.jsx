@@ -325,7 +325,7 @@ export default function CourseApprovalDetail() {
                 { icon: Globe,       label: 'Language',  value: course.language || 'English' },
                 { icon: Award,       label: 'Level',     value: course.level },
                 { icon: BookOpen,    label: 'Type',      value: course.type?.replace(/_/g, ' ') },
-                { icon: Clock,       label: 'Price',     value: `GH\u8373 ${(course.priceGhs || 0).toFixed(2)}` },
+                { icon: Clock,       label: 'Price',     value: `GH₵ ${(course.priceGhs || 0).toFixed(2)}` },
               ].map(({ icon: Icon, label, value }) => (
                 <div key={label} className="flex items-center gap-2">
                   <Icon className="w-4 h-4 text-white/30 flex-shrink-0" />

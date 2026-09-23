@@ -23,7 +23,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../components/common/Toast';
 
 function formatGhs(amount) {
-  return `GH\u20B5 ${amount.toFixed(2)}`;
+  return `GH₵ ${amount.toFixed(2)}`;
 }
 
 // ─── Auth Guard ────────────────────────────────────────────────

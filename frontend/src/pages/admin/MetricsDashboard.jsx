@@ -59,10 +59,10 @@ export default function MetricsDashboard() {
       {/* Financial summary cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[
-          { label: 'Total Revenue', value: `GH\u8373 ${(financials.totalRevenueGhs || 0).toFixed(2)}`, icon: DollarSign, color: 'text-emerald-400' },
-          { label: 'Platform Fees', value: `GH\u8373 ${(financials.totalPlatformFeesGhs || 0).toFixed(2)}`, icon: Lock, color: 'text-[#7C3AED]' },
-          { label: 'Creator Earnings', value: `GH\u8373 ${(financials.totalCreatorEarningsGhs || 0).toFixed(2)}`, icon: GraduationCap, color: 'text-sky-400' },
-          { label: 'Affiliate Earnings', value: `GH\u8373 ${(financials.totalAffiliateEarningsGhs || 0).toFixed(2)}`, icon: Link2, color: 'text-[#7C3AED]' },
+          { label: 'Total Revenue', value: `GH₵ ${(financials.totalRevenueGhs || 0).toFixed(2)}`, icon: DollarSign, color: 'text-emerald-400' },
+          { label: 'Platform Fees', value: `GH₵ ${(financials.totalPlatformFeesGhs || 0).toFixed(2)}`, icon: Lock, color: 'text-[#7C3AED]' },
+          { label: 'Creator Earnings', value: `GH₵ ${(financials.totalCreatorEarningsGhs || 0).toFixed(2)}`, icon: GraduationCap, color: 'text-sky-400' },
+          { label: 'Affiliate Earnings', value: `GH₵ ${(financials.totalAffiliateEarningsGhs || 0).toFixed(2)}`, icon: Link2, color: 'text-[#7C3AED]' },
         ].map(stat => {
           const Icon = stat.icon;
           return (
@@ -139,7 +139,7 @@ export default function MetricsDashboard() {
                       <span className="font-medium text-white">{order.course?.title}</span>
                     </td>
                     <td className="py-3 text-white/60">{order.student?.fullName}</td>
-                    <td className="py-3 text-right font-medium text-white">GH\u8373 {((order.totalAmountGhs || 0)).toFixed(2)}</td>
+                    <td className="py-3 text-right font-medium text-white">GH₵ {((order.totalAmountGhs || 0)).toFixed(2)}</td>
                     <td className="py-3 text-white/40">{order.affiliateLink?.affiliateCode || '—'}</td>
                   </tr>
                 ))}

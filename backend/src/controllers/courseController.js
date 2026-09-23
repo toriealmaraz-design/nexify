@@ -107,7 +107,7 @@ async function getCourse(req, res) {
           },
         },
         reviews: {
-          include: { student: { select: { fullName: true } } },
+          include: { user: { select: { fullName: true } } },
           orderBy: { createdAt: 'desc' },
         },
         _count: { select: { orders: true } },

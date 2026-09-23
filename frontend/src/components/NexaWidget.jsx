@@ -254,13 +254,11 @@ export default function NexaWidget() {
   }, [handleSend]);
 
   const handleToggle = useCallback(() => {
-    if (!panelOpen) {
-      setPanelOpen(true);
-      setMinimized(false);
-    } else if (minimized) {
+    if (panelOpen) {
+      setPanelOpen(false);
       setMinimized(false);
     } else {
-      setPanelOpen(false);
+      setPanelOpen(true);
       setMinimized(false);
     }
   }, [panelOpen, minimized]);

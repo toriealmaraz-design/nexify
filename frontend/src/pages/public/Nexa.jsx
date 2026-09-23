@@ -262,7 +262,7 @@ export default function Nexa() {
     setLoadingConvs(true);
     try {
       const token = localStorage.getItem('nexify_token');
-      const res = await fetch('/api/v1/nexa/conversations', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await fetch('/api/v1/nexa-chat/conversations', { headers: { Authorization: `Bearer ${token}` } });
       const data = await res.json();
       if (data.data) setConversations(data.data);
     } catch { /* silent */ }
@@ -274,7 +274,7 @@ export default function Nexa() {
     setSidebarOpen(false);
     try {
       const token = localStorage.getItem('nexify_token');
-      const res = await fetch(`/api/v1/nexa/conversations/${convId}`, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await fetch(`/api/v1/nexa-chat/conversations/${convId}`, { headers: { Authorization: `Bearer ${token}` } });
       const data = await res.json();
       if (data.data?.messages) setMessages(data.data.messages.map(m => ({ id: m.id, role: m.role, content: m.content })));
     } catch { setMessages([]); }
@@ -285,7 +285,7 @@ export default function Nexa() {
     if (!confirm('Delete this conversation?')) return;
     try {
       const token = localStorage.getItem('nexify_token');
-      await fetch(`/api/v1/nexa/conversations/${convId}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
+      await fetch(`/api/v1/nexa-chat/conversations/${convId}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
       setConversations(prev => prev.filter(c => c.id !== convId));
       if (activeConvId === convId) { setActiveConvId(null); setMessages([]); }
     } catch { /* silent */ }

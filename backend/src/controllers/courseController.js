@@ -519,6 +519,59 @@ async function getCreatorCourseStats(req, res) {
   }
 }
 
+// ─── GET RECOMMENDED COURSES ───────────────────────────────
+// GET /api/v1/courses/recommendations/me
+async function getRecommendations(req, res) {
+  try {
+    const userId = req.user.userId;
+
+    // Get user's enrolled course types
+    const enrollments = await prisma.enrollment.findMany({
+      where: { studentId: userId },
+      include: { course: { select: { type: true } } },
+    });
+
+    const enrolledCourseIds = enrollments.map(e => e.courseId);
+    const enrolledTypes = [...new Set(enrollments.map(e => e.course.type))];
+
+    // Recommend published courses NOT already enrolled, preferring same type
+    const recommendations = await prisma.course.findMany({
+      where: {
+        status: 'PUBLISHED',
+        id: { notIn: enrolledCourseIds.length > 0 ? enrolledCourseIds : [''] },
+      },
+      include: {
+        creator: { select: { fullName: true } },
+        _count: { select: { orders: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 10,
+    });
+
+    // Sort: same type first, then by newest
+    const sorted = recommendations.sort((a, b) => {
+      const aMatch = enrolledTypes.includes(a.type) ? 0 : 1;
+      const bMatch = enrolledTypes.includes(b.type) ? 0 : 1;
+      return aMatch - bMatch;
+    });
+
+    return res.status(200).json({
+      success: true,
+      statusCode: 200,
+      message: 'Recommended courses retrieved.',
+      data: sorted.slice(0, 6),
+    });
+  } catch (error) {
+    console.error('[GET RECOMMENDATIONS ERROR]', error.message);
+    return res.status(500).json({
+      success: false,
+      statusCode: 500,
+      error: 'INTERNAL_SERVER_ERROR',
+      message: 'Failed to retrieve recommendations.',
+    });
+  }
+}
+
 module.exports = {
   listCourses,
   getCourse,
@@ -527,4 +580,5 @@ module.exports = {
   createModule,
   createLesson,
   getCreatorCourseStats,
+  getRecommendations,
 };

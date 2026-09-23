@@ -5,7 +5,7 @@ import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation, Link } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
-import { Layout, ClipboardList, BarChart3, Users, FolderOpen, LogOut, Link2, BookOpen, PlusCircle, DollarSign, ShoppingBag, User, Brain, Trophy, ShoppingCart } from 'lucide-react';
+import { Layout, ClipboardList, BarChart3, Users, FolderOpen, LogOut, Link2, BookOpen, PlusCircle, DollarSign, ShoppingBag, User, Brain, Trophy, ShoppingCart, Award, Bell, Megaphone } from 'lucide-react';
 import { ToastProvider } from './components/common/Toast';
 import NexaWidget from './components/NexaWidget';
 import NexaAvatar from './components/common/NexaAvatar';
@@ -45,10 +45,13 @@ const AdminAssets = lazy(() => import('./pages/admin/AssetsManager'));
 const AdminNexaSettings = lazy(() => import('./pages/admin/NexaSettings'));
 const AdminGamification = lazy(() => import('./pages/admin/Gamification'));
 const AdminAds = lazy(() => import('./pages/admin/AdManager'));
+const AdminAnnouncements = lazy(() => import('./pages/admin/Announcements'));
+const StudentAnnouncements = lazy(() => import('./pages/student/Announcements'));
 const CartPage = lazy(() => import('./pages/public/Cart'));
 const CheckoutPage = lazy(() => import('./pages/public/Checkout'));
 const StudentWishlist = lazy(() => import('./pages/student/Wishlist'));
 const StudentCertificate = lazy(() => import('./pages/student/Certificate'));
+const StudentCertificates = lazy(() => import('./pages/student/Certificates'));
 const StudentReviews = lazy(() => import('./pages/student/CourseReviews'));
 const StudentNexaHistory = lazy(() => import('./pages/student/NexaChatHistory'));
 const StudentCommunity = lazy(() => import('./pages/student/Community'));
@@ -56,6 +59,7 @@ const StudentGamification = lazy(() => import('./pages/student/Gamification'));
 const AffiliateLeaderboard = lazy(() => import('./pages/affiliate/Leaderboard'));
 const AffiliateReferral = lazy(() => import('./pages/affiliate/ReferralProgram'));
 const CreatorPayout = lazy(() => import('./pages/creator/Payout'));
+const CreatorAnnouncements = lazy(() => import('./pages/creator/Announcements'));
 
 // ─── Loading fallback ────────────────────────────────────────
 function PageLoader() {
@@ -131,6 +135,7 @@ function CreatorLayout({ children }) {
           <NavItem href="/creator/course/new" icon={PlusCircle} label="Create Course" />
           <NavItem href="/creator/earnings" icon={DollarSign} label="Earnings" />
           <NavItem href="/creator/payout" icon={DollarSign} label="Payouts" />
+          <NavItem href="/creator/announcements" icon={Megaphone} label="Announcements" />
           <NavItem href="/creator/profile" icon={User} label="Profile" />
         </nav>
         <div className="p-3 border-t border-white/5">
@@ -163,6 +168,8 @@ function StudentLayout({ children }) {
           <NavItem href="/student/orders" icon={ShoppingBag} label="Orders" />
           <NavItem href="/student/wishlist" icon={BookOpen} label="Wishlist" />
           <NavItem href="/student/gamification" icon={Trophy} label="Rewards" />
+          <NavItem href="/student/announcements" icon={Bell} label="Announcements" />
+          <NavItem href="/student/certificates" icon={Award} label="Certificates" />
           <NavItem href="/student/profile" icon={User} label="Profile" />
           <NavItem href="/nexa" icon={NexaIcon} label="Nexa AI" />
         </nav>
@@ -216,6 +223,7 @@ function AdminLayout({ children }) {
           <NavItem href="/admin/nexa-settings" icon={NexaIcon} label="Nexa AI" />
           <NavItem href="/admin/gamification" icon={Trophy} label="Gamification" />
           <NavItem href="/admin/ads" icon={ShoppingBag} label="Ad Manager" />
+          <NavItem href="/admin/announcements" icon={Megaphone} label="Announcements" />
           <NavItem href="/profile" icon={User} label="Profile" />
         </nav>
         <div className="p-3 border-t border-white/5">
@@ -311,11 +319,13 @@ export default function App() {
                 <Route path="/admin/nexa-settings" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminLayout><AdminNexaSettings /></AdminLayout></ProtectedRoute>} />
                 <Route path="/admin/gamification" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminLayout><AdminGamification /></AdminLayout></ProtectedRoute>} />
                 <Route path="/admin/ads" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminLayout><AdminAds /></AdminLayout></ProtectedRoute>} />
+                <Route path="/admin/announcements" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminLayout><AdminAnnouncements /></AdminLayout></ProtectedRoute>} />
                 <Route path="/creator" element={<ProtectedRoute allowedRoles={['CREATOR']}><CreatorLayout><CreatorDashboard /></CreatorLayout></ProtectedRoute>} />
                 <Route path="/creator/earnings" element={<ProtectedRoute allowedRoles={['CREATOR']}><CreatorLayout><CreatorEarnings /></CreatorLayout></ProtectedRoute>} />
                 <Route path="/creator/course/new" element={<ProtectedRoute allowedRoles={['CREATOR']}><CreatorLayout><CourseBuilder /></CreatorLayout></ProtectedRoute>} />
                 <Route path="/creator/course/:courseId/edit" element={<ProtectedRoute allowedRoles={['CREATOR']}><CreatorLayout><CourseBuilder /></CreatorLayout></ProtectedRoute>} />
                 <Route path="/creator/payout" element={<ProtectedRoute allowedRoles={['CREATOR']}><CreatorLayout><CreatorPayout /></CreatorLayout></ProtectedRoute>} />
+                <Route path="/creator/announcements" element={<ProtectedRoute allowedRoles={['CREATOR']}><CreatorLayout><CreatorAnnouncements /></CreatorLayout></ProtectedRoute>} />
                 <Route path="/affiliate" element={<ProtectedRoute allowedRoles={['AFFILIATE']}><AffiliateLayout><AffiliateDashboard /></AffiliateLayout></ProtectedRoute>} />
                 <Route path="/affiliate/links" element={<ProtectedRoute allowedRoles={['AFFILIATE']}><AffiliateLayout><LinkGenerator /></AffiliateLayout></ProtectedRoute>} />
                 <Route path="/affiliate/leaderboard" element={<ProtectedRoute allowedRoles={['AFFILIATE']}><AffiliateLayout><AffiliateLeaderboard /></AffiliateLayout></ProtectedRoute>} />
@@ -325,11 +335,13 @@ export default function App() {
                 <Route path="/student/receipts/:orderId" element={<Suspense fallback={<PageLoader />}><ProtectedRoute allowedRoles={['STUDENT']}><StudentLayout><Receipt /></StudentLayout></ProtectedRoute></Suspense>} />
                 <Route path="/student/course/:courseId" element={<ProtectedRoute allowedRoles={['STUDENT']}><StudentLayout><CoursePlayer /></StudentLayout></ProtectedRoute>} />
                 <Route path="/student/course/:courseId/certificate" element={<ProtectedRoute allowedRoles={['STUDENT']}><StudentLayout><StudentCertificate /></StudentLayout></ProtectedRoute>} />
+                <Route path="/student/certificates" element={<ProtectedRoute allowedRoles={['STUDENT']}><StudentLayout><StudentCertificates /></StudentLayout></ProtectedRoute>} />
                 <Route path="/student/course/:courseId/review" element={<ProtectedRoute allowedRoles={['STUDENT']}><StudentLayout><StudentReviews /></StudentLayout></ProtectedRoute>} />
                 <Route path="/student/wishlist" element={<ProtectedRoute allowedRoles={['STUDENT']}><StudentLayout><StudentWishlist /></StudentLayout></ProtectedRoute>} />
                 <Route path="/student/nexa-history" element={<ProtectedRoute allowedRoles={['STUDENT']}><StudentLayout><StudentNexaHistory /></StudentLayout></ProtectedRoute>} />
                 <Route path="/student/course/:courseId/community" element={<ProtectedRoute allowedRoles={['STUDENT']}><StudentLayout><StudentCommunity /></StudentLayout></ProtectedRoute>} />
                 <Route path="/student/gamification" element={<ProtectedRoute allowedRoles={['STUDENT']}><StudentLayout><StudentGamification /></StudentLayout></ProtectedRoute>} />
+                <Route path="/student/announcements" element={<ProtectedRoute allowedRoles={['STUDENT']}><StudentLayout><StudentAnnouncements /></StudentLayout></ProtectedRoute>} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
               <NexaWidget />

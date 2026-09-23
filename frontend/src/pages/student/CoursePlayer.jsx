@@ -1,6 +1,6 @@
 /**
  * CoursePlayer — Immersive learning interface
- * Video player + collapsible module tree + Q&A + Announcements tabs
+ * Video player + collapsible module tree + Q&A + Announcements + Notes tabs
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -9,7 +9,8 @@ import axios from 'axios';
 import {
   Play, ChevronDown, ChevronRight, Video, FileText, HelpCircle,
   CheckCircle2, Circle, ChevronLeft, ChevronRight as ChevronRightIcon,
-  Loader2, AlertCircle, Star, BookOpen, Award, MessageCircle, Bell
+  Loader2, AlertCircle, Star, BookOpen, Award, MessageCircle, Bell,
+  StickyNote, Bookmark, BookmarkCheck, Trash2, Edit3, Clock, Send
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import QAPanel from '../../components/course/QAPanel';
@@ -94,8 +95,167 @@ function CommunityPreview({ courseId }) {
   );
 }
 
+// ─── Notes Panel ────────────────────────────────────────────
+function NotesPanel({ lessonId, courseId }) {
+  const { api } = useAuth();
+  const [notes, setNotes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [content, setContent] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [editContent, setEditContent] = useState('');
+
+  const fetchNotes = useCallback(async () => {
+    if (!lessonId) return;
+    try {
+      const res = await api.get(`/notes/lesson/${lessonId}`);
+      setNotes(res.data.data || []);
+    } catch {
+      // silent
+    } finally {
+      setLoading(false);
+    }
+  }, [lessonId, api]);
+
+  useEffect(() => {
+    setLoading(true);
+    fetchNotes();
+  }, [fetchNotes]);
+
+  const handleSubmit = async () => {
+    if (!content.trim()) return;
+    setSubmitting(true);
+    try {
+      await api.post('/notes', { lessonId, content: content.trim() });
+      setContent('');
+      fetchNotes();
+    } catch {
+      // silent
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await api.delete(`/notes/${id}`);
+      setNotes(prev => prev.filter(n => n.id !== id));
+    } catch {
+      // silent
+    }
+  };
+
+  const handleEdit = async (id) => {
+    if (!editContent.trim()) return;
+    try {
+      const res = await api.put(`/notes/${id}`, { content: editContent.trim() });
+      setNotes(prev => prev.map(n => n.id === id ? res.data.data : n));
+      setEditingId(null);
+      setEditContent('');
+    } catch {
+      // silent
+    }
+  };
+
+  const formatTimestamp = (seconds) => {
+    if (!seconds || seconds <= 0) return null;
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}:${s.toString().padStart(2, '0')}`;
+  };
+
+  return (
+    <div className="space-y-3">
+      {/* Add note form */}
+      <div className="bg-[#1E1B4B] border border-white/10 rounded-xl p-4 space-y-3">
+        <h4 className="text-xs font-semibold text-white flex items-center gap-2">
+          <StickyNote className="w-3.5 h-3.5 text-[#7C3AED]" />
+          Add Note
+        </h4>
+        <textarea
+          value={content}
+          onChange={e => setContent(e.target.value)}
+          placeholder="Save a note for this lesson..."
+          rows={3}
+          className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-[#7C3AED] resize-none"
+        />
+        <button
+          onClick={handleSubmit}
+          disabled={!content.trim() || submitting}
+          className="w-full bg-[#7C3AED] hover:bg-[#8b5cf6] disabled:opacity-40 text-white text-xs font-semibold py-2 rounded-xl transition-colors flex items-center justify-center gap-2"
+        >
+          <Send className="w-3.5 h-3.5" />
+          {submitting ? 'Saving...' : 'Save Note'}
+        </button>
+      </div>
+
+      {/* Notes list */}
+      {loading ? (
+        <div className="text-xs text-white/30 py-2">Loading notes...</div>
+      ) : notes.length === 0 ? (
+        <div className="text-center py-8 text-white/30 text-xs">
+          <StickyNote className="w-8 h-8 mx-auto mb-2 opacity-30" />
+          No notes yet. Add your first note above.
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {notes.map(note => (
+            <div key={note.id} className="bg-white/5 rounded-lg p-3 space-y-2">
+              {editingId === note.id ? (
+                <div className="space-y-2">
+                  <textarea
+                    value={editContent}
+                    onChange={e => setEditContent(e.target.value)}
+                    rows={2}
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-[#7C3AED] resize-none"
+                  />
+                  <div className="flex gap-2">
+                    <button onClick={() => handleEdit(note.id)} className="text-xs text-[#7C3AED] hover:text-[#c4b5fd]">Save</button>
+                    <button onClick={() => { setEditingId(null); setEditContent(''); }} className="text-xs text-white/40 hover:text-white/60">Cancel</button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <p className="text-xs text-white/80 whitespace-pre-wrap">{note.content}</p>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      {formatTimestamp(note.timestamp) && (
+                        <span className="text-[10px] text-[#7C3AED] flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          {formatTimestamp(note.timestamp)}
+                        </span>
+                      )}
+                      <span className="text-[10px] text-white/30">
+                        {new Date(note.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => { setEditingId(note.id); setEditContent(note.content); }}
+                        className="p-1 text-white/30 hover:text-white/60 transition-colors"
+                      >
+                        <Edit3 className="w-3 h-3" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(note.id)}
+                        className="p-1 text-white/30 hover:text-red-400 transition-colors"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Module item ────────────────────────────────────────────
-function ModuleItem({ module, completedLessons, currentLessonId, onLessonSelect, onMarkComplete }) {
+function ModuleItem({ module, completedLessons, currentLessonId, onLessonSelect, onMarkComplete, bookmarkedLessons, onToggleBookmark }) {
   const [open, setOpen] = useState(true);
   const moduleCompleted = module.lessons?.filter(l => completedLessons.includes(l.id)).length || 0;
   const totalLessons = module.lessons?.length || 0;
@@ -112,6 +272,7 @@ function ModuleItem({ module, completedLessons, currentLessonId, onLessonSelect,
           {module.lessons?.map(lesson => {
             const isCompleted = completedLessons.includes(lesson.id);
             const isCurrent = lesson.id === currentLessonId;
+            const isBookmarked = bookmarkedLessons?.has(lesson.id);
             return (
               <div key={lesson.id} className={`flex items-center gap-2 px-4 py-2.5 transition-colors group ${isCurrent ? 'bg-[#7C3AED]/10' : 'hover:bg-white/5'}`}>
                 <button onClick={() => onLessonSelect(lesson)} className="flex items-center gap-2 flex-1 min-w-0 text-left">
@@ -119,6 +280,13 @@ function ModuleItem({ module, completedLessons, currentLessonId, onLessonSelect,
                   <LessonTypeIcon type={lesson.type} />
                   <span className={`text-xs truncate ${isCurrent ? 'text-[#7C3AED] font-medium' : 'text-white/70'}`}>{lesson.title}</span>
                   {lesson.duration && <span className="text-xs text-white/30 flex-shrink-0">{lesson.duration}</span>}
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); onToggleBookmark(lesson.id); }}
+                  className={`p-1 rounded transition-colors ${isBookmarked ? 'text-[#7C3AED]' : 'text-white/20 opacity-0 group-hover:opacity-100 hover:text-[#7C3AED]'}`}
+                  title={isBookmarked ? 'Remove bookmark' : 'Bookmark lesson'}
+                >
+                  {isBookmarked ? <BookmarkCheck className="w-3.5 h-3.5" /> : <Bookmark className="w-3.5 h-3.5" />}
                 </button>
                 {!isCompleted && (
                   <button onClick={(e) => { e.stopPropagation(); onMarkComplete(lesson.id); }}
@@ -291,9 +459,9 @@ function AnnouncementsPanel({ announcements, courseId, api }) {
         <div className="text-center py-12 text-white/30 text-xs">No announcements yet</div>
       ) : (
         announcements.map(a => (
-          <div key={a.id} className={`bg-[#1E1B4B] border rounded-xl p-4 space-y-2 ${a.priority >= 5 ? 'border-amber-500/30' : 'border-white/10'}`}>
+          <div key={a.id} className={`bg-[#1E1B4B] border rounded-xl p-4 space-y-2 ${a.priority >= 2 ? 'border-amber-500/30' : 'border-white/10'}`}>
             <div className="flex items-start gap-2">
-              <Bell className={`w-4 h-4 flex-shrink-0 mt-0.5 ${a.priority >= 5 ? 'text-amber-400' : 'text-white/40'}`} />
+              <Bell className={`w-4 h-4 flex-shrink-0 mt-0.5 ${a.priority >= 2 ? 'text-amber-400' : 'text-white/40'}`} />
               <div className="flex-1 min-w-0">
                 <h4 className="text-sm font-semibold text-white">{a.title}</h4>
                 <p className="text-xs text-white/60 mt-1">{a.body}</p>
@@ -321,6 +489,7 @@ export default function CoursePlayer() {
   const [authError, setAuthError] = useState(false);
   const [activeTab, setActiveTab] = useState('syllabus');
   const [announcements, setAnnouncements] = useState([]);
+  const [bookmarkedLessons, setBookmarkedLessons] = useState(new Set());
 
   useEffect(() => {
     if (!courseId) return;
@@ -347,6 +516,39 @@ export default function CoursePlayer() {
       .catch(() => {});
   }, [courseId, token, api]);
 
+  // Fetch bookmarks for this course
+  useEffect(() => {
+    if (!token || !course?.modules) return;
+    api.get('/bookmarks/me')
+      .then(res => {
+        const allLessonIds = new Set(course.modules.flatMap(m => (m.lessons || []).map(l => l.id)));
+        const bmIds = new Set(
+          (res.data.data || [])
+            .filter(b => allLessonIds.has(b.lessonId))
+            .map(b => b.lessonId)
+        );
+        setBookmarkedLessons(bmIds);
+      })
+      .catch(() => {});
+  }, [token, course, api]);
+
+  const handleToggleBookmark = async (lessonId) => {
+    try {
+      const res = await api.post('/bookmarks/toggle', { lessonId });
+      setBookmarkedLessons(prev => {
+        const next = new Set(prev);
+        if (res.data.data.bookmarked) {
+          next.add(lessonId);
+        } else {
+          next.delete(lessonId);
+        }
+        return next;
+      });
+    } catch {
+      // silent
+    }
+  };
+
   const allLessons = course?.modules?.flatMap(m => m.lessons || []) || [];
   const currentIndex = allLessons.findIndex(l => l.id === currentLesson?.id);
   const prevLesson = currentIndex > 0 ? allLessons[currentIndex - 1] : null;
@@ -363,7 +565,7 @@ export default function CoursePlayer() {
 
   if (authError) return <Navigate to="/login" replace />;
 
-  const unreadAnnouncements = announcements.filter(a => !a.read).length;
+  const unreadAnnouncements = announcements.filter(a => !a.isRead).length;
 
   return (
     <div className="max-w-7xl mx-auto p-4 md:p-6">
@@ -420,9 +622,18 @@ export default function CoursePlayer() {
                       {currentLesson.duration && <><span className="text-white/20">·</span><span className="text-xs text-white/40">{currentLesson.duration}</span></>}
                     </div>
                   </div>
-                  {completedLessons.includes(currentLesson.id) && (
-                    <span className="flex items-center gap-1 text-xs text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-full"><CheckCircle2 className="w-3 h-3" />Completed</span>
-                  )}
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleToggleBookmark(currentLesson.id)}
+                      className={`p-2 rounded-lg transition-colors ${bookmarkedLessons.has(currentLesson.id) ? 'text-[#7C3AED] bg-[#7C3AED]/10' : 'text-white/30 hover:text-white/60 hover:bg-white/5'}`}
+                      title={bookmarkedLessons.has(currentLesson.id) ? 'Remove bookmark' : 'Bookmark this lesson'}
+                    >
+                      {bookmarkedLessons.has(currentLesson.id) ? <BookmarkCheck className="w-5 h-5" /> : <Bookmark className="w-5 h-5" />}
+                    </button>
+                    {completedLessons.includes(currentLesson.id) && (
+                      <span className="flex items-center gap-1 text-xs text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-full"><CheckCircle2 className="w-3 h-3" />Completed</span>
+                    )}
+                  </div>
                 </div>
               )}
 
@@ -454,6 +665,7 @@ export default function CoursePlayer() {
           <div className="flex items-center gap-1 bg-[#1E1B4B] border border-white/10 rounded-xl p-1">
             {[
               { key: 'syllabus', label: 'Syllabus', icon: BookOpen },
+              { key: 'notes', label: 'Notes', icon: StickyNote },
               { key: 'community', label: 'Community', icon: MessageCircle },
               { key: 'qa', label: 'Q&A', icon: HelpCircle },
               { key: 'announcements', label: 'News', icon: Bell, badge: unreadAnnouncements },
@@ -482,10 +694,19 @@ export default function CoursePlayer() {
                   <div className="space-y-3">
                     {course.modules?.map(module => (
                       <ModuleItem key={module.id} module={module} completedLessons={completedLessons}
-                        currentLessonId={currentLesson?.id} onLessonSelect={setCurrentLesson} onMarkComplete={markComplete} />
+                        currentLessonId={currentLesson?.id} onLessonSelect={setCurrentLesson} onMarkComplete={markComplete}
+                        bookmarkedLessons={bookmarkedLessons} onToggleBookmark={handleToggleBookmark} />
                     ))}
                   </div>
                 </>
+              )}
+
+              {activeTab === 'notes' && currentLesson && (
+                <NotesPanel lessonId={currentLesson.id} courseId={courseId} />
+              )}
+
+              {activeTab === 'notes' && !currentLesson && (
+                <div className="text-center py-12 text-white/30 text-xs">Select a lesson to view notes</div>
               )}
 
               {activeTab === 'community' && (

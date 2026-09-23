@@ -214,8 +214,48 @@ async function generateCertificate(req, res) {
   }
 }
 
+// ─── GET ALL USER CERTIFICATES ─────────────────────────────
+// GET /api/v1/certificates/my
+async function getMyCertificates(req, res) {
+  try {
+    const userId = req.user.userId;
+
+    const certificates = await prisma.certificate.findMany({
+      where: { userId },
+      include: {
+        course: {
+          select: {
+            id: true,
+            title: true,
+            slug: true,
+            coverImageUrl: true,
+            creator: { select: { fullName: true } },
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return res.status(200).json({
+      success: true,
+      statusCode: 200,
+      message: 'Certificates retrieved.',
+      data: certificates,
+    });
+  } catch (error) {
+    console.error('[GET MY CERTIFICATES ERROR]', error.message);
+    return res.status(500).json({
+      success: false,
+      statusCode: 500,
+      error: 'INTERNAL_SERVER_ERROR',
+      message: 'Failed to retrieve certificates.',
+    });
+  }
+}
+
 module.exports = {
   getCertificate,
   verifyCertificate,
   generateCertificate,
+  getMyCertificates,
 };

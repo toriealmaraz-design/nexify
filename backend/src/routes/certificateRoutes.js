@@ -7,6 +7,9 @@ const router = express.Router();
 const { authenticate } = require('../middleware/auth');
 const certificateController = require('../controllers/certificateController');
 
+// Authenticated: get all certificates for current user
+router.get('/my', authenticate, certificateController.getMyCertificates);
+
 // Authenticated: get certificate for a specific course
 router.get('/:courseId', authenticate, certificateController.getCertificate);
 

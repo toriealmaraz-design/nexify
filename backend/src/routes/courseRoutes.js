@@ -12,6 +12,9 @@ const reviewController = require('../controllers/reviewController');
 // Public: Browse published courses
 router.get('/', courseController.listCourses);
 
+// Authenticated: Personalized recommendations
+router.get('/recommendations/me', authenticate, courseController.getRecommendations);
+
 // Optional auth: Get single course (enriches if logged in)
 router.get('/:id', optionalAuth, courseController.getCourse);
 

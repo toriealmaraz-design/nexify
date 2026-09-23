@@ -67,6 +67,8 @@ app.use('/api/v1/announcements', require('./routes/announcementRoutes'));
 app.use('/api/v1/nexa-chat', require('./routes/nexaChatRoutes'));
 app.use('/api/v1/community', require('./routes/communityRoutes'));
 app.use('/api/v1/gamification', require('./routes/gamificationRoutes'));
+app.use('/api/v1/notes', require('./routes/noteRoutes'));
+app.use('/api/v1/bookmarks', require('./routes/bookmarkRoutes'));
 
 // ─── 404 Handler ────────────────────────────────────────────
 app.use((req, res) => {

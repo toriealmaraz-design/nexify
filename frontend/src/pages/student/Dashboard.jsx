@@ -8,7 +8,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, DollarSign, TrendingUp, Flame } from 'lucide-react';
+import { BookOpen, DollarSign, TrendingUp, Flame, Sparkles, Award, Bell } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { SkeletonStats, SkeletonGrid, SkeletonRow } from '../../components/Skeleton';
@@ -22,7 +22,11 @@ export default function StudentDashboard() {
   const [courses, setCourses] = useState([]);
   const [enrollments, setEnrollments] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [recommendations, setRecommendations] = useState([]);
+  const [certificates, setCertificates] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [announcements, setAnnouncements] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
     axios.get('/api/v1/courses')
@@ -37,11 +41,31 @@ export default function StudentDashboard() {
       axios.get('/api/v1/enrollments', {
         headers: { Authorization: `Bearer ${token}` },
       }).then(res => setEnrollments(res.data.data || [])).catch(() => {});
+      // Fetch personalized recommendations
+      axios.get('/api/v1/courses/recommendations/me', {
+        headers: { Authorization: `Bearer ${token}` },
+      }).then(res => setRecommendations(res.data.data || [])).catch(() => {});
+      // Fetch my certificates
+      axios.get('/api/v1/certificates/my', {
+        headers: { Authorization: `Bearer ${token}` },
+      }).then(res => setCertificates(res.data.data || [])).catch(() => {});
     } else {
       setOrders([]);
       setEnrollments([]);
     }
     setLoading(false);
+  }, []);
+
+  // Fetch announcements feed
+  useEffect(() => {
+    const token = localStorage.getItem('nexify_token');
+    if (!token) return;
+    axios.get('/api/v1/announcements/student/feed', {
+      headers: { Authorization: `Bearer ${token}` },
+    }).then(res => {
+      setAnnouncements(res.data.data || []);
+      setUnreadCount(res.data.unreadCount || 0);
+    }).catch(() => {});
   }, []);
 
   const enrolledCourses = orders
@@ -96,6 +120,120 @@ export default function StudentDashboard() {
             );
           })}
         </div>
+      )}
+
+
+      {/* Announcements */}
+      <section className="mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-bold text-white flex items-center gap-2">
+            <Bell className="w-5 h-5 text-[#7C3AED]" />
+            Announcements
+            {unreadCount > 0 && (
+              <span className="bg-[#7C3AED] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{unreadCount}</span>
+            )}
+          </h2>
+          <Link to="/student/announcements" className="text-xs text-[#7C3AED] hover:text-[#8b5cf6] transition-colors">
+            View all →
+          </Link>
+        </div>
+        {announcements.length === 0 ? (
+          <div className="bg-[#1E293B] border border-white/10 rounded-xl p-5 text-center">
+            <p className="text-sm text-white/40">No announcements yet.</p>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {announcements.slice(0, 3).map(a => (
+              <div key={a.id} className={`bg-[#1E293B] border rounded-xl p-3 flex items-start gap-3 ${!a.isRead ? 'border-[#7C3AED]/30 ring-1 ring-[#7C3AED]/20' : 'border-white/10'}`}>
+                {!a.isRead && <div className="w-2 h-2 rounded-full bg-[#7C3AED] flex-shrink-0 mt-1.5" />}
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-xs font-semibold text-white truncate">{a.title}</h3>
+                  <p className="text-[10px] text-white/40 mt-0.5">{a.course?.title} · {new Date(a.createdAt).toLocaleDateString()}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* Recommended for You */}
+      <section className="mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-bold text-white flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-[#7C3AED]" />
+            Recommended for You
+          </h2>
+        </div>
+        {loading ? (
+          <SkeletonGrid cols={2} count={2} />
+        ) : recommendations.length === 0 ? (
+          <div className="bg-[#1E1B4B] border border-white/10 rounded-xl p-6 text-center">
+            <p className="text-sm text-white/40">Enroll in courses to get personalized recommendations.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {recommendations.map(course => (
+              <Link
+                key={course.id}
+                to={`/course/${course.id}`}
+                className="bg-[#1E1B4B] border border-white/10 rounded-xl overflow-hidden hover:border-[#7C3AED]/40 transition-all group"
+              >
+                <div className="aspect-video bg-[#0F172A] relative">
+                  {course.coverImageUrl ? (
+                    <img src={course.coverImageUrl} alt={course.title} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <span className="text-2xl text-white/30">{course.title.charAt(0)}</span>
+                    </div>
+                  )}
+                  <span className="absolute top-2 right-2 bg-[#7C3AED]/90 text-white text-xs font-medium px-2 py-0.5 rounded-full">
+                    {course.type === 'IN_PERSON_LAB' ? 'Lab' : 'Digital'}
+                  </span>
+                </div>
+                <div className="p-3">
+                  <h3 className="text-sm font-bold text-white line-clamp-2 group-hover:text-[#7C3AED] transition-colors">{course.title}</h3>
+                  <p className="text-xs text-white/30 mt-1">by {course.creator?.fullName}</p>
+                  <div className="flex items-center justify-between mt-2">
+                    <span className="text-[#7C3AED] font-bold text-sm">GH₵ {(course.priceGhs || 0).toFixed(2)}</span>
+                    <span className="text-xs text-white/20">{course._count?.orders || 0} students</span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* My Certificates */}
+      {certificates.length > 0 && (
+        <section className="mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold text-white flex items-center gap-2">
+              <Award className="w-5 h-5 text-emerald-400" />
+              My Certificates
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {certificates.filter(c => c.completedAt).map(cert => (
+              <Link
+                key={cert.id}
+                to={`/student/course/${cert.courseId}/certificate`}
+                className="bg-[#1E1B4B] border border-emerald-500/20 rounded-xl p-4 flex items-center gap-4 hover:border-emerald-500/40 transition-all"
+              >
+                <div className="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Award className="w-5 h-5 text-emerald-400" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-sm font-semibold text-white truncate">{cert.course?.title}</h3>
+                  <p className="text-xs text-white/40 mt-0.5">
+                    Completed {new Date(cert.completedAt).toLocaleDateString()}
+                  </p>
+                </div>
+                <span className="text-xs text-emerald-400 font-medium">View</span>
+              </Link>
+            ))}
+          </div>
+        </section>
       )}
 
       {/* Course Marketplace Browse */}

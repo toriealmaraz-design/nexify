@@ -1,6 +1,6 @@
 /**
  * Student Profile — Learning Hub Personalization
- * Enrolled courses, active enrollments, bookmarks, review history, certificates.
+ * Enrolled courses, notes, bookmarks, review history, certificates.
  */
 
 import React, { useState, useEffect } from 'react';
@@ -11,19 +11,21 @@ import {
   Clock,
   TrendingUp,
   Award,
-  Settings,
-  Camera,
-  ExternalLink,
-  Play,
   RotateCw,
+  Play,
+  ExternalLink,
+  StickyNote,
+  Bookmark,
+  Trash2,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import axios from 'axios';
 
 const API = '/api/v1';
 
 const TABS = [
   { id: 'enrollments', label: 'My Courses' },
+  { id: 'notes', label: 'Notes' },
+  { id: 'bookmarks', label: 'Bookmarks' },
   { id: 'reviews', label: 'Reviews' },
   { id: 'certificates', label: 'Certificates' },
 ];
@@ -36,6 +38,8 @@ export default function StudentProfile() {
   const { user, api } = useAuth();
   const [activeTab, setActiveTab] = useState('enrollments');
   const [enrollments, setEnrollments] = useState([]);
+  const [notes, setNotes] = useState([]);
+  const [bookmarks, setBookmarks] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -48,6 +52,32 @@ export default function StudentProfile() {
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    api.get('/notes/me')
+      .then(res => setNotes(res.data.data || []))
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    api.get('/bookmarks/me')
+      .then(res => setBookmarks(res.data.data || []))
+      .catch(() => {});
+  }, []);
+
+  const handleDeleteNote = async (id) => {
+    try {
+      await api.delete(`/notes/${id}`);
+      setNotes(prev => prev.filter(n => n.id !== id));
+    } catch {}
+  };
+
+  const handleRemoveBookmark = async (lessonId) => {
+    try {
+      await api.post('/bookmarks/toggle', { lessonId });
+      setBookmarks(prev => prev.filter(b => b.lessonId !== lessonId));
+    } catch {}
+  };
 
   const purchasedCourseIds = enrollments.map(e => e.courseId);
   const totalLearning = enrollments.length;
@@ -88,10 +118,10 @@ export default function StudentProfile() {
         </div>
         <div className="bg-[#1E293B] border border-white/5 rounded-xl p-4">
           <div className="flex items-center gap-2 mb-2">
-            <Star className="w-4 h-4 text-amber-400" />
-            <span className="text-xs text-white/40 uppercase tracking-wider">Reviews</span>
+            <StickyNote className="w-4 h-4 text-amber-400" />
+            <span className="text-xs text-white/40 uppercase tracking-wider">Notes</span>
           </div>
-          <p className="text-2xl font-bold text-white">{reviews.length}</p>
+          <p className="text-2xl font-bold text-white">{notes.length}</p>
         </div>
         <div className="bg-[#1E293B] border border-white/5 rounded-xl p-4">
           <div className="flex items-center gap-2 mb-2">
@@ -103,12 +133,12 @@ export default function StudentProfile() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 border-b border-white/10 mb-6">
+      <div className="flex gap-1 border-b border-white/10 mb-6 overflow-x-auto">
         {TABS.map(tab => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
+            className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
               activeTab === tab.id
                 ? 'border-purple-500 text-white'
                 : 'border-transparent text-white/40 hover:text-white/70'
@@ -126,6 +156,10 @@ export default function StudentProfile() {
         </div>
       ) : activeTab === 'enrollments' ? (
         <EnrollmentsTab enrollments={enrollments} />
+      ) : activeTab === 'notes' ? (
+        <NotesTab notes={notes} onDelete={handleDeleteNote} />
+      ) : activeTab === 'bookmarks' ? (
+        <BookmarksTab bookmarks={bookmarks} onRemove={handleRemoveBookmark} />
       ) : activeTab === 'reviews' ? (
         <ReviewsTab reviews={reviews} />
       ) : (
@@ -195,6 +229,90 @@ function EnrollmentsTab({ enrollments }) {
           </div>
         );
       })}
+    </div>
+  );
+}
+
+function NotesTab({ notes, onDelete }) {
+  if (!notes.length) {
+    return (
+      <div className="text-center py-16">
+        <StickyNote className="w-12 h-12 text-white/20 mx-auto mb-3" />
+        <p className="text-white/50 text-sm">No notes yet</p>
+        <p className="text-white/30 text-xs mt-1">Take notes while watching lessons</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      {notes.map(note => (
+        <div key={note.id} className="bg-[#1E293B] border border-white/5 rounded-xl p-4">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex-1 min-w-0">
+              <p className="text-sm text-white/80 whitespace-pre-wrap">{note.content}</p>
+              <div className="flex items-center gap-3 mt-2 text-xs text-white/40">
+                <span className="text-purple-400">
+                  {note.lesson?.module?.course?.title || 'Course'}
+                </span>
+                <span>·</span>
+                <span>{note.lesson?.title || 'Lesson'}</span>
+                <span>·</span>
+                <span>{new Date(note.createdAt).toLocaleDateString()}</span>
+              </div>
+            </div>
+            <button
+              onClick={() => onDelete(note.id)}
+              className="p-1.5 text-white/30 hover:text-red-400 transition-colors flex-shrink-0"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function BookmarksTab({ bookmarks, onRemove }) {
+  if (!bookmarks.length) {
+    return (
+      <div className="text-center py-16">
+        <Bookmark className="w-12 h-12 text-white/20 mx-auto mb-3" />
+        <p className="text-white/50 text-sm">No bookmarks yet</p>
+        <p className="text-white/30 text-xs mt-1">Bookmark lessons to find them quickly</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      {bookmarks.map(bm => (
+        <div key={bm.id} className="bg-[#1E293B] border border-white/5 rounded-xl p-4">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex-1 min-w-0">
+              <Link
+                to={`/student/course/${bm.lesson?.module?.course?.id || ''}`}
+                className="text-sm font-medium text-white hover:text-purple-400 transition-colors"
+              >
+                {bm.lesson?.title || 'Lesson'}
+              </Link>
+              <div className="flex items-center gap-2 mt-1 text-xs text-white/40">
+                <span>{bm.lesson?.module?.course?.title || 'Course'}</span>
+                <span>·</span>
+                <span>{bm.lesson?.module?.title || 'Module'}</span>
+              </div>
+            </div>
+            <button
+              onClick={() => onRemove(bm.lessonId)}
+              className="p-1.5 text-white/30 hover:text-red-400 transition-colors flex-shrink-0"
+              title="Remove bookmark"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

@@ -33,6 +33,19 @@ const PLACEHOLDER = {
   certificateId: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
 };
 
+function getCertificateData(certificate) {
+  if (!certificate) return PLACEHOLDER;
+  return {
+    studentName: certificate.user?.fullName || PLACEHOLDER.studentName,
+    courseTitle: certificate.course?.title || PLACEHOLDER.courseTitle,
+    instructorName: certificate.course?.creator?.fullName || PLACEHOLDER.instructorName,
+    completionDate: certificate.completedAt
+      ? new Date(certificate.completedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+      : PLACEHOLDER.completionDate,
+    certificateId: certificate.certificateId || PLACEHOLDER.certificateId,
+  };
+}
+
 function SkeletonCertificate() {
   return (
     <div className="bg-[#1E1B4B] border border-white/10 rounded-2xl p-12 text-center">
@@ -76,10 +89,89 @@ export default function Certificate() {
     fetchCertificate();
   }, [courseId, token]);
 
-  const data = certificate || PLACEHOLDER;
+  const data = getCertificateData(certificate);
 
   const handleDownload = () => {
-    window.print();
+    const certId = certificate?.certificateId || PLACEHOLDER.certificateId;
+    const studentName = certificate?.user?.fullName || data.studentName;
+    const courseTitle = certificate?.course?.title || data.courseTitle;
+    const instructorName = certificate?.course?.creator?.fullName || data.instructorName;
+    const completionDate = certificate?.completedAt
+      ? new Date(certificate.completedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+      : data.completionDate;
+
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Certificate - ${courseTitle}</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #FFF8E7; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+  .certificate { width: 1000px; height: 700px; background: #FFF8E7; border: 12px solid #7C3AED; padding: 8px; position: relative; }
+  .inner-border { width: 100%; height: 100%; border: 2px dashed rgba(124, 58, 237, 0.4); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px; }
+  .logo { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; }
+  .logo-box { width: 48px; height: 48px; background: #7C3AED; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #000; font-size: 24px; font-weight: 700; }
+  .logo-text { font-size: 24px; font-weight: 700; color: #1E293B; }
+  .subtitle { font-size: 12px; color: #7C3AED; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; }
+  .cert-title { font-size: 14px; color: #7C3AED; font-weight: 600; letter-spacing: 6px; text-transform: uppercase; margin-bottom: 16px; }
+  .divider { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; }
+  .divider-line { width: 120px; height: 1px; background: rgba(124, 58, 237, 0.3); }
+  .divider-icon { color: #7C3AED; font-size: 20px; }
+  .label { font-size: 14px; color: #64748B; margin-bottom: 8px; }
+  .student-name { font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 700; color: #1E293B; margin-bottom: 12px; }
+  .course-label { font-size: 14px; color: #64748B; margin-bottom: 16px; }
+  .course-title { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; color: #1E293B; margin-bottom: 40px; max-width: 600px; text-align: center; }
+  .meta { display: flex; align-items: center; justify-content: center; gap: 48px; margin-bottom: 32px; }
+  .meta-item { text-align: center; }
+  .meta-label { font-size: 11px; color: #94A3B8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .meta-value { font-size: 14px; font-weight: 600; color: #475569; }
+  .footer { border-top: 1px dashed #CBD5E1; padding-top: 24px; display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 500px; }
+  .cert-id { font-size: 10px; color: #94A3B8; text-transform: uppercase; letter-spacing: 1px; }
+  .cert-id-value { font-family: monospace; font-size: 12px; color: #64748B; }
+  @media print { body { background: #FFF8E7; } }
+</style>
+</head>
+<body>
+<div class="certificate">
+  <div class="inner-border">
+    <div class="logo">
+      <div class="logo-box">N</div>
+      <div>
+        <div class="logo-text">Nexify</div>
+        <div class="subtitle">Learning Platform</div>
+      </div>
+    </div>
+    <div class="cert-title">Certificate of Completion</div>
+    <div class="divider"><div class="divider-line"></div><span class="divider-icon">🏆</span><div class="divider-line"></div></div>
+    <div class="label">This certifies that</div>
+    <div class="student-name">${studentName}</div>
+    <div class="course-label">has successfully completed</div>
+    <div class="course-title">"${courseTitle}"</div>
+    <div class="meta">
+      <div class="meta-item"><div class="meta-label">Date</div><div class="meta-value">${completionDate}</div></div>
+      <div class="meta-item"><div class="meta-label">Instructor</div><div class="meta-value">${instructorName}</div></div>
+    </div>
+    <div class="footer">
+      <div><div class="cert-id">Certificate ID</div><div class="cert-id-value">${certId}</div></div>
+      <div><div class="cert-id">Verify at</div><div class="cert-id-value" style="color:#7C3AED">nexify.io/cert/verify</div></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>`;
+
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `certificate-${courseTitle.replace(/\s+/g, '-').toLowerCase()}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   const handleShare = () => {

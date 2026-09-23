@@ -201,6 +201,31 @@ async function updateLessonProgress(req, res) {
       data: { progress: overallProgress },
     });
 
+    // Auto-generate certificate when progress reaches 100%
+    let certificate = null;
+    if (overallProgress === 100 && completed) {
+      const existing = await prisma.certificate.findFirst({
+        where: { userId: req.user.userId, courseId: enrollment.courseId },
+      });
+      if (existing) {
+        if (!existing.completedAt) {
+          certificate = await prisma.certificate.update({
+            where: { id: existing.id },
+            data: { completedAt: new Date() },
+          });
+        }
+      } else {
+        certificate = await prisma.certificate.create({
+          data: {
+            userId: req.user.userId,
+            courseId: enrollment.courseId,
+            enrolledAt: enrollment.createdAt,
+            completedAt: new Date(),
+          },
+        });
+      }
+    }
+
     return res.status(200).json({
       success: true,
       statusCode: 200,
@@ -210,6 +235,7 @@ async function updateLessonProgress(req, res) {
         completed: progress.completed,
         completedAt: progress.completedAt,
         overallProgress,
+        certificate,
       },
     });
 

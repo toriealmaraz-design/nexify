@@ -401,10 +401,13 @@ async function chat(req, res) {
     let matchedReplyKey = matchResult.matchedReplyKey;
     let usedLLM = false;
 
-    // ── 2. Optionally enhance with LLM if user requests it AND config exists
+    // ── 2. Enhance with LLM if: explicit request OR keyword match was generic/fallback
     const aiConfig = await prisma.nexaAIConfig.findUnique({ where: { key: 'DEFAULT' } });
+    const shouldUseLLM = aiConfig?.enabled && aiConfig.model && (
+      enhanceWithLLM === true || enhanceWithLLM === 'true' || matchedReplyKey === null
+    );
 
-    if (aiConfig?.enabled && (enhanceWithLLM === true || enhanceWithLLM === 'true')) {
+    if (shouldUseLLM) {
       let systemContext;
       switch (userRole) {
         case 'ADMIN':     systemContext = await buildAdminContext(); break;

@@ -151,7 +151,7 @@ export default function Nexa() {
       const res = await fetch('/api/v1/nexa/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ prompt: text, conversationId: activeConvId }),
+        body: JSON.stringify({ prompt: text, conversationId: activeConvId, enhanceWithLLM: true }),
       });
       const data = await res.json();
       const reply = data?.data?.reply || "I'm not sure how to help with that.";

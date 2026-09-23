@@ -321,7 +321,7 @@ export default function NexaWidget() {
 
   const panel = (
     <AnimatePresence>
-      {!minimized && (
+      {panelOpen && !minimized && (
         <motion.div
           ref={panelRef}
           initial={{ opacity: 0, y: 20, scale: 0.92 }}

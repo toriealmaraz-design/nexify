@@ -3,7 +3,7 @@
  * Skool-style gamification for student engagement
  */
 import React, { useState, useEffect } from 'react';
-import { Trophy, Star, Zap, Gift, Lock, ChevronRight, Medal, Crown, Flame } from 'lucide-react';
+import { Trophy, Star, Zap, Gift, Lock, ChevronRight, Medal, Crown, Flame, BookOpen, CheckCircle, Award, MessageSquare, RotateCw } from 'lucide-react';
 
 const LEVELS = [
   { name: 'Newcomer', min: 0, max: 99, color: 'text-gray-400', bg: 'bg-gray-500/20', icon: Star },
@@ -14,13 +14,13 @@ const LEVELS = [
 ];
 
 const POINTS_LOG = [
-  { action: 'Enroll in a course', points: '+10', icon: '📚' },
-  { action: 'Complete a lesson', points: '+5', icon: '✅' },
-  { action: 'Complete a course', points: '+50', icon: '🎓' },
-  { action: 'Leave a review', points: '+15', icon: '⭐' },
-  { action: 'Daily login streak', points: '+5', icon: '🔥' },
-  { action: 'Community post', points: '+3', icon: '💬' },
-  { action: 'Community reply', points: '+2', icon: '↩️' },
+  { action: 'Enroll in a course', points: '+10', icon: BookOpen },
+  { action: 'Complete a lesson', points: '+5', icon: CheckCircle },
+  { action: 'Complete a course', points: '+50', icon: Award },
+  { action: 'Leave a review', points: '+15', icon: Star },
+  { action: 'Daily login streak', points: '+5', icon: Flame },
+  { action: 'Community post', points: '+3', icon: MessageSquare },
+  { action: 'Community reply', points: '+2', icon: RotateCw },
 ];
 
 export default function Gamification() {
@@ -153,7 +153,7 @@ export default function Gamification() {
               {POINTS_LOG.map((item, i) => (
                 <div key={i} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
                   <div className="flex items-center gap-3">
-                    <span className="text-lg">{item.icon}</span>
+                    <item.icon className="w-5 h-5 text-[#7C3AED] flex-shrink-0" />
                     <span className="text-sm text-white/80">{item.action}</span>
                   </div>
                   <span className="text-sm font-bold text-emerald-400">{item.points}</span>

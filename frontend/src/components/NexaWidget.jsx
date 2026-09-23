@@ -15,8 +15,6 @@ import {
   Send,
   X,
   Minus,
-  Brain,
-  Sparkles,
   Cpu,
   Mic,
   MicOff,

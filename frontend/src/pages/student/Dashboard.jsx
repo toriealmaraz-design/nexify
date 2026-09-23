@@ -8,7 +8,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, DollarSign, TrendingUp, Flame, Sparkles, Award, Bell } from 'lucide-react';
+import { BookOpen, DollarSign, TrendingUp, Flame, Award, Bell } from 'lucide-react';
+import NexaIcon from '../../components/common/NexaIcon';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { SkeletonStats, SkeletonGrid, SkeletonRow } from '../../components/Skeleton';
@@ -160,7 +161,7 @@ export default function StudentDashboard() {
       <section className="mb-8">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold text-white flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-[#7C3AED]" />
+            <NexaIcon className="w-5 h-5 text-[#7C3AED]" />
             Recommended for You
           </h2>
         </div>
@@ -409,7 +410,7 @@ export default function StudentDashboard() {
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-xs text-amber-400 bg-amber-500/10 px-2 py-1 rounded-full">
-                          🔥 {e.streakCount || 0} day streak
+                          <Flame className="w-4 h-4 text-amber-400 flex-shrink-0" /> {e.streakCount || 0} day streak
                         </span>
                         <Link
                           to={`/student/course/${e.courseId}`}

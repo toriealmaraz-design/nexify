@@ -5,7 +5,7 @@ import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation, Link } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
-import { Layout, ClipboardList, BarChart3, Users, FolderOpen, LogOut, Link2, BookOpen, PlusCircle, DollarSign, ShoppingBag, User, Brain, Trophy, ShoppingCart, Award, Bell, Megaphone } from 'lucide-react';
+import { Layout, ClipboardList, BarChart3, Users, FolderOpen, LogOut, Link2, BookOpen, PlusCircle, DollarSign, ShoppingBag, User, Trophy, ShoppingCart, Award, Bell, Megaphone } from 'lucide-react';
 import { ToastProvider } from './components/common/Toast';
 import NexaWidget from './components/NexaWidget';
 import NexaAvatar from './components/common/NexaAvatar';

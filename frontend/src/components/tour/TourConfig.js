@@ -71,10 +71,10 @@ export const TOUR_STEPS = {
       selector: '[data-tour="nexa-widget-fab"]',
       title: 'Nexa AI — Your Personal Learning Assistant',
       subtitle: 'AI Assistant',
-      body: 'The purple brain button is Nexa, your AI tutor. Click it anytime to ask questions about your course content, get lesson summaries, or find recommended next steps. Nexa knows your enrolled courses and progress — ask anything specific.',
+      body: 'The purple Nexa button is your AI tutor. Click it anytime to ask questions about your course content, get lesson summaries, or find recommended next steps. Nexa knows your enrolled courses and progress — ask anything specific.',
       hint: 'Try: "What lesson should I watch next in my Python course?"',
       position: 'left',
-      icon: 'Brain',
+      icon: 'NexaIcon',
     },
   ],
 

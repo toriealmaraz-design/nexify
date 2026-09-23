@@ -11,18 +11,19 @@ import { createPortal } from 'react-dom';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  X, ChevronRight, ChevronLeft, Check, RotateCw, Sparkles,
-  LayoutDashboard, BookOpen, Play, DollarSign, User, Brain,
+  X, ChevronRight, ChevronLeft, Check, RotateCw,
+  LayoutDashboard, BookOpen, Play, DollarSign, User,
   Plus, FolderOpen, TrendingUp, ClipboardList, Settings,
   Wand2, Link2, Trophy, Shield, Users, ClipboardCheck,
   BarChart3, Cpu, Image, Megaphone,
 } from 'lucide-react';
+import NexaIcon from '../common/NexaIcon';
 import { useAuth } from '../../context/AuthContext';
 import TourMascot from './TourMascot';
 import { TOUR_STEPS, TOUR_KEY, TOUR_DONE_VALUE } from './TourConfig';
 
 const ICON_MAP = {
-  LayoutDashboard, BookOpen, Play, DollarSign, User, Brain,
+  LayoutDashboard, BookOpen, Play, DollarSign, User, NexaIcon,
   Plus, FolderOpen, TrendingUp, ClipboardList, Settings,
   Wand2, Link2, Trophy, Shield, Users, ClipboardCheck,
   BarChart3, Cpu, Image, Megaphone,
@@ -142,7 +143,7 @@ function ConnectorArrow({ fromRect, toRect, tooltipRect, position }) {
 
 // ─── Tooltip Card ─────────────────────────────────────────────────────
 function TooltipCard({ step, stepIndex, totalSteps, onNext, onPrev, onSkip, onJump, isFirst, isLast, mascotPose }) {
-  const Icon = ICON_MAP[step.icon] || Brain;
+  const Icon = ICON_MAP[step.icon] || NexaIcon;
 
   return (
     <motion.div
@@ -196,7 +197,7 @@ function TooltipCard({ step, stepIndex, totalSteps, onNext, onPrev, onSkip, onJu
 
           {/* Hint */}
           <div className="mt-3 flex items-start gap-2 bg-purple-500/10 border border-purple-500/20 rounded-xl px-3 py-2.5">
-            <Sparkles className="w-3.5 h-3.5 text-purple-400 flex-shrink-0 mt-0.5" />
+            <NexaIcon className="w-3.5 h-3.5 text-purple-400 flex-shrink-0 mt-0.5" />
             <p className="text-[11px] text-purple-300/80 leading-relaxed">{step.hint}</p>
           </div>
         </div>
@@ -240,7 +241,7 @@ function TooltipCard({ step, stepIndex, totalSteps, onNext, onPrev, onSkip, onJu
             className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-extrabold text-white bg-gradient-to-r from-purple-600 to-purple-500 shadow-lg shadow-purple-500/25"
           >
             {isLast ? (
-              <>All done! <Sparkles className="w-4 h-4" /></>
+              <>All done! <NexaIcon className="w-4 h-4" /></>
             ) : (
               <>Next <ChevronRight className="w-4 h-4" /></>
             )}
@@ -259,7 +260,7 @@ function ChecklistSidebar({ steps, currentIndex, onJump }) {
       <div className="p-5 border-b border-white/10">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-purple-600 to-purple-800 flex items-center justify-center flex-shrink-0">
-            <Sparkles className="w-4 h-4 text-white" />
+            <NexaIcon className="w-4 h-4 text-white" />
           </div>
           <div>
             <p className="text-sm font-bold text-white leading-none">Onboarding Tour</p>
@@ -271,7 +272,7 @@ function ChecklistSidebar({ steps, currentIndex, onJump }) {
       {/* Step list */}
       <div className="flex-1 overflow-y-auto p-3 space-y-1">
         {steps.map((step, i) => {
-          const Icon = ICON_MAP[step.icon] || Brain;
+          const Icon = ICON_MAP[step.icon] || NexaIcon;
           const isCompleted = i < currentIndex;
           const isCurrent = i === currentIndex;
           const isUpcoming = i > currentIndex;
@@ -335,7 +336,7 @@ function ChecklistSidebar({ steps, currentIndex, onJump }) {
 function MobileProgressBar({ steps, currentIndex, onJump }) {
   return (
     <div className="fixed top-0 left-0 right-0 z-[9999] bg-[#0F172A]/95 backdrop-blur border-b border-white/10 px-4 py-3 flex items-center gap-3">
-      <Sparkles className="w-4 h-4 text-purple-400 flex-shrink-0" />
+      <NexaIcon className="w-4 h-4 text-purple-400 flex-shrink-0" />
       <p className="text-xs font-semibold text-white flex-shrink-0">{currentIndex + 1}/{steps.length}</p>
       <div className="flex-1 flex items-center gap-1.5">
         {steps.map((step, i) => {
@@ -360,7 +361,7 @@ function MobileProgressBar({ steps, currentIndex, onJump }) {
 
 // ─── Bottom Sheet (Mobile) ────────────────────────────────────────────
 function BottomSheet({ step, stepIndex, totalSteps, onNext, onPrev, onSkip, onJump, isFirst, isLast, mascotPose }) {
-  const Icon = ICON_MAP[step.icon] || Brain;
+  const Icon = ICON_MAP[step.icon] || NexaIcon;
 
   return (
     <motion.div
@@ -397,7 +398,7 @@ function BottomSheet({ step, stepIndex, totalSteps, onNext, onPrev, onSkip, onJu
       <div className="px-5 pb-2">
         <p className="text-sm text-white/65 leading-relaxed">{step.body}</p>
         <div className="mt-3 flex items-start gap-2 bg-purple-500/10 border border-purple-500/20 rounded-xl px-3 py-2.5">
-          <Sparkles className="w-3.5 h-3.5 text-purple-400 flex-shrink-0 mt-0.5" />
+          <NexaIcon className="w-3.5 h-3.5 text-purple-400 flex-shrink-0 mt-0.5" />
           <p className="text-[11px] text-purple-300/80 leading-relaxed">{step.hint}</p>
         </div>
       </div>
@@ -432,7 +433,7 @@ function BottomSheet({ step, stepIndex, totalSteps, onNext, onPrev, onSkip, onJu
           onClick={onNext}
           className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-extrabold text-white bg-gradient-to-r from-purple-600 to-purple-500 shadow-lg"
         >
-          {isLast ? <>All done! <Sparkles className="w-4 h-4" /></> : <>Next <ChevronRight className="w-4 h-4" /></>}
+          {isLast ? <>All done! <NexaIcon className="w-4 h-4" /></> : <>Next <ChevronRight className="w-4 h-4" /></>}
         </button>
       </div>
     </motion.div>

@@ -7,10 +7,11 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Skeleton } from '../../components/Skeleton';
 import {
-  Zap, Globe, Brain, Key, MessageSquare, CheckCircle, XCircle,
+  Zap, Globe, Key, MessageSquare, CheckCircle, XCircle,
   Save, Trash2, Plus, RefreshCw, AlertCircle, Wifi, WifiOff,
-  MessageCircle, Edit3, RotateCw, Sparkles,
+  MessageCircle, Edit3, RotateCw,
 } from 'lucide-react';
+import NexaIcon from '../../components/common/NexaIcon';
 
 const DEFAULT_SYSTEM_PROMPTS = {
   ADMIN: `You are Nexa, operating in Executive Administrative Mode on the Nexify Platform. Provide platform-wide summaries, staging queue insights, and revenue analytics. Maintain an authoritative, concise tone. Use clean Markdown formatting. Never expose another user's private data.`,
@@ -276,7 +277,7 @@ export default function NexaSettings() {
       <div className="mb-4 flex items-start justify-between">
         <div>
           <div className="flex items-center gap-3 mb-1">
-            <div className="w-9 h-9 bg-amber-500/20 rounded-xl flex items-center justify-center"><Brain className="w-5 h-5 text-amber-400" /></div>
+            <div className="w-9 h-9 bg-amber-500/20 rounded-xl flex items-center justify-center"><NexaIcon className="w-5 h-5 text-amber-400" /></div>
             <h1 className="text-2xl font-bold text-white">Nexa AI Settings</h1>
           </div>
           <p className="text-white/40 text-sm ml-[44px]">Keyword-match responses always run first. LLM is an optional enhancement.</p>
@@ -354,8 +355,8 @@ export default function NexaSettings() {
             <div className="space-y-3">
               {[
                 { icon: MessageSquare, text: 'Nexa always checks keyword responses first — no network call needed.' },
-                { icon: Sparkles, text: 'LLM enhancement runs only when enabled and explicitly requested.' },
-                { icon: Brain, text: 'System context is built from live database records per role scope.' },
+                { icon: NexaIcon, text: 'LLM enhancement runs only when enabled and explicitly requested.' },
+                { icon: NexaIcon, text: 'System context is built from live database records per role scope.' },
                 { icon: Key, text: 'API key is stored per provider. Gemini and Claude keys are supported.' },
               ].map(({ icon: Icon, text }) => (<div key={text} className="flex items-start gap-2.5"><div className="w-6 h-6 bg-white/5 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"><Icon className="w-3 h-3 text-white/40" /></div><p className="text-xs text-white/50 leading-relaxed">{text}</p></div>))}
             </div>

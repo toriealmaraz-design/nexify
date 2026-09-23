@@ -17,8 +17,8 @@ import {
   Eye,
   ToggleLeft,
   ToggleRight,
-  Sparkles,
 } from 'lucide-react';
+import NexaIcon from '../../components/common/NexaIcon';
 
 const PLACEMENTS = [
   { value: 'LANDING_HERO', label: 'Landing — Hero' },
@@ -391,7 +391,7 @@ export default function AdManager() {
             disabled={saving}
             className="flex items-center gap-2 bg-white/5 border border-white/10 text-white/70 text-sm px-4 py-2 rounded-xl hover:bg-white/10 hover:text-white transition-all"
           >
-            <Sparkles className="w-4 h-4" />
+            <NexaIcon className="w-4 h-4" />
             Seed Sample Ads
           </button>
           <button

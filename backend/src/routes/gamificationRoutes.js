@@ -30,4 +30,13 @@ router.post('/rewards/claim', authenticate, gamificationController.claimReward);
 // ─── Seed Defaults (admin utility) ─────────────────────────
 router.post('/seed', authenticate, gamificationController.seedDefaults);
 
+// ─── Admin: All badges/rewards (manage) ─────────────────────
+router.get('/admin/badges', authenticate, gamificationController.getAllBadges);
+router.post('/admin/badges', authenticate, gamificationController.createBadge);
+router.delete('/admin/badges/:id', authenticate, gamificationController.deleteBadge);
+router.get('/admin/rewards', authenticate, gamificationController.getAllRewards);
+router.post('/admin/rewards', authenticate, gamificationController.createReward);
+router.delete('/admin/rewards/:id', authenticate, gamificationController.deleteReward);
+router.get('/admin/leaderboard', authenticate, gamificationController.getAdminLeaderboard);
+
 module.exports = router;

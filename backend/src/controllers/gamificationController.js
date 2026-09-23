@@ -724,6 +724,13 @@ module.exports = {
   getUserBadges,
   trackDailyLogin,
   seedDefaults,
+  getAllBadges,
+  createBadge,
+  deleteBadge,
+  getAllRewards,
+  createReward,
+  deleteReward,
+  getAdminLeaderboard,
 };
 
 // ─── Combined Stats (/me) ──────────────────────────────────
@@ -770,6 +777,161 @@ async function getUserStats(req, res) {
     return res.status(500).json({
       success: false, statusCode: 500,
       error: 'INTERNAL_SERVER_ERROR', message: 'Failed to retrieve user stats.',
+    });
+  }
+}
+
+// ─── ADMIN: GET ALL BADGES ─────────────────────────────────
+async function getAllBadges(req, res) {
+  try {
+    const badges = await prisma.badge.findMany({ orderBy: { createdAt: 'asc' } });
+    return res.status(200).json({
+      success: true, statusCode: 200,
+      message: 'All badges retrieved.', data: badges,
+    });
+  } catch (error) {
+    console.error('[GET ALL BADGES ERROR]', error.message);
+    return res.status(500).json({
+      success: false, statusCode: 500,
+      error: 'INTERNAL_SERVER_ERROR', message: 'Failed to retrieve badges.',
+    });
+  }
+}
+
+// ─── ADMIN: CREATE BADGE ───────────────────────────────────
+async function createBadge(req, res) {
+  try {
+    const { name, description, iconUrl, category, requirement, actionType } = req.body;
+    if (!name) {
+      return res.status(400).json({
+        success: false, statusCode: 400,
+        error: 'BAD_REQUEST', message: 'Badge name is required.',
+      });
+    }
+    const badge = await prisma.badge.create({
+      data: { name, description, iconUrl, category: category || 'ACHIEVEMENT', requirement: requirement || 1, actionType: actionType || 'CUSTOM' },
+    });
+    return res.status(201).json({
+      success: true, statusCode: 201,
+      message: 'Badge created.', data: badge,
+    });
+  } catch (error) {
+    console.error('[CREATE BADGE ERROR]', error.message);
+    return res.status(500).json({
+      success: false, statusCode: 500,
+      error: 'INTERNAL_SERVER_ERROR', message: 'Failed to create badge.',
+    });
+  }
+}
+
+// ─── ADMIN: DELETE BADGE ───────────────────────────────────
+async function deleteBadge(req, res) {
+  try {
+    const { id } = req.params;
+    await prisma.badge.delete({ where: { id } });
+    return res.status(200).json({
+      success: true, statusCode: 200,
+      message: 'Badge deleted.',
+    });
+  } catch (error) {
+    console.error('[DELETE BADGE ERROR]', error.message);
+    return res.status(500).json({
+      success: false, statusCode: 500,
+      error: 'INTERNAL_SERVER_ERROR', message: 'Failed to delete badge.',
+    });
+  }
+}
+
+// ─── ADMIN: GET ALL REWARDS ────────────────────────────────
+async function getAllRewards(req, res) {
+  try {
+    const rewards = await prisma.reward.findMany({ orderBy: { unlockLevel: 'asc' } });
+    return res.status(200).json({
+      success: true, statusCode: 200,
+      message: 'All rewards retrieved.', data: rewards,
+    });
+  } catch (error) {
+    console.error('[GET ALL REWARDS ERROR]', error.message);
+    return res.status(500).json({
+      success: false, statusCode: 500,
+      error: 'INTERNAL_SERVER_ERROR', message: 'Failed to retrieve rewards.',
+    });
+  }
+}
+
+// ─── ADMIN: CREATE REWARD ──────────────────────────────────
+async function createReward(req, res) {
+  try {
+    const { name, description, type, pointsCost, unlockLevel, couponCode, discountPercent } = req.body;
+    if (!name) {
+      return res.status(400).json({
+        success: false, statusCode: 400,
+        error: 'BAD_REQUEST', message: 'Reward name is required.',
+      });
+    }
+    const reward = await prisma.reward.create({
+      data: { name, description, type: type || 'DISCOUNT_COUPON', pointsCost: pointsCost || 0, unlockLevel: unlockLevel || 1, couponCode, discountPercent },
+    });
+    return res.status(201).json({
+      success: true, statusCode: 201,
+      message: 'Reward created.', data: reward,
+    });
+  } catch (error) {
+    console.error('[CREATE REWARD ERROR]', error.message);
+    return res.status(500).json({
+      success: false, statusCode: 500,
+      error: 'INTERNAL_SERVER_ERROR', message: 'Failed to create reward.',
+    });
+  }
+}
+
+// ─── ADMIN: DELETE REWARD ──────────────────────────────────
+async function deleteReward(req, res) {
+  try {
+    const { id } = req.params;
+    await prisma.reward.delete({ where: { id } });
+    return res.status(200).json({
+      success: true, statusCode: 200,
+      message: 'Reward deleted.',
+    });
+  } catch (error) {
+    console.error('[DELETE REWARD ERROR]', error.message);
+    return res.status(500).json({
+      success: false, statusCode: 500,
+      error: 'INTERNAL_SERVER_ERROR', message: 'Failed to delete reward.',
+    });
+  }
+}
+
+// ─── ADMIN: FULL LEADERBOARD ───────────────────────────────
+async function getAdminLeaderboard(req, res) {
+  try {
+    const leaderboard = await prisma.userGamification.findMany({
+      orderBy: { totalPoints: 'desc' },
+      include: { user: { select: { id: true, fullName: true, email: true, avatarUrl: true, role: true } } },
+    });
+    const ranked = leaderboard.map((entry, index) => ({
+      rank: index + 1,
+      userId: entry.userId,
+      fullName: entry.user.fullName,
+      email: entry.user.email,
+      avatarUrl: entry.user.avatarUrl,
+      role: entry.user.role,
+      totalPoints: entry.totalPoints,
+      currentLevel: entry.currentLevel,
+      loginStreak: entry.loginStreak,
+      lastLoginDate: entry.lastLoginDate,
+      levelName: getLevelInfo(entry.totalPoints).name,
+    }));
+    return res.status(200).json({
+      success: true, statusCode: 200,
+      message: 'Admin leaderboard retrieved.', data: ranked,
+    });
+  } catch (error) {
+    console.error('[ADMIN LEADERBOARD ERROR]', error.message);
+    return res.status(500).json({
+      success: false, statusCode: 500,
+      error: 'INTERNAL_SERVER_ERROR', message: 'Failed to retrieve leaderboard.',
     });
   }
 }

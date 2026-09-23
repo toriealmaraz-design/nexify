@@ -57,6 +57,7 @@ app.use('/api/v1/wishlist', require('./routes/wishlistRoutes'));
 app.use('/api/v1/notifications', require('./routes/notificationRoutes'));
 app.use('/api/v1/creators', require('./routes/creatorRoutes'));
 app.use('/api/v1/enrollments', require('./routes/progressRoutes'));
+app.use('/api/v1/waitlist', require('./routes/waitlistRoutes'));
 app.use('/api/v1/coupons', require('./routes/couponRoutes'));
 app.use('/api/v1/payouts', require('./routes/payoutRoutes'));
 app.use('/api/v1/referrals', require('./routes/referralRoutes'));

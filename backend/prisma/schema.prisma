@@ -386,6 +386,20 @@ model Enrollment {
   @@map("enrollments")
 }
 
+model Waitlist {
+  id        String   @id @default(uuid())
+  userId    String
+  courseId  String
+  joinedAt  DateTime @default(now())
+  notified  Boolean  @default(false)
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+  @@map("waitlist")
+}
+
 model Review {
   id        String   @id @default(uuid())
   courseId  String

@@ -95,12 +95,18 @@ async function checkout(req, res) {
     // ── Physical lab seat check (REQ-GRO-03) ──
     if (course.type === 'IN_PERSON_LAB') {
       if (course.maxSeats && course.bookedSeats >= course.maxSeats) {
+        // Auto-add to waitlist
+        await prisma.waitlist.upsert({
+          where: { userId_courseId: { userId, courseId } },
+          update: { notified: false },
+          create: { userId, courseId },
+        });
         return res.status(409).json({
           success: false,
           statusCode: 409,
           error: 'CONFLICT',
-          message: 'Cohort Full. Join the waitlist.',
-          details: { waitlistAvailable: true },
+          message: 'Cohort Full. You have been added to the waitlist.',
+          details: { waitlistAvailable: true, joinedWaitlist: true },
         });
       }
     }

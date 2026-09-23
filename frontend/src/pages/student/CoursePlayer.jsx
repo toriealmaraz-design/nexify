@@ -61,7 +61,7 @@ function CommunityPreview({ courseId }) {
     async function fetchRecent() {
       try {
         const res = await fetch(
-          `http://localhost:5000/api/v1/community/posts?courseId=${courseId}&limit=3`,
+          `/api/v1/community/posts?courseId=${courseId}&limit=3`,
           { headers: { Authorization: `Bearer ${localStorage.getItem('nexify_token')}` } }
         );
         const data = await res.json();

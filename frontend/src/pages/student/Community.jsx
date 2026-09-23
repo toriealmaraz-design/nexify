@@ -34,7 +34,7 @@ export default function Community() {
 
   async function fetchPosts() {
     try {
-      const res = await fetch(`http://localhost:5000/api/v1/community/posts?courseId=${courseId}`, {
+      const res = await fetch(`/api/v1/community/posts?courseId=${courseId}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('nexify_token')}` },
       });
       const data = await res.json();
@@ -48,7 +48,7 @@ export default function Community() {
 
   async function fetchCourse() {
     try {
-      const res = await fetch(`http://localhost:5000/api/v1/courses/${courseId}`);
+      const res = await fetch(`/api/v1/courses/${courseId}`);
       const data = await res.json();
       if (data.success) setCourse(data.data);
     } catch (err) {
@@ -58,7 +58,7 @@ export default function Community() {
 
   async function fetchComments(postId) {
     try {
-      const res = await fetch(`http://localhost:5000/api/v1/community/posts/${postId}/comments`, {
+      const res = await fetch(`/api/v1/community/posts/${postId}/comments`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('nexify_token')}` },
       });
       const data = await res.json();
@@ -71,7 +71,7 @@ export default function Community() {
   async function handleCreatePost(e) {
     e.preventDefault();
     try {
-      const res = await fetch(`http://localhost:5000/api/v1/community/posts`, {
+      const res = await fetch(`/api/v1/community/posts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -92,7 +92,7 @@ export default function Community() {
 
   async function handleLike(postId) {
     try {
-      await fetch(`http://localhost:5000/api/v1/community/posts/${postId}/like`, {
+      await fetch(`/api/v1/community/posts/${postId}/like`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${localStorage.getItem('nexify_token')}` },
       });
@@ -105,7 +105,7 @@ export default function Community() {
   async function handleReply(postId) {
     if (!replyText.trim()) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/v1/community/posts/${postId}/comments`, {
+      const res = await fetch(`/api/v1/community/posts/${postId}/comments`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

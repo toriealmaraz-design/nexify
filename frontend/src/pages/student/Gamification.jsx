@@ -38,7 +38,7 @@ export default function Gamification() {
 
   async function fetchStats() {
     try {
-      const res = await fetch('http://localhost:5000/api/v1/gamification/me', {
+      const res = await fetch('/api/v1/gamification/me', {
         headers: { Authorization: `Bearer ${localStorage.getItem('nexify_token')}` },
       });
       const data = await res.json();
@@ -52,11 +52,11 @@ export default function Gamification() {
 
   async function fetchLeaderboard() {
     try {
-      const res = await fetch('http://localhost:5000/api/v1/gamification/leaderboard', {
+      const res = await fetch('/api/v1/gamification/leaderboard', {
         headers: { Authorization: `Bearer ${localStorage.getItem('nexify_token')}` },
       });
       const data = await res.json();
-      if (data.success) setLeaderboard(data.data);
+      if (data.success) setLeaderboard(data.data.leaderboard || []);
     } catch (err) {
       console.error(err);
     }
@@ -64,7 +64,7 @@ export default function Gamification() {
 
   async function fetchRewards() {
     try {
-      const res = await fetch('http://localhost:5000/api/v1/gamification/rewards', {
+      const res = await fetch('/api/v1/gamification/rewards', {
         headers: { Authorization: `Bearer ${localStorage.getItem('nexify_token')}` },
       });
       const data = await res.json();
@@ -236,7 +236,7 @@ export default function Gamification() {
                   </div>
                   <div className="flex-1">
                     <p className="text-sm font-medium text-white">{entry.fullName}</p>
-                    <p className="text-xs text-white/40">{entry.level}</p>
+                    <p className="text-xs text-white/40">{entry.levelName}</p>
                   </div>
                   <span className="text-sm font-bold text-[#7C3AED]">{entry.totalPoints} pts</span>
                 </div>
@@ -267,10 +267,10 @@ export default function Gamification() {
                     <span className="text-xs px-2 py-1 bg-emerald-500/20 text-emerald-400 rounded-full">Claimed</span>
                   )}
                 </div>
-                <h3 className="text-sm font-semibold text-white mb-1">{reward.title}</h3>
+                <h3 className="text-sm font-semibold text-white mb-1">{reward.name}</h3>
                 <p className="text-xs text-white/50 mb-3">{reward.description}</p>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-white/40">Requires: {reward.requiredLevel}</span>
+                  <span className="text-xs text-white/40">Requires: Level {reward.unlockLevel}</span>
                   {!reward.isClaimed && (
                     <button className="text-xs px-3 py-1 bg-[#7C3AED] text-white rounded-lg hover:brightness-110">
                       Claim

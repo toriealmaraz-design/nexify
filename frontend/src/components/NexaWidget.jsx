@@ -10,6 +10,7 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import NexaAvatar from './common/NexaAvatar';
+import NexaIcon from './common/NexaIcon';
 import {
   Send,
   X,
@@ -307,7 +308,7 @@ export default function NexaWidget() {
           </motion.div>
         ) : (
           <motion.div key="brain" initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }} transition={SPRING}>
-            <Brain className="w-6 h-6 text-white" />
+            <NexaIcon className="w-6 h-6 text-white" />
           </motion.div>
         )}
       </AnimatePresence>
@@ -379,7 +380,7 @@ export default function NexaWidget() {
                   transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                 >
                   <div className="w-14 h-14 bg-[#7C3AED]/20 rounded-2xl flex items-center justify-center">
-                    <Sparkles className="w-7 h-7 text-[#7C3AED]" />
+                    <NexaIcon className="w-8 h-8 text-[#7C3AED]" />
                   </div>
                 </motion.div>
                 <div>
@@ -418,7 +419,7 @@ export default function NexaWidget() {
                   <p>{msg.text}</p>
                   {msg.role === 'nexa' && msg.usedLLM && (
                     <p className="text-[9px] text-white/25 mt-1 flex items-center gap-0.5">
-                      <Sparkles className="w-2.5 h-2.5" /> AI-powered
+                      <NexaIcon className="w-2.5 h-2.5" /> AI-powered
                     </p>
                   )}
                 </div>

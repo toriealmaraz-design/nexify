@@ -8,6 +8,8 @@ import { CartProvider } from './context/CartContext';
 import { Layout, ClipboardList, BarChart3, Users, FolderOpen, LogOut, Link2, BookOpen, PlusCircle, DollarSign, ShoppingBag, User, Brain, Trophy, ShoppingCart } from 'lucide-react';
 import { ToastProvider } from './components/common/Toast';
 import NexaWidget from './components/NexaWidget';
+import NexaAvatar from './components/common/NexaAvatar';
+import NexaIcon from './components/common/NexaIcon';
 import AdBanner from './components/AdBanner';
 import AdSidebar from './components/AdSidebar';
 import OnboardingTour from './components/tour/OnboardingTour';
@@ -162,7 +164,7 @@ function StudentLayout({ children }) {
           <NavItem href="/student/wishlist" icon={BookOpen} label="Wishlist" />
           <NavItem href="/student/gamification" icon={Trophy} label="Rewards" />
           <NavItem href="/student/profile" icon={User} label="Profile" />
-          <NavItem href="/nexa" icon={Brain} label="Nexa AI" />
+          <NavItem href="/nexa" icon={NexaIcon} label="Nexa AI" />
         </nav>
         <div className="p-3 border-t border-white/5">
           <AdSidebar />
@@ -211,7 +213,7 @@ function AdminLayout({ children }) {
           <NavItem href="/admin/metrics" icon={BarChart3} label="Metrics" />
           <NavItem href="/admin/users" icon={Users} label="Users" />
           <NavItem href="/admin/assets" icon={FolderOpen} label="Assets" />
-          <NavItem href="/admin/nexa-settings" icon={Brain} label="Nexa AI" />
+          <NavItem href="/admin/nexa-settings" icon={NexaIcon} label="Nexa AI" />
           <NavItem href="/admin/gamification" icon={Trophy} label="Gamification" />
           <NavItem href="/admin/ads" icon={ShoppingBag} label="Ad Manager" />
           <NavItem href="/profile" icon={User} label="Profile" />

@@ -12,7 +12,8 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { SkeletonGrid } from '../../components/Skeleton';
 import axios from 'axios';
-import { Sparkles, X, BookOpen } from 'lucide-react';
+import { X, BookOpen } from 'lucide-react';
+import NexaIcon from '../../components/common/NexaIcon';
 import AdBanner from '../../components/AdBanner';
 
 // ─── Nexa Chat Bubble Component ──────────────────────────────
@@ -159,7 +160,7 @@ export default function Landing() {
           </div>
           <nav className="flex items-center gap-4">
             <Link to="/nexa" className="flex items-center gap-1.5 text-sm text-white/70 hover:text-white transition-colors">
-              <Sparkles className="w-4 h-4 text-[#7C3AED]" />
+              <NexaIcon className="w-4 h-4 text-[#7C3AED]" />
               Nexa
             </Link>
             <Link to="/login" className="text-sm text-white/70 hover:text-white transition-colors">Sign In</Link>

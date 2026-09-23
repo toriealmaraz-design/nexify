@@ -6,7 +6,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
-  Sparkles,
   MessageSquare,
   Send,
   Trash2,
@@ -16,6 +15,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import NexaAvatar from '../../components/common/NexaAvatar';
+import NexaIcon from '../../components/common/NexaIcon';
 
 // ─── Mock conversation history ──────────────────────────────────
 const MOCK_CONVERSATIONS = [
@@ -250,7 +250,7 @@ export default function Nexa() {
             onClick={clearChat}
             className="w-full flex items-center gap-2 px-3 py-2.5 bg-[#7C3AED] hover:bg-[#6D28D9] rounded-xl text-sm font-medium transition-colors"
           >
-            <Sparkles className="w-4 h-4" />
+            <NexaIcon className="w-4 h-4" />
             New Chat
           </button>
         </div>

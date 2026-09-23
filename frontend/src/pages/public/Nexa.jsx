@@ -175,10 +175,12 @@ function MessageBubble({ role, content }) {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
   if (role === 'user') {
     return (
       <div className="flex justify-end animate-fade-in">
-        <div className="max-w-[75%] bg-gradient-to-br from-[#7C3AED] to-[#6D28D9] rounded-2xl rounded-br-md px-4 py-3 text-sm text-white shadow-lg shadow-[#7C3AED]/20">
+        <div className="max-w-[75%] bg-gradient-to-br from-[#7C3AED] to-[#6D28D9] rounded-2xl rounded-br-md px-4 py-3 text-sm text-white shadow-lg shadow-[#7C3AED]/20 leading-relaxed">
           {content}
         </div>
       </div>
@@ -186,16 +188,22 @@ function MessageBubble({ role, content }) {
   }
   return (
     <div className="flex gap-3 group animate-fade-in">
-      <div className="flex-shrink-0 mt-0.5"><NexaAvatar size="sm" /></div>
+      <div className="flex-shrink-0 mt-0.5 relative">
+        <NexaAvatar size="sm" />
+        <div className="absolute -inset-0.5 rounded-full bg-[#7C3AED]/20 blur" />
+      </div>
       <div className="max-w-[82%] relative">
-        <div className="bg-[#1E293B] border border-white/10 rounded-2xl rounded-bl-md px-5 py-4 text-sm text-white/80 shadow-sm">
+        <div className="bg-[#1E293B]/80 backdrop-blur-sm border border-white/10 rounded-2xl rounded-bl-md px-5 py-4 text-sm text-white/80 shadow-sm shadow-black/20">
           {renderMarkdown(content)}
         </div>
-        <button onClick={handleCopy}
-          className="absolute -bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-all px-2 py-1 bg-[#0B1120] border border-white/10 rounded-md text-[10px] text-white/50 hover:text-white hover:border-[#7C3AED]/30"
-          title="Copy">
-          {copied ? '✓ Copied' : 'Copy'}
-        </button>
+        <div className="flex items-center gap-2 mt-1 px-1">
+          <span className="text-[10px] text-white/20">{time}</span>
+          <button onClick={handleCopy}
+            className="opacity-0 group-hover:opacity-100 transition-all px-1.5 py-0.5 bg-[#0B1120]/50 border border-white/5 rounded text-[10px] text-white/40 hover:text-white hover:border-[#7C3AED]/30"
+            title="Copy">
+            {copied ? '✓ Copied' : 'Copy'}
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -203,14 +211,18 @@ function MessageBubble({ role, content }) {
 
 function ThinkingIndicator() {
   return (
-    <div className="flex gap-3">
-      <div className="flex-shrink-0 mt-1"><NexaAvatar size="sm" /></div>
-      <div className="bg-[#1E293B] border border-white/10 rounded-2xl rounded-bl-md px-4 py-3">
-        <div className="flex items-center gap-1.5">
-          <span className="w-2 h-2 bg-[#7C3AED] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-          <span className="w-2 h-2 bg-[#7C3AED] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-          <span className="w-2 h-2 bg-[#7C3AED] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+    <div className="flex gap-3 animate-fade-in">
+      <div className="flex-shrink-0 mt-0.5 relative">
+        <NexaAvatar size="sm" />
+        <div className="absolute -inset-1 rounded-full bg-[#7C3AED]/30 blur-sm animate-pulse" />
+      </div>
+      <div className="bg-[#1E293B] border border-white/10 rounded-2xl rounded-bl-md px-5 py-3 shadow-sm">
+        <div className="flex items-center gap-1.5 mb-2">
+          <span className="w-1.5 h-1.5 bg-[#7C3AED] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+          <span className="w-1.5 h-1.5 bg-[#7C3AED] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+          <span className="w-1.5 h-1.5 bg-[#7C3AED] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
         </div>
+        <p className="text-[11px] text-white/40 font-medium">Nexa is thinking</p>
       </div>
     </div>
   );
@@ -360,36 +372,53 @@ export default function Nexa() {
 
       {/* Main */}
       <div className="flex-1 flex flex-col min-w-0">
-        <div className="h-14 border-b border-white/5 px-4 flex items-center justify-between flex-shrink-0">
+        <div className="h-14 border-b border-white/5 px-4 flex items-center justify-between flex-shrink-0 bg-[#0F172A]/80 backdrop-blur-sm">
           <div className="flex items-center gap-3">
             <button onClick={() => setSidebarOpen(true)} className="lg:hidden text-white/50 hover:text-white p-1"><Menu className="w-5 h-5" /></button>
-            <NexaAvatar size="sm" />
+            <div className="relative">
+              <NexaAvatar size="sm" />
+              <div className="absolute -inset-0.5 rounded-full bg-emerald-400/30 blur" />
+            </div>
             <div>
               <h1 className="text-sm font-semibold text-white leading-none">Nexa AI</h1>
               <p className="text-[10px] text-white/40 mt-0.5">{ROLE_NAMES[role]} mode</p>
             </div>
           </div>
           {messages.length > 0 && (
-            <button onClick={startNewChat} className="text-white/40 hover:text-white p-1.5 hover:bg-white/5 rounded-lg"><Plus className="w-4 h-4" /></button>
+            <button onClick={startNewChat} className="text-white/40 hover:text-white p-1.5 hover:bg-white/5 rounded-lg transition-colors"><Plus className="w-4 h-4" /></button>
           )}
         </div>
 
         <div className="flex-1 overflow-y-auto">
           {messages.length === 0 && !thinking ? (
-            <div className="flex flex-col items-center justify-center h-full px-4 text-center">
-              <NexaAvatar size="lg" />
-              <h2 className="mt-5 text-xl font-bold text-white">How can Nexa help you?</h2>
-              <p className="mt-2 text-sm text-white/40 max-w-md">
-                Your AI assistant for everything Nexify. <span className="text-[#7C3AED]">{ROLE_NAMES[role]} mode</span> — responses tailored to your role.
-              </p>
-              <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-xl">
-                {quickActions.map((a, i) => (
-                  <button key={i} onClick={() => { setInput(a.prompt); inputRef.current?.focus(); }}
-                    className="flex items-center gap-3 px-4 py-3 bg-[#1E293B] border border-white/10 hover:border-[#7C3AED]/50 hover:bg-[#1E1B4B]/80 rounded-xl text-left transition-all group">
-                    <div className="w-9 h-9 bg-[#7C3AED]/10 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-[#7C3AED]/20"><a.icon className="w-4 h-4 text-[#7C3AED]" /></div>
-                    <div><p className="text-sm font-medium text-white">{a.label}</p><p className="text-xs text-white/40 line-clamp-1">{a.prompt}</p></div>
-                  </button>
-                ))}
+            <div className="flex flex-col items-center justify-center h-full px-4 text-center relative overflow-hidden">
+              {/* Background glow */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="w-[500px] h-[500px] rounded-full bg-[#7C3AED]/5 blur-[120px]" />
+              </div>
+              <div className="relative z-10">
+                <div className="relative inline-block mb-6">
+                  <NexaAvatar size="lg" />
+                  <div className="absolute -inset-2 rounded-full bg-[#7C3AED]/20 blur-lg animate-pulse" />
+                </div>
+                <h2 className="text-xl font-bold text-white">How can Nexa help you?</h2>
+                <p className="mt-2 text-sm text-white/40 max-w-md">
+                  Your AI assistant for everything Nexify. <span className="text-[#7C3AED]">{ROLE_NAMES[role]} mode</span> — responses tailored to your role.
+                </p>
+                <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-xl">
+                  {quickActions.map((a, i) => (
+                    <button key={i} onClick={() => { setInput(a.prompt); inputRef.current?.focus(); }}
+                      className="flex items-center gap-3 px-4 py-3 bg-[#1E293B]/60 border border-white/10 hover:border-[#7C3AED]/40 hover:bg-[#1E1B4B]/60 rounded-xl text-left transition-all group backdrop-blur-sm">
+                      <div className="w-9 h-9 bg-[#7C3AED]/10 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-[#7C3AED]/20 transition-colors">
+                        <a.icon className="w-4 h-4 text-[#7C3AED]" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-white">{a.label}</p>
+                        <p className="text-xs text-white/40 line-clamp-1">{a.prompt}</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           ) : (
@@ -403,13 +432,13 @@ export default function Nexa() {
 
         <div className="px-4 pb-4 pt-2 flex-shrink-0">
           <div className="max-w-3xl mx-auto">
-            <div className="relative flex items-end gap-2 bg-[#1E293B] border border-white/10 rounded-2xl px-4 py-3 focus-within:border-[#7C3AED]/50 focus-within:ring-1 focus-within:ring-[#7C3AED]/20 transition-all">
+            <div className="relative flex items-end gap-2 bg-[#1E293B]/60 backdrop-blur-sm border border-white/10 rounded-2xl px-4 py-3 focus-within:border-[#7C3AED]/50 focus-within:ring-1 focus-within:ring-[#7C3AED]/20 transition-all">
               <textarea ref={inputRef} value={input} onChange={e => setInput(e.target.value)} onKeyDown={handleKeyDown}
                 placeholder="Ask Nexa anything..." rows={1}
                 className="flex-1 bg-transparent text-sm text-white placeholder-white/30 resize-none focus:outline-none min-h-[24px] max-h-[160px] leading-relaxed"
                 style={{ height: 'auto', overflowY: input.split('\n').length > 4 ? 'auto' : 'hidden' }} />
               <button onClick={handleSend} disabled={!input.trim() || thinking}
-                className="w-9 h-9 bg-[#7C3AED] hover:bg-[#6D28D9] disabled:opacity-30 rounded-xl flex items-center justify-center flex-shrink-0 mb-0.5">
+                className="w-9 h-9 bg-gradient-to-br from-[#7C3AED] to-[#6D28D9] hover:from-[#8B5CF6] hover:to-[#7C3AED] disabled:opacity-30 disabled:hover:from-[#7C3AED] disabled:hover:to-[#6D28D9] rounded-xl flex items-center justify-center flex-shrink-0 mb-0.5 shadow-lg shadow-[#7C3AED]/20 transition-all active:scale-95">
                 <Send className="w-4 h-4 text-white" />
               </button>
             </div>

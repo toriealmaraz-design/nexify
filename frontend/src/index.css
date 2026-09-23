@@ -129,3 +129,11 @@ h1, h2, h3, h4, h5, h6 {
 .animate-fade-in {
   animation: fade-in-up 0.3s ease-out;
 }
+
+/* ─── Nexa Glass Card ─────────────────────────────── */
+.nexa-glass {
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}

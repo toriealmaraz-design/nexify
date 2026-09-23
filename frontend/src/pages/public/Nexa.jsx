@@ -48,6 +48,7 @@ function renderMarkdown(text) {
   let listItems = [];
   let inCodeBlock = false;
   let codeContent = [];
+  let codeLang = '';
 
   const flushList = () => {
     if (listItems.length > 0) {
@@ -66,16 +67,27 @@ function renderMarkdown(text) {
     // Code blocks
     if (line.startsWith('```')) {
       if (inCodeBlock) {
+        const lang = codeLang || '';
         elements.push(
-          <pre key={`code-${i}`} className="bg-[#0B1120] border border-white/10 rounded-lg p-3 my-2 overflow-x-auto text-xs text-emerald-300 font-mono">
-            <code>{codeContent.join('\n')}</code>
-          </pre>
+          <div key={`code-${i}`} className="my-2 rounded-lg overflow-hidden border border-white/10">
+            {lang && (
+              <div className="px-3 py-1.5 bg-[#0B1120] border-b border-white/5 flex items-center justify-between">
+                <span className="text-[10px] text-white/40 font-medium uppercase tracking-wider">{lang}</span>
+                <span className="text-[10px] text-white/20">code</span>
+              </div>
+            )}
+            <pre className={`p-3 ${lang ? 'rounded-none' : 'rounded-lg'} bg-[#0B1120] text-xs text-emerald-300 font-mono overflow-x-auto`}>
+              <code>{codeContent.join('\n')}</code>
+            </pre>
+          </div>
         );
         codeContent = [];
+        codeLang = '';
         inCodeBlock = false;
       } else {
         flushList();
         inCodeBlock = true;
+        codeLang = line.slice(3).trim() || '';
       }
       continue;
     }
@@ -84,7 +96,7 @@ function renderMarkdown(text) {
     // Horizontal rule
     if (line.match(/^---+$/)) {
       flushList();
-      elements.push(<hr key={`hr-${i}`} className="border-white/10 my-3" />);
+      elements.push(<hr key={`hr-${i}`} className="border-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent my-4" />);
       continue;
     }
 
@@ -109,7 +121,7 @@ function renderMarkdown(text) {
     if (line.startsWith('> ')) {
       flushList();
       elements.push(
-        <blockquote key={i} className="border-l-2 border-[#7C3AED] pl-3 py-1 my-2 text-white/70 italic">
+        <blockquote key={i} className="border-l-2 border-[#7C3AED] pl-4 py-1.5 my-3 text-white/70 italic bg-[#7C3AED]/5 rounded-r-lg">
           {renderInline(line.slice(2))}
         </blockquote>
       );
@@ -193,7 +205,7 @@ function MessageBubble({ role, content }) {
         <div className="absolute -inset-0.5 rounded-full bg-[#7C3AED]/20 blur" />
       </div>
       <div className="max-w-[82%] relative">
-        <div className="bg-[#1E293B]/80 backdrop-blur-sm border border-white/10 rounded-2xl rounded-bl-md px-5 py-4 text-sm text-white/80 shadow-sm shadow-black/20">
+        <div className="bg-[#1E293B]/80 backdrop-blur-sm border border-white/10 border-l-[3px] border-l-[#7C3AED]/50 rounded-2xl rounded-bl-sm px-5 py-4 text-sm text-white/80 shadow-sm shadow-black/20">
           {renderMarkdown(content)}
         </div>
         <div className="flex items-center gap-2 mt-1 px-1">
@@ -394,7 +406,8 @@ export default function Nexa() {
             <div className="flex flex-col items-center justify-center h-full px-4 text-center relative overflow-hidden">
               {/* Background glow */}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="w-[500px] h-[500px] rounded-full bg-[#7C3AED]/5 blur-[120px]" />
+                <div className="w-[600px] h-[600px] rounded-full bg-[#7C3AED]/5 blur-[150px] nexa-glow" />
+                <div className="absolute w-[400px] h-[400px] rounded-full bg-[#6D28D9]/5 blur-[120px]" style={{ top: '60%' }} />
               </div>
               <div className="relative z-10">
                 <div className="relative inline-block mb-6">
@@ -408,13 +421,13 @@ export default function Nexa() {
                 <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-xl">
                   {quickActions.map((a, i) => (
                     <button key={i} onClick={() => { setInput(a.prompt); inputRef.current?.focus(); }}
-                      className="flex items-center gap-3 px-4 py-3 bg-[#1E293B]/60 border border-white/10 hover:border-[#7C3AED]/40 hover:bg-[#1E1B4B]/60 rounded-xl text-left transition-all group backdrop-blur-sm">
-                      <div className="w-9 h-9 bg-[#7C3AED]/10 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-[#7C3AED]/20 transition-colors">
-                        <a.icon className="w-4 h-4 text-[#7C3AED]" />
+                      className="flex items-center gap-3 px-4 py-3.5 bg-[#1E293B]/40 border border-white/10 hover:border-[#7C3AED]/40 hover:bg-[#1E1B4B]/50 rounded-2xl text-left transition-all group backdrop-blur-sm hover:shadow-lg hover:shadow-[#7C3AED]/10 hover:-translate-y-0.5 active:translate-y-0">
+                      <div className="w-10 h-10 bg-gradient-to-br from-[#7C3AED]/20 to-[#6D28D9]/20 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:from-[#7C3AED]/30 group-hover:to-[#6D28D9]/30 transition-all">
+                        <a.icon className="w-4 h-4 text-[#A78BFA]" />
                       </div>
-                      <div>
-                        <p className="text-sm font-medium text-white">{a.label}</p>
-                        <p className="text-xs text-white/40 line-clamp-1">{a.prompt}</p>
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-white/90">{a.label}</p>
+                        <p className="text-xs text-white/40 line-clamp-1 mt-0.5">{a.prompt}</p>
                       </div>
                     </button>
                   ))}
@@ -422,7 +435,7 @@ export default function Nexa() {
               </div>
             </div>
           ) : (
-            <div className="max-w-3xl mx-auto px-4 py-6 space-y-5">
+            <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
               {messages.map(msg => <MessageBubble key={msg.id} role={msg.role} content={msg.content} />)}
               {thinking && <ThinkingIndicator />}
               <div ref={messagesEndRef} />

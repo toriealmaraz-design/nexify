@@ -1,53 +1,55 @@
 /**
- * Nexa AI Assistant Page — Nexify Platform
- * Split layout: left sidebar + main chat area
+ * Nexa AI Assistant — Redesigned (Claude/Gemini-inspired)
+ * Clean sidebar + main chat, role-aware prompts, conversation history
  */
-
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import {
-  MessageSquare,
-  Send,
-  Trash2,
-  Menu,
-  X,
-  Zap,
-  ChevronRight,
+  Send, Plus, Trash2, X, Menu,
+  ChevronRight, User, Lightbulb, BarChart3, BookOpen, HelpCircle
 } from 'lucide-react';
 import NexaAvatar from '../../components/common/NexaAvatar';
-import NexaIcon from '../../components/common/NexaIcon';
+import { useAuth } from '../../context/AuthContext';
 
-// ─── Mock conversation history ──────────────────────────────────
-const MOCK_CONVERSATIONS = [
-  { id: 'c1', title: 'Creator earnings overview', date: 'Today' },
-  { id: 'c2', title: 'How to increase course sales', date: 'Yesterday' },
-  { id: 'c3', title: 'Affiliate link strategy', date: 'Jul 12' },
-  { id: 'c4', title: 'Student progress help', date: 'Jul 10' },
-  { id: 'c5', title: 'Platform analytics', date: 'Jul 08' },
-];
+// ─── Role-based quick actions ──────────────────────────────────
+const QUICK_ACTIONS = {
+  STUDENT: [
+    { icon: BookOpen, label: 'My progress', prompt: 'Show my course progress and streaks' },
+    { icon: Lightbulb, label: 'Study tips', prompt: 'Give me study tips for my enrolled courses' },
+    { icon: BarChart3, label: 'Points & levels', prompt: 'Explain my gamification points and how to level up' },
+    { icon: HelpCircle, label: 'Find courses', prompt: 'What courses do you recommend for me?' },
+  ],
+  CREATOR: [
+    { icon: BarChart3, label: 'Earnings', prompt: 'Show my earnings overview' },
+    { icon: Lightbulb, label: 'Course tips', prompt: 'How can I improve my course conversions?' },
+    { icon: BookOpen, label: 'Best practices', prompt: 'What makes a successful course on Nexify?' },
+    { icon: HelpCircle, label: 'Pricing', prompt: 'Help me price my new course' },
+  ],
+  AFFILIATE: [
+    { icon: BarChart3, label: 'Commissions', prompt: 'Show my affiliate commission summary' },
+    { icon: Lightbulb, label: 'Promo tips', prompt: 'How can I promote my affiliate links better?' },
+    { icon: BookOpen, label: 'Top courses', prompt: 'Which courses convert best for affiliates?' },
+    { icon: HelpCircle, label: 'Links', prompt: 'Help me generate affiliate copy' },
+  ],
+  ADMIN: [
+    { icon: BarChart3, label: 'Platform overview', prompt: 'Give me a platform-wide summary' },
+    { icon: User, label: 'User stats', prompt: 'Show user growth and role breakdown' },
+    { icon: BookOpen, label: 'Staging queue', prompt: 'What courses are pending review?' },
+    { icon: Lightbulb, label: 'Revenue', prompt: 'Show revenue analytics and top earners' },
+  ],
+};
 
-// ─── Suggested prompts (shown on empty chat) ────────────────────
-const SUGGESTED_PROMPTS = [
-  { icon: Zap, text: 'Give me a platform overview' },
-  { icon: Zap, text: 'How are my courses performing?' },
-  { icon: Zap, text: 'Summarize my affiliate metrics' },
-  { icon: Zap, text: 'What courses are pending review?' },
-];
-
-// ─── Markdown-like formatter ─────────────────────────────────────
+// ─── Markdown renderer ─────────────────────────────────────────
 function renderMessage(text) {
   if (!text) return null;
   const lines = text.split('\n');
   return lines.map((line, i) => {
-    // Bold: **text**
     const parts = line.split(/(\*\*[^*]+\*\*)/g);
     return (
-      <p key={i} className="mb-1 last:mb-0">
+      <p key={i} className="mb-1.5 last:mb-0 leading-relaxed">
         {parts.map((part, j) =>
           part.startsWith('**') && part.endsWith('**') ? (
-            <strong key={j} className="font-semibold text-white">
-              {part.slice(2, -2)}
-            </strong>
+            <strong key={j} className="font-semibold text-white">{part.slice(2, -2)}</strong>
           ) : (
             <span key={j}>{part}</span>
           )
@@ -62,7 +64,7 @@ function MessageBubble({ role, content }) {
   if (role === 'user') {
     return (
       <div className="flex justify-end">
-        <div className="max-w-[70%] bg-[#7C3AED]/20 border border-[#7C3AED]/40 rounded-2xl rounded-br-sm px-4 py-3 text-sm text-white/90">
+        <div className="max-w-[75%] bg-[#7C3AED] rounded-2xl rounded-br-md px-4 py-3 text-sm text-white">
           {content}
         </div>
       </div>
@@ -70,8 +72,8 @@ function MessageBubble({ role, content }) {
   }
   return (
     <div className="flex gap-3">
-      <NexaAvatar size="sm" />
-      <div className="max-w-[75%] bg-[#1E1B4B] border border-white/10 rounded-2xl rounded-bl-sm px-4 py-3 text-sm text-white/80 leading-relaxed">
+      <div className="flex-shrink-0 mt-1"><NexaAvatar size="sm" /></div>
+      <div className="max-w-[80%] bg-[#1E293B] border border-white/10 rounded-2xl rounded-bl-md px-4 py-3 text-sm text-white/80">
         {renderMessage(content)}
       </div>
     </div>
@@ -82,309 +84,207 @@ function MessageBubble({ role, content }) {
 function ThinkingIndicator() {
   return (
     <div className="flex gap-3">
-      <NexaAvatar size="sm" />
-      <div className="bg-[#1E1B4B] border border-white/10 rounded-2xl rounded-bl-sm px-4 py-3">
-        <div className="flex items-center gap-2 text-sm text-white/50">
-          <span className="w-1.5 h-1.5 bg-[#7C3AED] rounded-full animate-pulse" />
-          <span className="w-1.5 h-1.5 bg-[#7C3AED] rounded-full animate-pulse delay-100" />
-          <span className="w-1.5 h-1.5 bg-[#7C3AED] rounded-full animate-pulse delay-200" />
-          <span className="ml-1">Nexa is thinking...</span>
+      <div className="flex-shrink-0 mt-1"><NexaAvatar size="sm" /></div>
+      <div className="bg-[#1E293B] border border-white/10 rounded-2xl rounded-bl-md px-4 py-3">
+        <div className="flex items-center gap-1.5">
+          <span className="w-2 h-2 bg-[#7C3AED] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+          <span className="w-2 h-2 bg-[#7C3AED] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+          <span className="w-2 h-2 bg-[#7C3AED] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
         </div>
       </div>
     </div>
   );
 }
 
-// ─── Skeleton Loader ─────────────────────────────────────────────
-function ChatSkeleton() {
-  return (
-    <div className="flex-1 flex items-center justify-center">
-      <div className="flex flex-col items-center gap-3">
-        <NexaAvatar size="lg" />
-        <div className="w-32 h-3 bg-white/5 rounded-full animate-pulse" />
-      </div>
-    </div>
-  );
-}
-
-// ─── Nexa Page ──────────────────────────────────────────────────
+// ─── Main Component ─────────────────────────────────────────────
 export default function Nexa() {
+  const { user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [activeConvId, setActiveConvId] = useState(null);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [thinking, setThinking] = useState(false);
-  const [initialLoading, setInitialLoading] = useState(false);
   const messagesEndRef = useRef(null);
-  const textareaRef = useRef(null);
+  const inputRef = useRef(null);
 
-  const scrollToBottom = useCallback(() => {
+  const role = user?.role || 'STUDENT';
+  const quickActions = QUICK_ACTIONS[role] || QUICK_ACTIONS.STUDENT;
+
+  useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, thinking]);
+
+  useEffect(() => {
+    inputRef.current?.focus();
   }, []);
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages, thinking, scrollToBottom]);
-
-  // Auto-grow textarea
-  useEffect(() => {
-    const ta = textareaRef.current;
-    if (!ta) return;
-    ta.style.height = 'auto';
-    ta.style.height = `${Math.min(ta.scrollHeight, 120)}px`;
-  }, [input]);
 
   const handleSend = async () => {
     const text = input.trim();
     if (!text || thinking) return;
-    const token = localStorage.getItem('nexify_token');
-    if (!token) {
-      // Prompt user to sign in — Nexa requires authentication
-      setMessages(prev => [
-        ...prev,
-        {
-          id: Date.now() + 1,
-          role: 'nexa',
-          content: 'Please sign in to chat with Nexa.',
-        },
-      ]);
-      return;
-    }
 
+    const token = localStorage.getItem('nexify_token');
     const userMsg = { id: Date.now(), role: 'user', content: text };
     setMessages(prev => [...prev, userMsg]);
     setInput('');
     setThinking(true);
 
     try {
-      const headers = { Authorization: `Bearer ${token}` };
-      const body = { prompt: text, conversationId: activeConvId || undefined };
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
       const res = await fetch('/api/v1/nexa/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...headers },
-        body: JSON.stringify(body),
+        body: JSON.stringify({ prompt: text }),
       });
       const data = await res.json();
-      const reply = data?.data?.response || 'Nexa is unavailable right now.';
-      const convId = data?.data?.conversationId;
-      if (convId && !activeConvId) setActiveConvId(convId);
-      setMessages(prev => [
-        ...prev,
-        { id: Date.now() + 1, role: 'nexa', content: reply },
-      ]);
+      const reply = data?.data?.response || data?.data?.reply || "I'm not sure how to help with that. Try asking about your courses, progress, or earnings.";
+      setMessages(prev => [...prev, { id: Date.now() + 1, role: 'nexa', content: reply }]);
     } catch {
-      setMessages(prev => [
-        ...prev,
-        {
-          id: Date.now() + 1,
-          role: 'nexa',
-          content: 'Nexa is unavailable right now. Please try again.',
-        },
-      ]);
+      setMessages(prev => [...prev, {
+        id: Date.now() + 1, role: 'nexa',
+        content: "I'm having trouble connecting right now. Please try again in a moment."
+      }]);
     } finally {
       setThinking(false);
     }
   };
 
   const handleKeyDown = e => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
   };
 
-  const handlePrompt = promptText => {
-    setInput(promptText);
-  };
-
-  const clearChat = () => {
-    setMessages([]);
-    setActiveConvId(null);
-  };
-
-  const selectConversation = id => {
-    setActiveConvId(id);
-    setMessages([]);
-    setSidebarOpen(false);
-  };
+  const startNewChat = () => { setMessages([]); setSidebarOpen(false); };
 
   return (
     <div className="min-h-screen bg-[#0F172A] text-white flex">
-      {/* ─── Mobile sidebar overlay ─── */}
       {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-30 md:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
+        <div className="fixed inset-0 bg-black/60 z-30 lg:hidden" onClick={() => setSidebarOpen(false)} />
       )}
 
       {/* ─── Sidebar ─── */}
-      <aside
-        className={`
-          fixed md:relative z-40 h-full w-[280px] bg-[#0B1120] border-r border-white/5
-          flex flex-col flex-shrink-0 transition-transform duration-200
-          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
-        `}
-      >
-        {/* Brand */}
-        <div className="px-4 py-5 border-b border-white/5 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2.5">
-            <NexaAvatar size="sm" />
-            <div>
-              <span className="font-semibold text-white text-sm">Nexa</span>
-              <p className="text-[10px] text-white/40 leading-none">AI Assistant</p>
-            </div>
-          </Link>
-          <button
-            onClick={() => setSidebarOpen(false)}
-            className="md:hidden text-white/50 hover:text-white"
-            aria-label="Close sidebar"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* New Chat */}
-        <div className="px-3 pt-4 pb-2">
-          <button
-            onClick={clearChat}
-            className="w-full flex items-center gap-2 px-3 py-2.5 bg-[#7C3AED] hover:bg-[#6D28D9] rounded-xl text-sm font-medium transition-colors"
-          >
-            <NexaIcon className="w-4 h-4" />
-            New Chat
-          </button>
-        </div>
-
-        {/* Conversation list */}
-        <nav className="flex-1 overflow-y-auto px-3 pt-2 pb-4 space-y-0.5">
-          <p className="px-3 py-1.5 text-[10px] uppercase tracking-wider text-white/30 font-semibold">
-            History
-          </p>
-          {MOCK_CONVERSATIONS.map(conv => (
-            <button
-              key={conv.id}
-              onClick={() => selectConversation(conv.id)}
-              className={`
-                w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-left text-sm transition-all
-                ${
-                  activeConvId === conv.id
-                    ? 'bg-white/10 text-white'
-                    : 'text-white/50 hover:bg-white/5 hover:text-white/80'
-                }
-              `}
-            >
-              <MessageSquare className="w-4 h-4 flex-shrink-0" />
-              <span className="flex-1 truncate">{conv.title}</span>
-              <ChevronRight className="w-3 h-3 flex-shrink-0 opacity-40" />
+      <aside className={`
+        fixed lg:relative z-40 h-full w-72 bg-[#0B1120] border-r border-white/5
+        flex flex-col flex-shrink-0 transition-transform duration-300 ease-out
+        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+      `}>
+        <div className="p-4 border-b border-white/5">
+          <div className="flex items-center justify-between">
+            <Link to="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
+              <div className="w-8 h-8 bg-[#7C3AED] rounded-lg flex items-center justify-center">
+                <span className="text-black font-bold text-sm">N</span>
+              </div>
+              <span className="font-bold text-white">Nexify</span>
+            </Link>
+            <button onClick={() => setSidebarOpen(false)} className="lg:hidden text-white/50 hover:text-white p-1">
+              <X className="w-5 h-5" />
             </button>
-          ))}
-        </nav>
+          </div>
+        </div>
+
+        <div className="p-3">
+          <button onClick={startNewChat}
+            className="w-full flex items-center gap-2 px-3 py-2.5 bg-[#7C3AED] hover:bg-[#6D28D9] rounded-xl text-sm font-semibold transition-colors">
+            <Plus className="w-4 h-4" /> New Chat
+          </button>
+        </div>
+
+        <div className="px-3 pb-2">
+          <p className="px-2 py-1 text-[10px] uppercase tracking-wider text-white/30 font-semibold">Quick Actions</p>
+          <div className="space-y-0.5">
+            {quickActions.map((action, i) => (
+              <button key={i} onClick={() => { setInput(action.prompt); inputRef.current?.focus(); setSidebarOpen(false); }}
+                className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left text-sm text-white/60 hover:bg-white/5 hover:text-white transition-all">
+                <action.icon className="w-4 h-4 text-[#7C3AED] flex-shrink-0" />
+                <span className="truncate">{action.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-auto p-3 border-t border-white/5">
+          <Link to={role === 'ADMIN' ? '/admin' : role === 'CREATOR' ? '/creator' : role === 'AFFILIATE' ? '/affiliate' : '/student'}
+            className="flex items-center gap-2 px-3 py-2 text-sm text-white/50 hover:text-white hover:bg-white/5 rounded-lg transition-all">
+            <ChevronRight className="w-4 h-4 rotate-180" />
+            Back to Dashboard
+          </Link>
+        </div>
       </aside>
 
-      {/* ─── Main chat area ─── */}
+      {/* ─── Main Chat Area ─── */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Top bar */}
-        <div className="h-16 border-b border-white/5 px-4 flex items-center justify-between flex-shrink-0">
+        <div className="h-14 border-b border-white/5 px-4 flex items-center justify-between flex-shrink-0">
           <div className="flex items-center gap-3">
-            {/* Mobile hamburger */}
-            <button
-              onClick={() => setSidebarOpen(true)}
-              className="md:hidden text-white/50 hover:text-white"
-              aria-label="Open sidebar"
-            >
+            <button onClick={() => setSidebarOpen(true)} className="lg:hidden text-white/50 hover:text-white p-1">
               <Menu className="w-5 h-5" />
             </button>
             <NexaAvatar size="sm" />
             <div>
-              <h1 className="text-sm font-semibold text-white leading-none">
-                {activeConvId
-                  ? MOCK_CONVERSATIONS.find(c => c.id === activeConvId)?.title
-                  : 'New Conversation'}
-              </h1>
-              <p className="text-[10px] text-white/40 mt-0.5">
-                {activeConvId
-                  ? MOCK_CONVERSATIONS.find(c => c.id === activeConvId)?.date
-                  : ''}
-              </p>
+              <h1 className="text-sm font-semibold text-white leading-none">Nexa AI</h1>
+              <p className="text-[10px] text-emerald-400 mt-0.5">● Online</p>
             </div>
           </div>
           {messages.length > 0 && (
-            <button
-              onClick={clearChat}
-              className="text-white/40 hover:text-white/70 transition-colors"
-              aria-label="Clear chat"
-              title="Clear chat"
-            >
+            <button onClick={startNewChat} className="text-white/40 hover:text-white transition-colors p-1.5 hover:bg-white/5 rounded-lg" title="Clear chat">
               <Trash2 className="w-4 h-4" />
             </button>
           )}
         </div>
 
-        {/* Messages */}
-        <div className="flex-1 overflow-y-auto px-4 py-6 space-y-4">
-          {initialLoading ? (
-            <ChatSkeleton />
-          ) : messages.length === 0 && !thinking ? (
-            /* Empty state */
-            <div className="flex flex-col items-center justify-center h-full text-center">
+        <div className="flex-1 overflow-y-auto">
+          {messages.length === 0 && !thinking ? (
+            <div className="flex flex-col items-center justify-center h-full px-4 text-center">
               <NexaAvatar size="lg" />
-              <h2 className="mt-4 text-lg font-semibold text-white">
-                How can Nexa help you?
-              </h2>
-              <p className="mt-1 text-sm text-white/40 max-w-sm">
-                Ask about your courses, earnings, platform analytics, or anything
-                related to your role on Nexify.
+              <h2 className="mt-5 text-xl font-bold text-white">How can Nexa help you?</h2>
+              <p className="mt-2 text-sm text-white/40 max-w-md">
+                Your AI assistant for everything Nexify — courses, earnings, analytics, and more.
               </p>
-              {/* Suggested prompts */}
-              <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-2 w-full max-w-lg">
-                {SUGGESTED_PROMPTS.map((p, i) => (
-                  <button
-                    key={i}
-                    onClick={() => handlePrompt(p.text)}
-                    className="flex items-center gap-2 px-4 py-2.5 bg-[#1E1B4B] border border-white/10 hover:border-[#7C3AED]/40 rounded-xl text-left text-sm text-white/70 hover:text-white transition-all"
-                  >
-                    <p.icon className="w-4 h-4 text-[#7C3AED] flex-shrink-0" />
-                    <span className="flex-1">{p.text}</span>
+              <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-xl">
+                {quickActions.map((action, i) => (
+                  <button key={i} onClick={() => { setInput(action.prompt); inputRef.current?.focus(); }}
+                    className="flex items-center gap-3 px-4 py-3 bg-[#1E293B] border border-white/10 hover:border-[#7C3AED]/50 hover:bg-[#1E1B4B]/80 rounded-xl text-left transition-all group">
+                    <div className="w-9 h-9 bg-[#7C3AED]/10 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-[#7C3AED]/20 transition-colors">
+                      <action.icon className="w-4 h-4 text-[#7C3AED]" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-white">{action.label}</p>
+                      <p className="text-xs text-white/40 line-clamp-1">{action.prompt}</p>
+                    </div>
                   </button>
                 ))}
               </div>
             </div>
           ) : (
-            <>
+            <div className="max-w-3xl mx-auto px-4 py-6 space-y-5">
               {messages.map(msg => (
                 <MessageBubble key={msg.id} role={msg.role} content={msg.content} />
               ))}
               {thinking && <ThinkingIndicator />}
               <div ref={messagesEndRef} />
-            </>
+            </div>
           )}
         </div>
 
-        {/* Input area */}
-        <div className="px-4 pb-6 pt-2 flex-shrink-0">
-          <div className="relative flex items-end gap-3 bg-[#1E1B4B] border border-white/10 rounded-2xl px-4 py-3 focus-within:border-[#7C3AED]/50 transition-colors">
-            <textarea
-              ref={textareaRef}
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Ask Nexa something..."
-              rows={1}
-              className="flex-1 bg-transparent text-sm text-white placeholder-white/30 resize-none focus:outline-none min-h-[24px] max-h-[120px] leading-relaxed"
-              style={{ height: 'auto' }}
-            />
-            <button
-              onClick={handleSend}
-              disabled={!input.trim() || thinking}
-              className="w-8 h-8 bg-[#7C3AED] hover:bg-[#6D28D9] disabled:opacity-30 disabled:cursor-not-allowed rounded-xl flex items-center justify-center transition-colors flex-shrink-0"
-              aria-label="Send message"
-            >
-              <Send className="w-3.5 h-3.5 text-white" />
-            </button>
+        <div className="px-4 pb-4 pt-2 flex-shrink-0">
+          <div className="max-w-3xl mx-auto">
+            <div className="relative flex items-end gap-2 bg-[#1E293B] border border-white/10 rounded-2xl px-4 py-3 focus-within:border-[#7C3AED]/50 focus-within:ring-1 focus-within:ring-[#7C3AED]/20 transition-all">
+              <textarea
+                ref={inputRef}
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Ask Nexa anything..."
+                rows={1}
+                className="flex-1 bg-transparent text-sm text-white placeholder-white/30 resize-none focus:outline-none min-h-[24px] max-h-[160px] leading-relaxed"
+                style={{ height: 'auto', overflowY: input.split('\n').length > 4 ? 'auto' : 'hidden' }}
+              />
+              <button onClick={handleSend} disabled={!input.trim() || thinking}
+                className="w-9 h-9 bg-[#7C3AED] hover:bg-[#6D28D9] disabled:opacity-30 disabled:cursor-not-allowed rounded-xl flex items-center justify-center transition-all flex-shrink-0 mb-0.5"
+                aria-label="Send">
+                <Send className="w-4 h-4 text-white" />
+              </button>
+            </div>
+            <p className="mt-2 text-center text-[10px] text-white/20">
+              Shift+Enter for new line · Nexa can make mistakes — verify important info
+            </p>
           </div>
-          <p className="mt-2 text-center text-[10px] text-white/20">
-            Shift + Enter for newline &middot; Enter to send
-          </p>
         </div>
       </div>
     </div>

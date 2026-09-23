@@ -332,6 +332,9 @@ export default function Landing() {
       </div>
     </section>
 
+      {/* ─── Footer Banner Ad ─── */}
+      <AdBanner placement="FOOTER" />
+
       {/* ─── Footer ─── */}
       <footer className="bg-[#0F172A] text-white/70 py-8 mt-16">
         <div className="max-w-7xl mx-auto px-6 text-center text-sm">

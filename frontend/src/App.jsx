@@ -8,6 +8,8 @@ import { CartProvider } from './context/CartContext';
 import { Layout, ClipboardList, BarChart3, Users, FolderOpen, LogOut, Link2, BookOpen, PlusCircle, DollarSign, ShoppingBag, User, Brain, Trophy, ShoppingCart } from 'lucide-react';
 import { ToastProvider } from './components/common/Toast';
 import NexaWidget from './components/NexaWidget';
+import AdBanner from './components/AdBanner';
+import AdSidebar from './components/AdSidebar';
 import OnboardingTour from './components/tour/OnboardingTour';
 
 // ─── Page components ─────────────────────────────────────────
@@ -130,6 +132,9 @@ function CreatorLayout({ children }) {
           <NavItem href="/creator/profile" icon={User} label="Profile" />
         </nav>
         <div className="p-3 border-t border-white/5">
+          <AdSidebar />
+        </div>
+        <div className="p-3 border-t border-white/5">
           <button onClick={logout} className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-white/60 hover:bg-white/5 hover:text-white transition-all w-full">
             <LogOut className="w-4 h-4 flex-shrink-0" /><span>Logout</span>
           </button>
@@ -159,6 +164,9 @@ function StudentLayout({ children }) {
           <NavItem href="/student/profile" icon={User} label="Profile" />
           <NavItem href="/nexa" icon={Brain} label="Nexa AI" />
         </nav>
+        <div className="p-3 border-t border-white/5">
+          <AdSidebar />
+        </div>
         <div className="p-3 border-t border-white/5">
           <button onClick={logout} className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-white/60 hover:bg-white/5 hover:text-white transition-all w-full">
             <LogOut className="w-4 h-4 flex-shrink-0" /><span>Logout</span>
@@ -237,6 +245,9 @@ function AffiliateLayout({ children }) {
           <NavItem href="/affiliate/referral" icon={Users} label="Referral Program" />
           <NavItem href="/affiliate/profile" icon={User} label="Profile" />
         </nav>
+        <div className="p-3 border-t border-white/5">
+          <AdSidebar />
+        </div>
         <div className="p-3 border-t border-white/5">
           <button onClick={logout} className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-white/60 hover:bg-white/5 hover:text-white transition-all w-full">
             <LogOut className="w-4 h-4 flex-shrink-0" /><span>Logout</span>

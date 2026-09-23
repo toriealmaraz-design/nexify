@@ -12,6 +12,7 @@ import { BookOpen, DollarSign, TrendingUp, Flame } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { SkeletonStats, SkeletonGrid, SkeletonRow } from '../../components/Skeleton';
+import AdBanner from '../../components/AdBanner';
 import axios from 'axios';
 
 export default function StudentDashboard() {
@@ -59,6 +60,9 @@ export default function StudentDashboard() {
           {user?.role}
         </span>
       </div>
+
+      {/* Banner Ad */}
+      <AdBanner placement="BANNER" />
 
       {/* Stats */}
       {loading ? (

@@ -40,35 +40,162 @@ const QUICK_ACTIONS = {
 
 const ROLE_NAMES = { STUDENT: 'Student', CREATOR: 'Creator', AFFILIATE: 'Affiliate', ADMIN: 'Admin' };
 
-function renderMessage(text) {
+// ─── Full Markdown renderer ────────────────────────────────────
+function renderMarkdown(text) {
   if (!text) return null;
-  return text.split('\n').map((line, i) => {
-    const parts = line.split(/(\*\*[^*]+\*\*)/g);
-    return (
-      <p key={i} className="mb-1.5 last:mb-0 leading-relaxed">
-        {parts.map((part, j) =>
-          part.startsWith('**') && part.endsWith('**') ? (
-            <strong key={j} className="font-semibold text-white">{part.slice(2, -2)}</strong>
-          ) : (<span key={j}>{part}</span>)
-        )}
-      </p>
-    );
+  const lines = text.split('\n');
+  const elements = [];
+  let listItems = [];
+  let inCodeBlock = false;
+  let codeContent = [];
+
+  const flushList = () => {
+    if (listItems.length > 0) {
+      elements.push(
+        <ul key={`list-${elements.length}`} className="list-disc list-inside space-y-1 my-2 text-white/80">
+          {listItems.map((item, i) => <li key={i} className="leading-relaxed">{item}</li>)}
+        </ul>
+      );
+      listItems = [];
+    }
+  };
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+
+    // Code blocks
+    if (line.startsWith('```')) {
+      if (inCodeBlock) {
+        elements.push(
+          <pre key={`code-${i}`} className="bg-[#0B1120] border border-white/10 rounded-lg p-3 my-2 overflow-x-auto text-xs text-emerald-300 font-mono">
+            <code>{codeContent.join('\n')}</code>
+          </pre>
+        );
+        codeContent = [];
+        inCodeBlock = false;
+      } else {
+        flushList();
+        inCodeBlock = true;
+      }
+      continue;
+    }
+    if (inCodeBlock) { codeContent.push(line); continue; }
+
+    // Horizontal rule
+    if (line.match(/^---+$/)) {
+      flushList();
+      elements.push(<hr key={`hr-${i}`} className="border-white/10 my-3" />);
+      continue;
+    }
+
+    // Headers
+    if (line.startsWith('### ')) {
+      flushList();
+      elements.push(<h4 key={i} className="text-sm font-bold text-white mt-3 mb-1">{renderInline(line.slice(4))}</h4>);
+      continue;
+    }
+    if (line.startsWith('## ')) {
+      flushList();
+      elements.push(<h3 key={i} className="text-base font-bold text-white mt-3 mb-1">{renderInline(line.slice(3))}</h3>);
+      continue;
+    }
+    if (line.startsWith('# ')) {
+      flushList();
+      elements.push(<h2 key={i} className="text-lg font-bold text-white mt-3 mb-1">{renderInline(line.slice(2))}</h2>);
+      continue;
+    }
+
+    // Blockquote
+    if (line.startsWith('> ')) {
+      flushList();
+      elements.push(
+        <blockquote key={i} className="border-l-2 border-[#7C3AED] pl-3 py-1 my-2 text-white/70 italic">
+          {renderInline(line.slice(2))}
+        </blockquote>
+      );
+      continue;
+    }
+
+    // List items
+    if (line.match(/^[-*] /)) {
+      listItems.push(renderInline(line.slice(2)));
+      continue;
+    }
+    if (line.match(/^\d+\. /)) {
+      listItems.push(renderInline(line.replace(/^\d+\. /, '')));
+      continue;
+    }
+
+    // Empty line
+    if (line.trim() === '') {
+      flushList();
+      continue;
+    }
+
+    // Paragraph
+    flushList();
+    elements.push(<p key={i} className="mb-1.5 last:mb-0 leading-relaxed">{renderInline(line)}</p>);
+  }
+  flushList();
+  return elements;
+}
+
+// ─── Inline formatting (bold, italic, code, links) ─────────────
+function renderInline(text) {
+  // Split by inline code first
+  const codeParts = text.split(/(`[^`]+`)/g);
+  return codeParts.map((part, i) => {
+    if (part.startsWith('`') && part.endsWith('`')) {
+      return <code key={i} className="bg-white/10 text-emerald-300 px-1.5 py-0.5 rounded text-xs font-mono">{part.slice(1, -1)}</code>;
+    }
+    // Bold + italic
+    const boldParts = part.split(/(\*\*[^*]+\*\*)/g);
+    return boldParts.map((bp, j) => {
+      if (bp.startsWith('**') && bp.endsWith('**')) {
+        return <strong key={`${i}-${j}`} className="font-semibold text-white">{bp.slice(2, -2)}</strong>;
+      }
+      // Italic
+      const italicParts = bp.split(/(\*[^*]+\*)/g);
+      return italicParts.map((ip, k) => {
+        if (ip.startsWith('*') && ip.endsWith('*')) {
+          return <em key={`${i}-${j}-${k}`} className="italic text-white/70">{ip.slice(1, -1)}</em>;
+        }
+        return <span key={`${i}-${j}-${k}`}>{ip}</span>;
+      });
+    });
   });
 }
 
 function MessageBubble({ role, content }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(content);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   if (role === 'user') {
     return (
-      <div className="flex justify-end">
-        <div className="max-w-[75%] bg-[#7C3AED] rounded-2xl rounded-br-md px-4 py-3 text-sm text-white">{content}</div>
+      <div className="flex justify-end animate-fade-in">
+        <div className="max-w-[75%] bg-gradient-to-br from-[#7C3AED] to-[#6D28D9] rounded-2xl rounded-br-md px-4 py-3 text-sm text-white shadow-lg shadow-[#7C3AED]/20">
+          {content}
+        </div>
       </div>
     );
   }
   return (
-    <div className="flex gap-3">
-      <div className="flex-shrink-0 mt-1"><NexaAvatar size="sm" /></div>
-      <div className="max-w-[80%] bg-[#1E293B] border border-white/10 rounded-2xl rounded-bl-md px-4 py-3 text-sm text-white/80">
-        {renderMessage(content)}
+    <div className="flex gap-3 group animate-fade-in">
+      <div className="flex-shrink-0 mt-0.5"><NexaAvatar size="sm" /></div>
+      <div className="max-w-[82%] relative">
+        <div className="bg-[#1E293B] border border-white/10 rounded-2xl rounded-bl-md px-5 py-4 text-sm text-white/80 shadow-sm">
+          {renderMarkdown(content)}
+        </div>
+        <button onClick={handleCopy}
+          className="absolute -bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-all px-2 py-1 bg-[#0B1120] border border-white/10 rounded-md text-[10px] text-white/50 hover:text-white hover:border-[#7C3AED]/30"
+          title="Copy">
+          {copied ? '✓ Copied' : 'Copy'}
+        </button>
       </div>
     </div>
   );

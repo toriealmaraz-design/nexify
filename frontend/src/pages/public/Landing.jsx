@@ -13,6 +13,7 @@ import { Link } from 'react-router-dom';
 import { SkeletonGrid } from '../../components/Skeleton';
 import axios from 'axios';
 import { X, BookOpen } from 'lucide-react';
+import { motion } from 'framer-motion';
 import NexaIcon from '../../components/common/NexaIcon';
 import AdBanner from '../../components/AdBanner';
 
@@ -43,48 +44,58 @@ function NexaChatBubble() {
       {/* Chat Toggle Button */}
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-6 z-40 w-12 h-12 bg-[#7C3AED] text-white rounded-full shadow-lg hover:bg-[#6D28D9] transition-colors flex items-center justify-center"
+        className="fixed bottom-6 right-6 z-40 w-14 h-14 bg-gradient-to-br from-purple-600 to-purple-800 text-white rounded-2xl shadow-xl shadow-purple-500/25 hover:shadow-purple-500/40 hover:scale-105 transition-all duration-300 flex items-center justify-center group"
         aria-label="Open Nexa chat"
       >
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z"/></svg>
+        <NexaIcon className="w-6 h-6 text-white" />
+        <span className="absolute right-full mr-3 text-xs text-white/50 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Ask Nexa</span>
       </button>
 
       {/* Chat Window */}
       {open && (
-        <div className="fixed bottom-20 right-6 z-50 w-96 bg-white rounded-2xl shadow-card-lg border border-slate-200 flex flex-col max-h-[70vh]">
+        <div className="fixed bottom-20 right-6 z-50 w-96 bg-[#1E1B4B]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl shadow-purple-900/30 flex flex-col max-h-[70vh] overflow-hidden">
           {/* Header */}
-          <div className="bg-[#0F172A] text-white px-4 py-3 rounded-t-2xl flex items-center justify-between">
+          <div className="bg-gradient-to-r from-purple-600/20 to-purple-800/20 backdrop-blur text-white px-4 py-3 rounded-t-2xl flex items-center justify-between border-b border-white/10">
             <div className="flex items-center gap-2">
-              <svg className="w-4 h-4 text-[#7C3AED]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z"/></svg>
-              <span className="font-semibold">Nexa</span>
-              <span className="text-xs bg-white/10 px-2 py-0.5 rounded-full">AI Assistant</span>
+              <NexaIcon className="w-4 h-4 text-purple-400" />
+              <span className="font-semibold text-sm">Nexa</span>
+              <span className="text-[10px] bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded-full">AI</span>
+              <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
             </div>
-            <button onClick={() => setOpen(false)} className="text-white/70 hover:text-white text-lg">&times;</button>
+            <button onClick={() => setOpen(false)} className="text-white/40 hover:text-white transition-colors p-0.5 rounded-lg hover:bg-white/5">
+              <X className="w-4 h-4" />
+            </button>
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-[#EDE9FE]">
+          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-[#0F172A]/50">
             {messages.length === 0 && (
-              <p className="text-sm text-slate-400 text-center">Ask Nexa anything about courses, earnings, or the platform.</p>
+              <p className="text-sm text-white/40 text-center">Ask Nexa anything about courses, earnings, or the platform.</p>
             )}
             {messages.map((msg, i) => (
-              <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: i * 0.05 }}
+                className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
                 <div className={`max-w-[80%] px-3 py-2 rounded-2xl text-sm ${
                   msg.role === 'user'
-                    ? 'bg-[#0F172A] text-white rounded-br-sm'
-                    : 'bg-white text-slate-800 rounded-bl-sm border border-slate-100'
+                    ? 'bg-gradient-to-r from-purple-600 to-purple-500 text-white rounded-br-sm shadow-lg shadow-purple-500/20'
+                    : 'bg-white/10 text-white/90 rounded-bl-sm border border-white/5'
                 }`}>
                   {msg.text}
                 </div>
-              </div>
+              </motion.div>
             ))}
             {loading && (
               <div className="flex justify-start">
-                <div className="bg-white border border-slate-100 rounded-bl-sm px-3 py-2">
+                <div className="bg-white/10 border border-white/5 rounded-bl-sm px-3 py-2">
                   <div className="flex gap-1">
-                    <span className="w-2 h-2 bg-[#7C3AED] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                    <span className="w-2 h-2 bg-[#7C3AED] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                    <span className="w-2 h-2 bg-[#7C3AED] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                    <span className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <span className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                    <span className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                   </div>
                 </div>
               </div>
@@ -92,18 +103,18 @@ function NexaChatBubble() {
           </div>
 
           {/* Input */}
-          <div className="p-3 border-t border-slate-200 flex gap-2">
+          <div className="p-3 border-t border-white/10 flex gap-2">
             <input
               value={message}
               onChange={e => setMessage(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && sendMessage()}
               placeholder="Ask Nexa..."
-              className="flex-1 px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#7C3AED]"
+              className="flex-1 px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/30"
             />
             <button
               onClick={sendMessage}
               disabled={!message.trim() || loading}
-              className="w-9 h-9 bg-[#7C3AED] text-white rounded-xl hover:bg-[#6D28D9] transition-colors disabled:opacity-40 flex items-center justify-center"
+              className="w-9 h-9 bg-gradient-to-r from-purple-600 to-purple-500 text-white rounded-xl hover:from-purple-500 hover:to-purple-400 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center shadow-lg shadow-purple-500/20"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M12 19V5m-7 7l7-7 7 7" />

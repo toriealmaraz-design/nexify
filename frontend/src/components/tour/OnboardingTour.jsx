@@ -662,25 +662,36 @@ export default function OnboardingTour({ role }) {
     const step = steps[idx];
     if (!step) { setNavigating(false); return; }
 
-    let el = null;
-    if (step.selector) {
-      el = document.querySelector(step.selector);
-    }
-
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-      setTimeout(() => {
-        const rect = el.getBoundingClientRect();
-        setSpotlightRect({ x: rect.left, y: rect.top, width: rect.width, height: rect.height });
-        positionTooltip(rect);
-        setNavigating(false);
-      }, 300);
-    } else {
+    if (!step.selector) {
       setSpotlightRect(null);
       setTooltipRect(null);
       setNavigating(false);
+      return;
     }
+
+    let attempts = 0;
+    const maxAttempts = 15;
+    const interval = setInterval(() => {
+      attempts++;
+      const el = document.querySelector(step.selector);
+      if (el) {
+        clearInterval(interval);
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => {
+          const rect = el.getBoundingClientRect();
+          setSpotlightRect({ x: rect.left, y: rect.top, width: rect.width, height: rect.height });
+          positionTooltip(rect);
+          setNavigating(false);
+        }, 300);
+      } else if (attempts >= maxAttempts) {
+        clearInterval(interval);
+        setSpotlightRect(null);
+        setTooltipRect(null);
+        setNavigating(false);
+      }
+    }, 200);
+
+    return () => clearInterval(interval);
   }, [steps, positionTooltip]);
 
   // When step changes, navigate
@@ -805,7 +816,7 @@ export default function OnboardingTour({ role }) {
                     transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                     className="w-5 h-5 border-2 border-purple-400 border-t-transparent rounded-full"
                   />
-                  <p className="text-sm text-white/70">Navigating…</p>
+                  <p className="text-sm text-white/70">Loading…</p>
                 </div>
               </div>
             )}

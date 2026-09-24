@@ -1,10 +1,12 @@
 /**
- * OnboardingTour — Spotlight tour system (Linear/Notion-inspired)
+ * OnboardingTour — Spotlight tour system (Duolingo-inspired fluid animations)
  * - SVG overlay punches a hole at the target element
- * - Glowing ring highlights the spotlighted element
+ * - Glowing purple ring highlights the spotlighted element with pulse
  * - Tooltip anchored near the element with rich copy
  * - Progress checklist sidebar (desktop) / progress dots (mobile)
  * - Steps navigate to real pages via useNavigate
+ * - Confetti explosion on completion
+ * - Spring-bounce physics throughout
  */
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
@@ -29,31 +31,81 @@ const ICON_MAP = {
   BarChart3, Cpu, Image, Megaphone,
 };
 
-const SPRING = { type: 'spring', stiffness: 350, damping: 28 };
-const SPOTLIGHT_PADDING = 8;
+const SPRING = { type: 'spring', stiffness: 400, damping: 26 };
+const SPRING_BOUNCE = { type: 'spring', stiffness: 500, damping: 18 };
+const SPOTLIGHT_PADDING = 10;
 const GLOW_COLOR = '#7C3AED';
 const GLOW_COLOR_RGBA = '124, 58, 237';
 
-// ─── Spotlight SVG Overlay ───────────────────────────────────────────────
+// ─── Confetti Particle ────────────────────────────────────────────
+function ConfettiParticle({ delay, color }) {
+  const drift = (Math.random() - 0.5) * 200;
+  const rotation = Math.random() * 720 - 360;
+  const scale = Math.random() * 0.6 + 0.4;
+  const duration = Math.random() * 1.2 + 1.0;
+
+  return (
+    <motion.div
+      initial={{ opacity: 1, scale }}
+      animate={{
+        y: [-10, window.innerHeight + 50],
+        x: [0, drift],
+        rotate: rotation,
+        opacity: [1, 0.6, 0],
+        scale: [scale, scale * 0.5, 0.3],
+      }}
+      transition={{
+        duration,
+        delay,
+        ease: 'easeOut',
+      }}
+      className="absolute w-2.5 h-2.5 rounded-sm"
+      style={{ backgroundColor: color, top: '50%', left: '50%' }}
+    />
+  );
+}
+
+// ─── Confetti Explosion ───────────────────────────────────────────
+function ConfettiBurst({ active }) {
+  if (!active) return null;
+  const colors = ['#7C3AED', '#A78BFA', '#F59E0B', '#10B981', '#EF4444', '#EC4899', '#3B82F6'];
+  const particles = Array.from({ length: 50 }, (_, i) => ({
+    id: i,
+    color: colors[Math.floor(Math.random() * colors.length)],
+    delay: Math.random() * 0.6,
+  }));
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[9999] pointer-events-none"
+    >
+      {particles.map((p) => (
+        <ConfettiParticle key={p.id} delay={p.delay} color={p.color} />
+      ))}
+    </motion.div>
+  );
+}
+
+// ─── Spotlight SVG Overlay ─────────────────────────────────────────
 function SpotlightOverlay({ rect, borderRadius = 12 }) {
   if (!rect) return null;
   const { x, y, width, height } = rect;
   const p = SPOTLIGHT_PADDING;
   const r = borderRadius;
 
-  // SVG viewport
   const svgX = Math.max(0, x - p);
   const svgY = Math.max(0, y - p);
   const svgW = width + p * 2;
   const svgH = height + p * 2;
 
-  // Cutout rect with padding
   const cutX = x - p;
   const cutY = y - p;
   const cutW = width + p * 2;
   const cutH = height + p * 2;
 
-  // Glow stroke width
   const glowW = 3;
 
   return (
@@ -68,7 +120,6 @@ function SpotlightOverlay({ rect, borderRadius = 12 }) {
       }}
       xmlns="http://www.w3.org/2000/svg"
     >
-      {/* Dark overlay with rectangular cutout */}
       <defs>
         <mask id="spotlight-mask">
           <rect x="0" y="0" width="100%" height="100%" fill="white" />
@@ -78,17 +129,24 @@ function SpotlightOverlay({ rect, borderRadius = 12 }) {
             fill="black"
           />
         </mask>
+        <filter id="glow-blur">
+          <feGaussianBlur stdDeviation="6" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
       </defs>
 
       {/* Dark overlay */}
       <rect
         x="0" y="0" width="100%" height="100%"
-        fill="rgba(0,0,0,0.72)"
+        fill="rgba(0,0,0,0.78)"
         mask="url(#spotlight-mask)"
       />
 
-      {/* Spotlight ring with glow */}
-      <rect
+      {/* Pulse ring — animated glow */}
+      <motion.rect
         x={cutX + glowW / 2}
         y={cutY + glowW / 2}
         width={cutW - glowW}
@@ -98,15 +156,37 @@ function SpotlightOverlay({ rect, borderRadius = 12 }) {
         fill="none"
         stroke={GLOW_COLOR}
         strokeWidth={glowW}
-        style={{
-          filter: `drop-shadow(0 0 8px rgba(${GLOW_COLOR_RGBA}, 0.8)) drop-shadow(0 0 20px rgba(${GLOW_COLOR_RGBA}, 0.4))`,
+        filter="url(#glow-blur)"
+        animate={{
+          strokeOpacity: [0.6, 1, 0.6],
+          strokeWidth: [2, 4, 2],
         }}
+        transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+      />
+
+      {/* Outer glow ring */}
+      <motion.rect
+        x={cutX + glowW / 2 - 4}
+        y={cutY + glowW / 2 - 4}
+        width={cutW - glowW + 8}
+        height={cutH - glowW + 8}
+        rx={r + p - glowW / 2 + 2}
+        ry={r + p - glowW / 2 + 2}
+        fill="none"
+        stroke={GLOW_COLOR}
+        strokeWidth={1}
+        opacity={0.3}
+        animate={{
+          opacity: [0.1, 0.5, 0.1],
+          strokeWidth: [1, 3, 1],
+        }}
+        transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut', delay: 0.3 }}
       />
     </svg>
   );
 }
 
-// ─── Arrow connector between tooltip and spotlight ─────────────────────
+// ─── Arrow connector ────────────────────────────────────────────────
 function ConnectorArrow({ fromRect, toRect, tooltipRect, position }) {
   if (!fromRect || !toRect || !tooltipRect) return null;
 
@@ -114,9 +194,6 @@ function ConnectorArrow({ fromRect, toRect, tooltipRect, position }) {
   const ty = tooltipRect.y + tooltipRect.height / 2;
   const sx = fromRect.x + fromRect.width / 2;
   const sy = fromRect.y + fromRect.height / 2;
-
-  const midX = (tx + sx) / 2;
-  const midY = (ty + sy) / 2;
 
   return (
     <svg
@@ -128,36 +205,39 @@ function ConnectorArrow({ fromRect, toRect, tooltipRect, position }) {
           <polygon points="0 0, 8 3, 0 6" fill={GLOW_COLOR} />
         </marker>
       </defs>
-      <line
+      <motion.line
         x1={tx} y1={ty}
         x2={sx} y2={sy}
         stroke={GLOW_COLOR}
         strokeWidth="1.5"
         strokeDasharray="4 3"
-        opacity="0.6"
+        opacity="0.5"
         markerEnd="url(#arrowhead)"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ duration: 0.6, ease: 'easeInOut' }}
       />
     </svg>
   );
 }
 
-// ─── Tooltip Card ─────────────────────────────────────────────────────
+// ─── Tooltip Card ──────────────────────────────────────────────────
 function TooltipCard({ step, stepIndex, totalSteps, onNext, onPrev, onSkip, onJump, isFirst, isLast, mascotPose }) {
   const Icon = ICON_MAP[step.icon] || NexaIcon;
 
   return (
     <motion.div
       key={stepIndex}
-      initial={{ opacity: 0, scale: 0.88, y: 16 }}
+      initial={{ opacity: 0, scale: 0.85, y: 24 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.92, y: -10 }}
+      exit={{ opacity: 0, scale: 0.92, y: -16 }}
       transition={SPRING}
-      className="relative z-[9998] w-[min(420px, calc(100vw-32px))]"
+      className="relative z-[9998] w-[min(440px, calc(100vw-32px))]"
     >
       {/* Glow border */}
-      <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-purple-500/40 via-purple-500/10 to-purple-500/40" />
+      <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-purple-500/50 via-purple-500/10 to-purple-500/50" />
 
-      <div className="relative bg-[#1E1B4B] border border-white/10 rounded-2xl overflow-hidden shadow-2xl shadow-purple-900/30">
+      <div className="relative bg-[#1E1B4B] border border-white/10 rounded-2xl overflow-hidden shadow-2xl shadow-purple-900/40">
         {/* Header */}
         <div className="flex items-start justify-between p-5 pb-0">
           <div className="flex items-center gap-3">
@@ -252,7 +332,7 @@ function TooltipCard({ step, stepIndex, totalSteps, onNext, onPrev, onSkip, onJu
   );
 }
 
-// ─── Checklist Sidebar (Desktop) ───────────────────────────────────────
+// ─── Checklist Sidebar ─────────────────────────────────────────────
 function ChecklistSidebar({ steps, currentIndex, onJump }) {
   return (
     <div className="w-60 flex-shrink-0 bg-[#0F172A] border-r border-white/10 flex flex-col h-full overflow-hidden">
@@ -294,7 +374,13 @@ function ChecklistSidebar({ steps, currentIndex, onJump }) {
                 ${isCompleted ? 'bg-emerald-500/20' : isCurrent ? 'bg-purple-500/20' : 'bg-white/5'}
               `}>
                 {isCompleted ? (
-                  <Check className="w-3.5 h-3.5 text-emerald-400" />
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: 'spring', stiffness: 500, damping: 20 }}
+                  >
+                    <Check className="w-3.5 h-3.5 text-emerald-400" />
+                  </motion.div>
                 ) : (
                   <Icon className={`w-3.5 h-3.5 ${isCurrent ? 'text-purple-400' : 'text-white/30'}`} />
                 )}
@@ -332,8 +418,10 @@ function ChecklistSidebar({ steps, currentIndex, onJump }) {
   );
 }
 
-// ─── Mobile Top Progress Bar ───────────────────────────────────────────
+// ─── Mobile Top Progress Bar ────────────────────────────────────────
 function MobileProgressBar({ steps, currentIndex, onJump }) {
+  const progress = ((currentIndex + 1) / steps.length) * 100;
+
   return (
     <div className="fixed top-0 left-0 right-0 z-[9999] bg-[#0F172A]/95 backdrop-blur border-b border-white/10 px-4 py-3 flex items-center gap-3">
       <NexaIcon className="w-4 h-4 text-purple-400 flex-shrink-0" />
@@ -355,11 +443,20 @@ function MobileProgressBar({ steps, currentIndex, onJump }) {
           );
         })}
       </div>
+      {/* Gradient progress bar */}
+      <div className="absolute top-0 left-0 right-0 h-0.5 bg-white/5">
+        <motion.div
+          className="h-full bg-gradient-to-r from-purple-500 to-purple-400 rounded-full"
+          initial={{ width: 0 }}
+          animate={{ width: `${progress}%` }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+        />
+      </div>
     </div>
   );
 }
 
-// ─── Bottom Sheet (Mobile) ────────────────────────────────────────────
+// ─── Bottom Sheet (Mobile) ──────────────────────────────────────────
 function BottomSheet({ step, stepIndex, totalSteps, onNext, onPrev, onSkip, onJump, isFirst, isLast, mascotPose }) {
   const Icon = ICON_MAP[step.icon] || NexaIcon;
 
@@ -369,7 +466,7 @@ function BottomSheet({ step, stepIndex, totalSteps, onNext, onPrev, onSkip, onJu
       initial={{ y: '100%' }}
       animate={{ y: 0 }}
       exit={{ y: '100%' }}
-      transition={{ type: 'spring', stiffness: 350, damping: 30 }}
+      transition={SPRING}
       className="fixed bottom-0 left-0 right-0 z-[9998] bg-[#1E1B4B] border-t border-white/10 rounded-t-3xl shadow-2xl shadow-black/50"
       style={{ maxHeight: '80vh', overflowY: 'auto' }}
     >
@@ -440,7 +537,7 @@ function BottomSheet({ step, stepIndex, totalSteps, onNext, onPrev, onSkip, onJu
   );
 }
 
-// ─── Main Export ───────────────────────────────────────────────────────
+// ─── Main Export ────────────────────────────────────────────────────
 export default function OnboardingTour({ role }) {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
@@ -452,6 +549,7 @@ export default function OnboardingTour({ role }) {
   const [tooltipRect, setTooltipRect] = useState(null);
   const [navigating, setNavigating] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
   const tooltipRef = useRef(null);
 
   const steps = TOUR_STEPS[role] || TOUR_STEPS.STUDENT;
@@ -530,7 +628,6 @@ export default function OnboardingTour({ role }) {
         break;
     }
 
-    // Clamp to viewport
     top = Math.max(16, Math.min(top, vh - ttH - 16));
     left = Math.max(16, Math.min(left, vw - ttW - 16));
 
@@ -547,7 +644,6 @@ export default function OnboardingTour({ role }) {
     const step = steps[idx];
     setNavigating(true);
 
-    // If same route as current, just scroll
     if (step.route === location.pathname || !step.route) {
       setTimeout(() => {
         findAndHighlight(idx);
@@ -555,10 +651,8 @@ export default function OnboardingTour({ role }) {
       return;
     }
 
-    // Navigate to the step's page
     navigate(step.route);
 
-    // Wait for navigation to settle
     setTimeout(() => {
       findAndHighlight(idx);
     }, 400);
@@ -568,17 +662,14 @@ export default function OnboardingTour({ role }) {
     const step = steps[idx];
     if (!step) { setNavigating(false); return; }
 
-    // Try finding the element
     let el = null;
     if (step.selector) {
       el = document.querySelector(step.selector);
     }
 
     if (el) {
-      // Scroll element into view
       el.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-      // Wait for scroll to settle, then get rect
       setTimeout(() => {
         const rect = el.getBoundingClientRect();
         setSpotlightRect({ x: rect.left, y: rect.top, width: rect.width, height: rect.height });
@@ -586,7 +677,6 @@ export default function OnboardingTour({ role }) {
         setNavigating(false);
       }, 300);
     } else {
-      // Element not found — center spotlight
       setSpotlightRect(null);
       setTooltipRect(null);
       setNavigating(false);
@@ -603,8 +693,12 @@ export default function OnboardingTour({ role }) {
   const handleNext = useCallback(() => {
     if (isLast) {
       localStorage.setItem(TOUR_KEY(role), TOUR_DONE_VALUE);
-      setActive(false);
-      setSpotlightRect(null);
+      setShowConfetti(true);
+      setTimeout(() => {
+        setActive(false);
+        setSpotlightRect(null);
+        setShowConfetti(false);
+      }, 2500);
       return;
     }
     setSpotlightRect(null);
@@ -642,6 +736,8 @@ export default function OnboardingTour({ role }) {
 
   return createPortal(
     <>
+      <ConfettiBurst active={showConfetti} />
+
       {/* Dark overlay + spotlight */}
       <SpotlightOverlay rect={spotlightRect} borderRadius={12} />
 

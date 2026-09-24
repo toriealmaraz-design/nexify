@@ -3,15 +3,16 @@
  * Fetches ads for a given placement and renders a clickable card.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { ExternalLink } from 'lucide-react';
 
 export default function AdBanner({ placement, limit = 1 }) {
   const [ads, setAds] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { api } = useAuth();
 
-  useEffect(() => {
+  const fetchAds = useCallback(() => {
     if (!placement) return;
     axios
       .get(`/api/v1/advertisements?placement=${encodeURIComponent(placement)}&limit=${limit}`)
@@ -19,6 +20,19 @@ export default function AdBanner({ placement, limit = 1 }) {
       .catch(() => setAds([]))
       .finally(() => setLoading(false));
   }, [placement, limit]);
+
+  useEffect(() => {
+    fetchAds();
+  }, [fetchAds]);
+
+  // Re-fetch when a new ad is created (dispatched from AdManager)
+  useEffect(() => {
+    function handleAdCreated() {
+      fetchAds();
+    }
+    window.addEventListener('nexa:ad-created', handleAdCreated);
+    return () => window.removeEventListener('nexa:ad-created', handleAdCreated);
+  }, [fetchAds]);
 
   if (loading || ads.length === 0) return null;
 

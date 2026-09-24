@@ -292,6 +292,7 @@ export default function AdManager() {
       }
       closeModal();
       fetchAds();
+      window.dispatchEvent(new CustomEvent('nexa:ad-created'));
     } catch (err) {
       setError(err.response?.data?.message || 'Save failed. Please try again.');
     } finally {

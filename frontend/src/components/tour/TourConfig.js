@@ -307,7 +307,7 @@ export const TOUR_STEPS = {
     },
     {
       id: 'admin-ads',
-      route: '/admin/ad-manager',
+      route: '/admin/ads',
       selector: '[data-tour="admin-ad-manager-list"]',
       title: 'Ad Manager — Platform Advertisements',
       subtitle: 'Ads',

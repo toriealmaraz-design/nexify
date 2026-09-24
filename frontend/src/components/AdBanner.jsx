@@ -10,7 +10,6 @@ import { ExternalLink } from 'lucide-react';
 export default function AdBanner({ placement, limit = 1 }) {
   const [ads, setAds] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { api } = useAuth();
 
   const fetchAds = useCallback(() => {
     if (!placement) return;

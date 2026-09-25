@@ -282,6 +282,6 @@ export default function App() {
 // Separate component so it can use useAuth inside the AuthProvider tree
 function OnboardingTourWrapper() {
   const { user } = useAuth();
-  if (!user) return null;
+  if (!user || !user.role) return null;
   return <OnboardingTour role={user.role} />;
 }

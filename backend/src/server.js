@@ -14,6 +14,7 @@ const express = require('express');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
+const cookieParser = require('cookie-parser');
 const csrf = require('csurf');
 const config = require('./config/env');
 const constants = require('./config/constants');
@@ -51,14 +52,20 @@ app.use('/api/v1/auth/', authLimiter);
 // ─── Security Headers ──────────────────────────────
 app.use(helmet());
 
+// ─── Cookie Parser ────────────────────────────────
+app.use(cookieParser());
+
 // ─── CSRF Protection ──────────────────────────────
 const csrfProtection = csrf({ cookie: true });
 app.get('/api/v1/csrf-token', csrfProtection, (req, res) => {
   res.json({ success: true, csrfToken: req.csrfToken() });
 });
 
-// Apply CSRF to all state-changing routes
-app.use('/api/v1/', csrfProtection);
+// Apply CSRF to all routes EXCEPT auth (public endpoints)
+app.use('/api/v1/', (req, res, next) => {
+  if (req.path.startsWith('/auth/')) return next();
+  csrfProtection(req, res, next);
+});
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));

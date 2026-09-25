@@ -24,7 +24,7 @@ module.exports = {
   nodeEnv: process.env.NODE_ENV || 'development',
 
   jwt: {
-    secret: process.env.JWT_SECRET || 'nexify-dev-secret-change-in-production',
+    secret: process.env.JWT_SECRET || (process.env.NODE_ENV === 'production' ? (() => { throw new Error('JWT_SECRET is required in production') })() : 'nexify-dev-secret-change-in-production'),
     expiresIn: process.env.JWT_EXPIRES_IN || '7d',
   },
 

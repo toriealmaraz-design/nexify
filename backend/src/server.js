@@ -12,6 +12,7 @@
 const { PrismaClient } = require('@prisma/client');
 const express = require('express');
 const cors = require('cors');
+const rateLimit = require('express-rate-limit');
 const config = require('./config/env');
 const constants = require('./config/constants');
 
@@ -21,11 +22,30 @@ const prisma = new PrismaClient();
 // ─── Express App ──────────────────────────────────────────
 const app = express();
 
-// ─── Middleware Stack ──────────────────────────────────────
+// ─── Middleware Stack ──────────────────────────────
 app.use(cors({
   origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:3000'],
   credentials: true,
 }));
+
+// ─── Rate Limiting ─────────────────────────────────
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per window
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use('/api/v1/', apiLimiter);
+
+// Stricter limit on auth endpoints
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use('/api/v1/auth/', authLimiter);
+
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 

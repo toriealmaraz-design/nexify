@@ -56,6 +56,7 @@ model User {
   notes             Note[]
   bookmarks         Bookmark[]
   announcementReads AnnouncementRead[]
+  passwordResetTokens PasswordResetToken[]
 
   @@map("users")
 }
@@ -842,3 +843,17 @@ model Bookmark {
   @@map("bookmarks")
 }
 
+
+// ─── Password Reset Tokens ─────────────────────────
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("password_reset_tokens")
+}

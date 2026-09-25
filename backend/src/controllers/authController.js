@@ -14,9 +14,6 @@ const config = require('../config/env');
 const constants = require('../config/constants');
 const { OAuth2Client } = require('google-auth-library');
 
-// In-memory reset token store (use Redis/database in production)
-const resetTokens = new Map();
-
 // ─── Helper: Generate JWT ──────────────────────────────────
 function generateToken(userId, email, role) {
   return jwt.sign(
@@ -483,10 +480,12 @@ async function forgotPassword(req, res) {
     if (user) {
       // Generate secure reset token
       const token = crypto.randomBytes(32).toString('hex');
-      const expiresAt = Date.now() + 60 * 60 * 1000; // 1 hour
+      const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 
-      // Store token with userId and expiry
-      resetTokens.set(token, { userId: user.id, expiresAt });
+      // Store token in database (survives restarts, auto-expires via TTL)
+      await prisma.passwordResetToken.create({
+        data: { userId: user.id, token, expiresAt },
+      });
 
       // In production: send email with FRONTEND_URL/reset-password?token=TOKEN
       // For dev: log the reset link
@@ -534,9 +533,11 @@ async function resetPassword(req, res) {
     }
 
     // Validate token
-    const tokenData = resetTokens.get(token);
-    if (!tokenData || tokenData.expiresAt < Date.now()) {
-      resetTokens.delete(token);
+    const now = new Date();
+    const tokenData = await prisma.passwordResetToken.findUnique({ where: { token } });
+    if (!tokenData || tokenData.expiresAt < now || tokenData.used) {
+      // Clean up expired/used tokens
+      await prisma.passwordResetToken.deleteMany({ where: { OR: [{ expiresAt: { lt: now } }, { used: true }] } });
       return res.status(400).json({
         success: false,
         statusCode: 400,
@@ -552,8 +553,8 @@ async function resetPassword(req, res) {
       data: { passwordHash: newHash },
     });
 
-    // Delete token — one-time use
-    resetTokens.delete(token);
+    // Mark token as used — one-time use
+    await prisma.passwordResetToken.update({ where: { token }, data: { used: true } });
 
     return res.status(200).json({
       success: true,

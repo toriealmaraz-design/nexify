@@ -221,17 +221,42 @@ function ConnectorArrow({ fromRect, toRect, tooltipRect, position }) {
   );
 }
 
-// ─── Tooltip Card ──────────────────────────────────────────────────
+// ─── Morph Overlay ────────────────────────────────
+function MorphOverlay({ fromRect, toRect, active }) {
+  if (!fromRect || !toRect) return null;
+
+  const x = fromRect.x;
+  const y = fromRect.y;
+  const w = fromRect.width;
+  const h = fromRect.height;
+  const targetX = toRect.x;
+  const targetY = toRect.y;
+  const targetW = toRect.width;
+  const targetH = toRect.height;
+
+  return (
+    <motion.div
+      initial={active ? { x, y, width: w, height: h, borderRadius: 12, opacity: 0.6 } : {}}
+      animate={active ? { x: targetX, y: targetY, width: targetW, height: targetH, borderRadius: 16, opacity: 0 } : {}}
+      exit={active ? {} : { x, y, width: w, height: h, borderRadius: 12, opacity: 0 }}
+      transition={{ type: 'spring', stiffness: 200, damping: 24 }}
+      className="fixed inset-0 z-[9995] bg-gradient-to-br from-purple-500/40 via-purple-600/30 to-purple-800/40 pointer-events-none"
+      style={{ filter: 'blur(20px)' }}
+    />
+  );
+}
+
+// ─── Tooltip Card ────────────────────────────────────────
 function TooltipCard({ step, stepIndex, totalSteps, onNext, onPrev, onSkip, onJump, isFirst, isLast, mascotPose }) {
   const Icon = ICON_MAP[step.icon] || NexaIcon;
 
   return (
     <motion.div
       key={stepIndex}
-      initial={{ opacity: 0, scale: 0.85, y: 24 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.92, y: -16 }}
-      transition={SPRING}
+      initial={{ opacity: 0, scale: 0.6, y: 40, borderRadius: 28 }}
+      animate={{ opacity: 1, scale: 1, y: 0, borderRadius: 16 }}
+      exit={{ opacity: 0, scale: 0.85, y: -20, borderRadius: 24 }}
+      transition={MORPH_SPRING}
       className="relative z-[9998] w-[min(440px, calc(100vw-32px))]"
     >
       {/* Glow border */}
@@ -332,10 +357,15 @@ function TooltipCard({ step, stepIndex, totalSteps, onNext, onPrev, onSkip, onJu
   );
 }
 
-// ─── Checklist Sidebar ─────────────────────────────────────────────
+// ─── Checklist Sidebar ──────────────────────────────────────
 function ChecklistSidebar({ steps, currentIndex, onJump }) {
   return (
-    <div className="w-60 flex-shrink-0 bg-[#0F172A] border-r border-white/10 flex flex-col h-full overflow-hidden">
+    <motion.div
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+      className="w-60 flex-shrink-0 bg-[#0F172A] border-r border-white/10 flex flex-col h-full overflow-hidden"
+    >
       {/* Header */}
       <div className="p-5 border-b border-white/10">
         <div className="flex items-center gap-2.5">
@@ -414,16 +444,21 @@ function ChecklistSidebar({ steps, currentIndex, onJump }) {
       <div className="p-4 border-t border-white/10">
         <p className="text-[10px] text-white/20 text-center">Press Skip anytime to dismiss</p>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
-// ─── Mobile Top Progress Bar ────────────────────────────────────────
+// ─── Mobile Top Progress Bar ────────────────────────────
 function MobileProgressBar({ steps, currentIndex, onJump }) {
   const progress = ((currentIndex + 1) / steps.length) * 100;
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-[9999] bg-[#0F172A]/95 backdrop-blur border-b border-white/10 px-4 py-3 flex items-center gap-3">
+    <motion.div
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+      className="fixed top-0 left-0 right-0 z-[9999] bg-[#0F172A]/95 backdrop-blur border-b border-white/10 px-4 py-3 flex items-center gap-3"
+    >
       <NexaIcon className="w-4 h-4 text-purple-400 flex-shrink-0" />
       <p className="text-xs font-semibold text-white flex-shrink-0">{currentIndex + 1}/{steps.length}</p>
       <div className="flex-1 flex items-center gap-1.5">
@@ -452,21 +487,21 @@ function MobileProgressBar({ steps, currentIndex, onJump }) {
           transition={{ duration: 0.5, ease: 'easeOut' }}
         />
       </div>
-    </div>
+    </motion.div>
   );
 }
 
-// ─── Bottom Sheet (Mobile) ──────────────────────────────────────────
+// ─── Bottom Sheet (Mobile) ──────────────────────────────────
 function BottomSheet({ step, stepIndex, totalSteps, onNext, onPrev, onSkip, onJump, isFirst, isLast, mascotPose }) {
   const Icon = ICON_MAP[step.icon] || NexaIcon;
 
   return (
     <motion.div
       key={stepIndex}
-      initial={{ y: '100%' }}
-      animate={{ y: 0 }}
-      exit={{ y: '100%' }}
-      transition={SPRING}
+      initial={{ y: '100%', opacity: 0, scale: 0.85, borderTopLeftRadius: 28, borderTopRightRadius: 28 }}
+      animate={{ y: 0, opacity: 1, scale: 1, borderTopLeftRadius: 16, borderTopRightRadius: 16 }}
+      exit={{ y: '100%', opacity: 0, scale: 0.9, borderTopLeftRadius: 28, borderTopRightRadius: 28 }}
+      transition={MORPH_SPRING}
       className="fixed bottom-0 left-0 right-0 z-[9998] bg-[#1E1B4B] border-t border-white/10 rounded-t-3xl shadow-2xl shadow-black/50"
       style={{ maxHeight: '80vh', overflowY: 'auto' }}
     >
@@ -751,6 +786,13 @@ export default function OnboardingTour({ role }) {
 
       {/* Dark overlay + spotlight */}
       <SpotlightOverlay rect={spotlightRect} borderRadius={12} />
+
+      {/* Morph overlay — expands from spotlight to tooltip */}
+      <MorphOverlay
+        fromRect={spotlightRect}
+        toRect={tooltipRect}
+        active={!!spotlightRect && !!tooltipRect}
+      />
 
       {/* Connector arrow */}
       {spotlightRect && tooltipRect && (

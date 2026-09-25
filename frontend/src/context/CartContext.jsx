@@ -77,7 +77,7 @@ export function CartProvider({ children }) {
   const applyCoupon = useCallback(async (code) => {
     const token = localStorage.getItem('nexify_token');
     const res = await fetch(`/api/v1/coupons/validate/${code}`, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${token}` }
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || 'Invalid coupon');

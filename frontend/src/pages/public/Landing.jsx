@@ -29,7 +29,7 @@ function NexaChatBubble() {
     setMessages(prev => [...prev, { role: 'user', text: message.trim() }]);
     setLoading(true);
     try {
-      const res = await axios.post('/api/v1/nexa/chat', { prompt: message.trim() });
+      const res = await axios.post('/api/v1/nexa-chat/chat', { prompt: message.trim() });
       setMessages(prev => [...prev, { role: 'nexa', text: res.data.data.response || 'No response.' }]);
     } catch {
       setMessages(prev => [...prev, { role: 'nexa', text: 'Nexa is unavailable right now.' }]);

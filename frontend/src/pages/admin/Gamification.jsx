@@ -61,7 +61,7 @@ export default function AdminGamification() {
       const token = localStorage.getItem('nexify_token');
       const res = await fetch('/api/v1/gamification/seed', {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
       if (data.success) {

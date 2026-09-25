@@ -299,7 +299,7 @@ export default function Nexa() {
     setInput('');
     setThinking(true);
     try {
-      const res = await fetch('/api/v1/nexa/chat', {
+      const res = await fetch('/api/v1/nexa-chat/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ prompt: text, conversationId: activeConvId, enhanceWithLLM: true }),

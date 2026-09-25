@@ -87,7 +87,7 @@ export default function StudentDashboard() {
       </div>
 
       {/* Banner Ad */}
-      <AdBanner placement="BANNER" />
+      <AdBanner placement="LANDING_BANNER" />
 
       {/* Stats */}
       {loading ? (

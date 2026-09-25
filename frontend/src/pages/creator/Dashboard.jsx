@@ -209,7 +209,7 @@ export default function CreatorDashboard() {
           <button onClick={() => document.getElementById('swipe-upload').click()} className="bg-[#7C3AED] text-black px-4 py-2 rounded-xl text-sm font-semibold hover:brightness-110 active:scale-[0.98] transition-all duration-150">
             + Upload Swipe Asset
           </button>
-          <input id="swipe-upload" type="file" multiple accept=".pdf,.doc,.docx,.txt,.mp4,.mov" className="hidden" onChange={e => { /* TODO: upload handler */ console.log('files:', e.target.files); }} />
+          <input id="swipe-upload" type="file" multiple accept=".pdf,.doc,.docx,.txt,.mp4,.mov" className="hidden" onChange={e => { /* TODO: upload handler */ }} />
           <button onClick={() => navigate('/creator/assets')} className="border border-white/10 text-white/60 px-4 py-2 rounded-xl text-sm hover:bg-white/5 transition-colors">
             View Assets
           </button>

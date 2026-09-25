@@ -44,7 +44,6 @@ async function getCertificate(req, res) {
       data: certificate,
     });
   } catch (error) {
-    console.error('[GET CERTIFICATE ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -106,7 +105,6 @@ async function verifyCertificate(req, res) {
       },
     });
   } catch (error) {
-    console.error('[VERIFY CERTIFICATE ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -204,7 +202,6 @@ async function generateCertificate(req, res) {
       data: certificate,
     });
   } catch (error) {
-    console.error('[GENERATE CERTIFICATE ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -243,7 +240,6 @@ async function getMyCertificates(req, res) {
       data: certificates,
     });
   } catch (error) {
-    console.error('[GET MY CERTIFICATES ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,

@@ -38,7 +38,6 @@ async function getWishlist(req, res) {
     });
 
   } catch (error) {
-    console.error('[GET WISHLIST ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -109,7 +108,6 @@ async function addToWishlist(req, res) {
     });
 
   } catch (error) {
-    console.error('[ADD TO WISHLIST ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -153,7 +151,6 @@ async function removeFromWishlist(req, res) {
     });
 
   } catch (error) {
-    console.error('[REMOVE FROM WISHLIST ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,

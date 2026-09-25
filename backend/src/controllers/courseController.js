@@ -81,7 +81,6 @@ async function listCourses(req, res) {
     });
 
   } catch (error) {
-    console.error('[LIST COURSES ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -131,7 +130,6 @@ async function getCourse(req, res) {
     });
 
   } catch (error) {
-    console.error('[GET COURSE ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -239,7 +237,6 @@ async function createCourse(req, res) {
     });
 
   } catch (error) {
-    console.error('[CREATE COURSE ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -338,7 +335,6 @@ async function updateCourse(req, res) {
     });
 
   } catch (error) {
-    console.error('[UPDATE COURSE ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -399,7 +395,6 @@ async function createModule(req, res) {
     });
 
   } catch (error) {
-    console.error('[CREATE MODULE ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -467,7 +462,6 @@ async function createLesson(req, res) {
     });
 
   } catch (error) {
-    console.error('[CREATE LESSON ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -509,7 +503,6 @@ async function getCreatorCourseStats(req, res) {
     });
 
   } catch (error) {
-    console.error('[CREATOR STATS ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -562,7 +555,6 @@ async function getRecommendations(req, res) {
       data: sorted.slice(0, 6),
     });
   } catch (error) {
-    console.error('[GET RECOMMENDATIONS ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,

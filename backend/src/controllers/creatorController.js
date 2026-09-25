@@ -80,7 +80,6 @@ async function getCreatorProfile(req, res) {
     });
 
   } catch (error) {
-    console.error('[GET CREATOR PROFILE ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -154,7 +153,6 @@ async function getCreatorCourses(req, res) {
     });
 
   } catch (error) {
-    console.error('[GET CREATOR COURSES ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,

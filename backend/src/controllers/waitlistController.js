@@ -50,7 +50,6 @@ async function joinWaitlist(req, res) {
       data: { id: entry.id, joinedAt: entry.joinedAt },
     });
   } catch (error) {
-    console.error('[JOIN WAITLIST ERROR]', error.message);
     return res.status(500).json({
       success: false, statusCode: 500,
       error: 'INTERNAL_SERVER_ERROR', message: 'Failed to join waitlist.',
@@ -73,7 +72,6 @@ async function leaveWaitlist(req, res) {
       message: 'Removed from waitlist.',
     });
   } catch (error) {
-    console.error('[LEAVE WAITLIST ERROR]', error.message);
     return res.status(500).json({
       success: false, statusCode: 500,
       error: 'INTERNAL_SERVER_ERROR', message: 'Failed to leave waitlist.',
@@ -98,7 +96,6 @@ async function getWaitlist(req, res) {
       data: entries,
     });
   } catch (error) {
-    console.error('[GET WAITLIST ERROR]', error.message);
     return res.status(500).json({
       success: false, statusCode: 500,
       error: 'INTERNAL_SERVER_ERROR', message: 'Failed to retrieve waitlist.',
@@ -123,7 +120,6 @@ async function getMyWaitlist(req, res) {
       data: entries,
     });
   } catch (error) {
-    console.error('[GET MY WAITLIST ERROR]', error.message);
     return res.status(500).json({
       success: false, statusCode: 500,
       error: 'INTERNAL_SERVER_ERROR', message: 'Failed to retrieve waitlist.',

@@ -74,7 +74,6 @@ async function validateCoupon(req, res) {
       },
     });
   } catch (error) {
-    console.error('[VALIDATE COUPON ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -159,7 +158,6 @@ async function createCoupon(req, res) {
       data: coupon,
     });
   } catch (error) {
-    console.error('[CREATE COUPON ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -184,7 +182,6 @@ async function listCoupons(req, res) {
       data: coupons,
     });
   } catch (error) {
-    console.error('[LIST COUPONS ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -274,7 +271,6 @@ async function updateCoupon(req, res) {
       data: updated,
     });
   } catch (error) {
-    console.error('[UPDATE COUPON ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -311,7 +307,6 @@ async function deactivateCoupon(req, res) {
       message: 'Coupon deactivated.',
     });
   } catch (error) {
-    console.error('[DEACTIVATE COUPON ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,

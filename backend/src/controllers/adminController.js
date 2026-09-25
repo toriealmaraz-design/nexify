@@ -36,7 +36,6 @@ async function getStagingQueue(req, res) {
     });
 
   } catch (error) {
-    console.error('[STAGING QUEUE ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -94,7 +93,6 @@ async function updateCourseStatus(req, res) {
     });
 
   } catch (error) {
-    console.error('[UPDATE COURSE STATUS ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -183,7 +181,6 @@ async function getGlobalMetrics(req, res) {
     });
 
   } catch (error) {
-    console.error('getGlobalMetrics error:', error);
     return res.status(500).json({ success: false, statusCode: 500, message: 'Internal server error' });
   }
 }
@@ -237,7 +234,6 @@ async function getAffiliateLeaderboard(req, res) {
       data: enriched,
     });
   } catch (error) {
-    console.error('getAffiliateLeaderboard error:', error);
     return res.status(500).json({ success: false, statusCode: 500, message: 'Internal server error' });
   }
 }
@@ -286,7 +282,6 @@ async function getUserGrid(req, res) {
     });
 
   } catch (error) {
-    console.error('[USER GRID ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -331,7 +326,6 @@ async function updateUserRole(req, res) {
     });
 
   } catch (error) {
-    console.error('[UPDATE USER ROLE ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -356,7 +350,6 @@ async function getSystemAssets(req, res) {
     });
 
   } catch (error) {
-    console.error('[GET SYSTEM ASSETS ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -399,7 +392,6 @@ async function updateSystemAsset(req, res) {
     });
 
   } catch (error) {
-    console.error('[UPDATE SYSTEM ASSET ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -458,7 +450,6 @@ async function createSwipeAsset(req, res) {
     });
 
   } catch (error) {
-    console.error('[CREATE SWIPE ASSET ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -512,7 +503,6 @@ async function getCourseDetail(req, res) {
     });
 
   } catch (error) {
-    console.error('[GET COURSE DETAIL ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -544,7 +534,6 @@ async function approveCourse(req, res) {
     });
 
   } catch (error) {
-    console.error('[APPROVE COURSE ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -585,7 +574,6 @@ async function rejectCourse(req, res) {
     });
 
   } catch (error) {
-    console.error('[REJECT COURSE ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,

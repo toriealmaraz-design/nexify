@@ -18,7 +18,6 @@ async function getConfig(req, res) {
     }
     return res.status(200).json({ success: true, statusCode: 200, message: 'Config retrieved.', data: config });
   } catch (error) {
-    console.error('[NEXA GLOBAL CONFIG GET ERROR]', error.message);
     return res.status(500).json({ success: false, statusCode: 500, message: 'Internal server error.' });
   }
 }
@@ -48,7 +47,6 @@ async function updateConfig(req, res) {
     });
     return res.status(200).json({ success: true, statusCode: 200, message: 'Config updated.', data: updated });
   } catch (error) {
-    console.error('[NEXA GLOBAL CONFIG UPDATE ERROR]', error.message);
     return res.status(500).json({ success: false, statusCode: 500, message: 'Internal server error.' });
   }
 }

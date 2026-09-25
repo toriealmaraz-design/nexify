@@ -20,7 +20,6 @@ async function listByLesson(req, res) {
 
     res.json({ data: questions });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ message: 'Failed to fetch questions' });
   }
 }
@@ -37,7 +36,6 @@ async function create(req, res) {
     });
     res.status(201).json({ data: question });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ message: 'Failed to create question' });
   }
 }
@@ -63,7 +61,6 @@ async function createAnswer(req, res) {
     });
     res.status(201).json({ data: answer });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ message: 'Failed to post answer' });
   }
 }

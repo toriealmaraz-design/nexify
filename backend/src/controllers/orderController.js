@@ -311,7 +311,6 @@ async function checkout(req, res) {
     });
 
   } catch (error) {
-    console.error('[CHECKOUT ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -352,7 +351,6 @@ async function getOrder(req, res) {
     });
 
   } catch (error) {
-    console.error('[GET ORDER ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -382,7 +380,6 @@ async function getStudentOrders(req, res) {
     });
 
   } catch (error) {
-    console.error('[STUDENT ORDERS ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,

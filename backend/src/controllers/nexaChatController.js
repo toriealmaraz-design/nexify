@@ -111,7 +111,6 @@ async function handleChat(req, res) {
           reply = result.reply;
           usedLLM = true; provider = config.provider; model = config.model; tokensUsed = result.tokens;
         } catch (llmErr) {
-          console.error('[Nexa LLM error]', llmErr.message);
           reply = "I'm sorry — Nexa is having trouble connecting. Please try again in a moment.";
         }
       } else {
@@ -135,7 +134,6 @@ async function handleChat(req, res) {
 
     res.json({ data: { reply, conversationId: convId, usedLLM, provider, model } });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ message: 'Chat failed' });
   }
 }

@@ -17,7 +17,6 @@ async function listConfigs(req, res) {
       data: configs,
     });
   } catch (error) {
-    console.error('[NEXA CONFIG LIST ERROR]', error.message);
     return res.status(500).json({ success: false, statusCode: 500, message: 'Internal server error.' });
   }
 }
@@ -31,7 +30,6 @@ async function getConfig(req, res) {
     }
     return res.status(200).json({ success: true, statusCode: 200, message: 'Config retrieved.', data: config });
   } catch (error) {
-    console.error('[NEXA CONFIG GET ERROR]', error.message);
     return res.status(500).json({ success: false, statusCode: 500, message: 'Internal server error.' });
   }
 }
@@ -71,7 +69,6 @@ async function upsertConfig(req, res) {
     });
     return res.status(200).json({ success: true, statusCode: 200, message: 'Config saved.', data: config });
   } catch (error) {
-    console.error('[NEXA CONFIG UPSERT ERROR]', error.message);
     return res.status(500).json({ success: false, statusCode: 500, message: 'Internal server error.' });
   }
 }
@@ -85,7 +82,6 @@ async function deleteConfig(req, res) {
     if (error.code === 'P2025') {
       return res.status(404).json({ success: false, statusCode: 404, message: 'Config not found.' });
     }
-    console.error('[NEXA CONFIG DELETE ERROR]', error.message);
     return res.status(500).json({ success: false, statusCode: 500, message: 'Internal server error.' });
   }
 }

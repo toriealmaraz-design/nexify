@@ -50,7 +50,6 @@ async function createPost(req, res) {
       data: post,
     });
   } catch (error) {
-    console.error('[CREATE POST ERROR]', error.message);
     return res.status(500).json({
       success: false, statusCode: 500,
       error: 'INTERNAL_SERVER_ERROR', message: 'Failed to create post.',
@@ -99,7 +98,6 @@ async function getPosts(req, res) {
       },
     });
   } catch (error) {
-    console.error('[GET POSTS ERROR]', error.message);
     return res.status(500).json({
       success: false, statusCode: 500,
       error: 'INTERNAL_SERVER_ERROR', message: 'Failed to retrieve posts.',
@@ -134,7 +132,6 @@ async function getPostById(req, res) {
       data: post,
     });
   } catch (error) {
-    console.error('[GET POST BY ID ERROR]', error.message);
     return res.status(500).json({
       success: false, statusCode: 500,
       error: 'INTERNAL_SERVER_ERROR', message: 'Failed to retrieve post.',
@@ -188,7 +185,6 @@ async function updatePost(req, res) {
       data: updated,
     });
   } catch (error) {
-    console.error('[UPDATE POST ERROR]', error.message);
     return res.status(500).json({
       success: false, statusCode: 500,
       error: 'INTERNAL_SERVER_ERROR', message: 'Failed to update post.',
@@ -224,7 +220,6 @@ async function deletePost(req, res) {
       message: 'Post deleted successfully.',
     });
   } catch (error) {
-    console.error('[DELETE POST ERROR]', error.message);
     return res.status(500).json({
       success: false, statusCode: 500,
       error: 'INTERNAL_SERVER_ERROR', message: 'Failed to delete post.',
@@ -257,7 +252,6 @@ async function likePost(req, res) {
       data: updated,
     });
   } catch (error) {
-    console.error('[LIKE POST ERROR]', error.message);
     return res.status(500).json({
       success: false, statusCode: 500,
       error: 'INTERNAL_SERVER_ERROR', message: 'Failed to like post.',
@@ -317,7 +311,6 @@ async function createComment(req, res) {
       data: comment,
     });
   } catch (error) {
-    console.error('[CREATE COMMENT ERROR]', error.message);
     return res.status(500).json({
       success: false, statusCode: 500,
       error: 'INTERNAL_SERVER_ERROR', message: 'Failed to create comment.',
@@ -369,7 +362,6 @@ async function getComments(req, res) {
       data: rootComments,
     });
   } catch (error) {
-    console.error('[GET COMMENTS ERROR]', error.message);
     return res.status(500).json({
       success: false, statusCode: 500,
       error: 'INTERNAL_SERVER_ERROR', message: 'Failed to retrieve comments.',
@@ -405,7 +397,6 @@ async function deleteComment(req, res) {
       message: 'Comment deleted successfully.',
     });
   } catch (error) {
-    console.error('[DELETE COMMENT ERROR]', error.message);
     return res.status(500).json({
       success: false, statusCode: 500,
       error: 'INTERNAL_SERVER_ERROR', message: 'Failed to delete comment.',

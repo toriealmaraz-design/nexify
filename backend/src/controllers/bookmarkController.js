@@ -49,7 +49,6 @@ async function toggleBookmark(req, res) {
       data: { bookmarked: true, id: bookmark.id },
     });
   } catch (error) {
-    console.error('[TOGGLE BOOKMARK ERROR]', error.message);
     return res.status(500).json({
       success: false, statusCode: 500,
       error: 'INTERNAL_SERVER_ERROR', message: 'Failed to toggle bookmark.',
@@ -76,7 +75,6 @@ async function getMyBookmarks(req, res) {
       data: bookmarks,
     });
   } catch (error) {
-    console.error('[GET MY BOOKMARKS ERROR]', error.message);
     return res.status(500).json({
       success: false, statusCode: 500,
       error: 'INTERNAL_SERVER_ERROR', message: 'Failed to retrieve bookmarks.',
@@ -100,7 +98,6 @@ async function checkBookmark(req, res) {
       data: { bookmarked: !!bookmark, id: bookmark?.id || null },
     });
   } catch (error) {
-    console.error('[CHECK BOOKMARK ERROR]', error.message);
     return res.status(500).json({
       success: false, statusCode: 500,
       error: 'INTERNAL_SERVER_ERROR', message: 'Failed to check bookmark.',

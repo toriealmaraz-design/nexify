@@ -52,7 +52,6 @@ async function getReferralStats(req, res) {
       },
     });
   } catch (error) {
-    console.error('[REFERRAL STATS ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -98,7 +97,6 @@ async function getLeaderboard(req, res) {
       data: enriched,
     });
   } catch (error) {
-    console.error('[LEADERBOARD ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -173,7 +171,6 @@ async function recordReferral(req, res) {
       data: referral,
     });
   } catch (error) {
-    console.error('[RECORD REFERRAL ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,

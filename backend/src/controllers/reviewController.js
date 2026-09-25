@@ -62,7 +62,6 @@ async function getCourseReviews(req, res) {
     });
 
   } catch (error) {
-    console.error('[GET COURSE REVIEWS ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -150,7 +149,6 @@ async function createOrUpdateReview(req, res) {
     });
 
   } catch (error) {
-    console.error('[CREATE/UPDATE REVIEW ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,

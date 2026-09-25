@@ -94,7 +94,6 @@ async function generateLink(req, res) {
     });
 
   } catch (error) {
-    console.error('[GENERATE LINK ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -158,7 +157,6 @@ async function trackClick(req, res) {
     }).setHeader('Set-Cookie', cookieValue);
 
   } catch (error) {
-    console.error('[TRACK CLICK ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -231,7 +229,6 @@ async function getDashboard(req, res) {
     });
 
   } catch (error) {
-    console.error('[AFFILIATE DASHBOARD ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -268,7 +265,6 @@ async function getSwipes(req, res) {
     });
 
   } catch (error) {
-    console.error('[GET SWIPES ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -297,7 +293,6 @@ async function listLinks(req, res) {
     });
 
   } catch (error) {
-    console.error('[LIST LINKS ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,

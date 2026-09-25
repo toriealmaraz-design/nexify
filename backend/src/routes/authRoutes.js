@@ -34,26 +34,20 @@ router.get('/google', (req, res, next) => {
 router.get('/google/callback', async (req, res) => {
   const { OAuth2Client } = require('google-auth-library');
   const config = require('../config/env');
-  console.log('[Google callback] config.oauth.google:', JSON.stringify(config.oauth?.google));
   const client = new OAuth2Client({
     clientId: config.oauth.google.clientId,
     clientSecret: config.oauth.google.clientSecret,
     redirectUri: config.oauth.google.redirectUri,
   });
   const { code } = req.query;
-  console.log('[Google callback] code present:', !!code);
   if (!code) {
-    console.log('[Google callback] No code provided');
     return res.redirect(`${config.app.frontendUrl || 'http://localhost:5173'}/login?error=oauth_failed`);
   }
   try {
-    console.log('[Google callback] Exchanging code for tokens...');
     const { tokens } = await client.getToken(code);
-    console.log('[Google callback] Tokens received:', Object.keys(tokens));
     req.oauth2Tokens = tokens;
     return authController.googleCallback(req, res);
   } catch (err) {
-    console.error('[Google callback] getToken error:', err.message, err.stack);
     return res.redirect(`${config.app.frontendUrl || 'http://localhost:5173'}/login?error=oauth_failed`);
   }
 });

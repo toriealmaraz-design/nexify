@@ -47,7 +47,6 @@ async function getNotifications(req, res) {
     });
 
   } catch (error) {
-    console.error('[GET NOTIFICATIONS ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -97,7 +96,6 @@ async function markAsRead(req, res) {
     });
 
   } catch (error) {
-    console.error('[MARK AS READ ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -125,7 +123,6 @@ async function markAllAsRead(req, res) {
     });
 
   } catch (error) {
-    console.error('[MARK ALL AS READ ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,

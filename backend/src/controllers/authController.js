@@ -118,7 +118,6 @@ async function register(req, res) {
     });
 
   } catch (error) {
-    console.error('[REGISTER ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -183,7 +182,6 @@ async function login(req, res) {
     });
 
   } catch (error) {
-    console.error('[LOGIN ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -226,7 +224,6 @@ async function getMe(req, res) {
     });
 
   } catch (error) {
-    console.error('[ME ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -265,7 +262,6 @@ async function updateProfile(req, res) {
     });
 
   } catch (error) {
-    console.error('[UPDATE PROFILE ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -324,7 +320,6 @@ async function changePassword(req, res) {
     });
 
   } catch (error) {
-    console.error('[CHANGE PASSWORD ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -377,7 +372,6 @@ async function googleCallback(req, res) {
     const frontendUrl = config.app.frontendUrl || 'http://localhost:5173';
     return res.redirect(`${frontendUrl}/login?token=${token}`);
   } catch (error) {
-    console.error('[GOOGLE CALLBACK ERROR]', error.message);
     return res.redirect('http://localhost:5173/login?error=oauth_failed');
   }
 }
@@ -460,7 +454,6 @@ async function appleCallback(req, res) {
       },
     });
   } catch (error) {
-    console.error('[APPLE CALLBACK ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -499,7 +492,6 @@ async function forgotPassword(req, res) {
       // For dev: log the reset link
       const frontendUrl = config.app.frontendUrl || 'http://localhost:5173';
       const resetLink = `${frontendUrl}/reset-password?token=${token}`;
-      console.log(`\n[PASSWORD RESET LINK] ${resetLink}\n`);
     }
 
     return res.status(200).json({
@@ -509,7 +501,6 @@ async function forgotPassword(req, res) {
     });
 
   } catch (error) {
-    console.error('[FORGOT PASSWORD ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -571,7 +562,6 @@ async function resetPassword(req, res) {
     });
 
   } catch (error) {
-    console.error('[RESET PASSWORD ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,

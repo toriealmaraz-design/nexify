@@ -41,7 +41,6 @@ async function createNote(req, res) {
       data: note,
     });
   } catch (error) {
-    console.error('[CREATE NOTE ERROR]', error.message);
     return res.status(500).json({
       success: false, statusCode: 500,
       error: 'INTERNAL_SERVER_ERROR', message: 'Failed to save note.',
@@ -66,7 +65,6 @@ async function getNotesByLesson(req, res) {
       data: notes,
     });
   } catch (error) {
-    console.error('[GET NOTES ERROR]', error.message);
     return res.status(500).json({
       success: false, statusCode: 500,
       error: 'INTERNAL_SERVER_ERROR', message: 'Failed to retrieve notes.',
@@ -93,7 +91,6 @@ async function getMyNotes(req, res) {
       data: notes,
     });
   } catch (error) {
-    console.error('[GET MY NOTES ERROR]', error.message);
     return res.status(500).json({
       success: false, statusCode: 500,
       error: 'INTERNAL_SERVER_ERROR', message: 'Failed to retrieve notes.',
@@ -130,7 +127,6 @@ async function updateNote(req, res) {
       data: note,
     });
   } catch (error) {
-    console.error('[UPDATE NOTE ERROR]', error.message);
     return res.status(500).json({
       success: false, statusCode: 500,
       error: 'INTERNAL_SERVER_ERROR', message: 'Failed to update note.',
@@ -159,7 +155,6 @@ async function deleteNote(req, res) {
       message: 'Note deleted.',
     });
   } catch (error) {
-    console.error('[DELETE NOTE ERROR]', error.message);
     return res.status(500).json({
       success: false, statusCode: 500,
       error: 'INTERNAL_SERVER_ERROR', message: 'Failed to delete note.',

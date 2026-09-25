@@ -164,7 +164,6 @@ async function awardPoints(req, res) {
       },
     });
   } catch (error) {
-    console.error('[AWARD POINTS ERROR]', error.message);
     return res.status(500).json({
       success: false, statusCode: 500,
       error: 'INTERNAL_SERVER_ERROR', message: 'Failed to award points.',
@@ -198,7 +197,6 @@ async function getUserPoints(req, res) {
       },
     });
   } catch (error) {
-    console.error('[GET USER POINTS ERROR]', error.message);
     return res.status(500).json({
       success: false, statusCode: 500,
       error: 'INTERNAL_SERVER_ERROR', message: 'Failed to retrieve user points.',
@@ -223,7 +221,6 @@ async function getUserLevel(req, res) {
       },
     });
   } catch (error) {
-    console.error('[GET USER LEVEL ERROR]', error.message);
     return res.status(500).json({
       success: false, statusCode: 500,
       error: 'INTERNAL_SERVER_ERROR', message: 'Failed to retrieve user level.',
@@ -295,7 +292,6 @@ async function getLeaderboard(req, res) {
       },
     });
   } catch (error) {
-    console.error('[GET LEADERBOARD ERROR]', error.message);
     return res.status(500).json({
       success: false, statusCode: 500,
       error: 'INTERNAL_SERVER_ERROR', message: 'Failed to retrieve leaderboard.',
@@ -331,7 +327,6 @@ async function checkAndLevelUp(req, res) {
       },
     });
   } catch (error) {
-    console.error('[CHECK LEVEL UP ERROR]', error.message);
     return res.status(500).json({
       success: false, statusCode: 500,
       error: 'INTERNAL_SERVER_ERROR', message: 'Failed to check level.',
@@ -382,7 +377,6 @@ async function getRewards(req, res) {
       },
     });
   } catch (error) {
-    console.error('[GET REWARDS ERROR]', error.message);
     return res.status(500).json({
       success: false, statusCode: 500,
       error: 'INTERNAL_SERVER_ERROR', message: 'Failed to retrieve rewards.',
@@ -490,7 +484,6 @@ async function claimReward(req, res) {
       },
     });
   } catch (error) {
-    console.error('[CLAIM REWARD ERROR]', error.message);
     return res.status(500).json({
       success: false, statusCode: 500,
       error: 'INTERNAL_SERVER_ERROR', message: 'Failed to claim reward.',
@@ -551,7 +544,6 @@ async function getUserBadges(req, res) {
       },
     });
   } catch (error) {
-    console.error('[GET USER BADGES ERROR]', error.message);
     return res.status(500).json({
       success: false, statusCode: 500,
       error: 'INTERNAL_SERVER_ERROR', message: 'Failed to retrieve badges.',
@@ -647,7 +639,6 @@ async function trackDailyLogin(req, res) {
       },
     });
   } catch (error) {
-    console.error('[TRACK DAILY LOGIN ERROR]', error.message);
     return res.status(500).json({
       success: false, statusCode: 500,
       error: 'INTERNAL_SERVER_ERROR', message: 'Failed to track daily login.',
@@ -704,7 +695,6 @@ async function seedDefaults(req, res) {
       },
     });
   } catch (error) {
-    console.error('[SEED DEFAULTS ERROR]', error.message);
     return res.status(500).json({
       success: false, statusCode: 500,
       error: 'INTERNAL_SERVER_ERROR', message: 'Failed to seed defaults.',
@@ -773,7 +763,6 @@ async function getUserStats(req, res) {
       },
     });
   } catch (error) {
-    console.error('[GET USER STATS ERROR]', error.message);
     return res.status(500).json({
       success: false, statusCode: 500,
       error: 'INTERNAL_SERVER_ERROR', message: 'Failed to retrieve user stats.',
@@ -790,7 +779,6 @@ async function getAllBadges(req, res) {
       message: 'All badges retrieved.', data: badges,
     });
   } catch (error) {
-    console.error('[GET ALL BADGES ERROR]', error.message);
     return res.status(500).json({
       success: false, statusCode: 500,
       error: 'INTERNAL_SERVER_ERROR', message: 'Failed to retrieve badges.',
@@ -816,7 +804,6 @@ async function createBadge(req, res) {
       message: 'Badge created.', data: badge,
     });
   } catch (error) {
-    console.error('[CREATE BADGE ERROR]', error.message);
     return res.status(500).json({
       success: false, statusCode: 500,
       error: 'INTERNAL_SERVER_ERROR', message: 'Failed to create badge.',
@@ -834,7 +821,6 @@ async function deleteBadge(req, res) {
       message: 'Badge deleted.',
     });
   } catch (error) {
-    console.error('[DELETE BADGE ERROR]', error.message);
     return res.status(500).json({
       success: false, statusCode: 500,
       error: 'INTERNAL_SERVER_ERROR', message: 'Failed to delete badge.',
@@ -851,7 +837,6 @@ async function getAllRewards(req, res) {
       message: 'All rewards retrieved.', data: rewards,
     });
   } catch (error) {
-    console.error('[GET ALL REWARDS ERROR]', error.message);
     return res.status(500).json({
       success: false, statusCode: 500,
       error: 'INTERNAL_SERVER_ERROR', message: 'Failed to retrieve rewards.',
@@ -877,7 +862,6 @@ async function createReward(req, res) {
       message: 'Reward created.', data: reward,
     });
   } catch (error) {
-    console.error('[CREATE REWARD ERROR]', error.message);
     return res.status(500).json({
       success: false, statusCode: 500,
       error: 'INTERNAL_SERVER_ERROR', message: 'Failed to create reward.',
@@ -895,7 +879,6 @@ async function deleteReward(req, res) {
       message: 'Reward deleted.',
     });
   } catch (error) {
-    console.error('[DELETE REWARD ERROR]', error.message);
     return res.status(500).json({
       success: false, statusCode: 500,
       error: 'INTERNAL_SERVER_ERROR', message: 'Failed to delete reward.',
@@ -928,7 +911,6 @@ async function getAdminLeaderboard(req, res) {
       message: 'Admin leaderboard retrieved.', data: ranked,
     });
   } catch (error) {
-    console.error('[ADMIN LEADERBOARD ERROR]', error.message);
     return res.status(500).json({
       success: false, statusCode: 500,
       error: 'INTERNAL_SERVER_ERROR', message: 'Failed to retrieve leaderboard.',

@@ -40,7 +40,6 @@ async function listAds(req, res) {
 
     return res.status(200).json({ success: true, statusCode: 200, message: 'Ads retrieved.', data: filtered });
   } catch (error) {
-    console.error('[AD LIST ERROR]', error.message);
     return res.status(500).json({ success: false, statusCode: 500, message: 'Internal server error.' });
   }
 }
@@ -70,7 +69,6 @@ async function createAd(req, res) {
     });
     return res.status(201).json({ success: true, statusCode: 201, message: 'Ad created.', data: ad });
   } catch (error) {
-    console.error('[AD CREATE ERROR]', error.message);
     return res.status(500).json({ success: false, statusCode: 500, message: 'Internal server error.' });
   }
 }
@@ -105,7 +103,6 @@ async function updateAd(req, res) {
     return res.status(200).json({ success: true, statusCode: 200, message: 'Ad updated.', data: updated });
   } catch (error) {
     if (error.code === 'P2025') return res.status(404).json({ success: false, statusCode: 404, message: 'Ad not found.' });
-    console.error('[AD UPDATE ERROR]', error.message);
     return res.status(500).json({ success: false, statusCode: 500, message: 'Internal server error.' });
   }
 }
@@ -118,7 +115,6 @@ async function deleteAd(req, res) {
     return res.status(200).json({ success: true, statusCode: 200, message: 'Ad deleted.' });
   } catch (error) {
     if (error.code === 'P2025') return res.status(404).json({ success: false, statusCode: 404, message: 'Ad not found.' });
-    console.error('[AD DELETE ERROR]', error.message);
     return res.status(500).json({ success: false, statusCode: 500, message: 'Internal server error.' });
   }
 }
@@ -170,7 +166,6 @@ async function seedAds(req, res) {
 
     return res.status(201).json({ success: true, statusCode: 201, message: 'Seed complete.', data: { seeded: results } });
   } catch (error) {
-    console.error('[AD SEED ERROR]', error.message);
     return res.status(500).json({ success: false, statusCode: 500, message: 'Internal server error.' });
   }
 }

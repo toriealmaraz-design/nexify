@@ -29,7 +29,6 @@ async function list(req, res) {
 
     res.json({ success: true, statusCode: 200, data });
   } catch (error) {
-    console.error('[LIST ANNOUNCEMENTS ERROR]', error.message);
     res.status(500).json({ success: false, statusCode: 500, message: 'Failed to fetch announcements' });
   }
 }
@@ -62,7 +61,6 @@ async function listAll(req, res) {
 
     res.json({ success: true, statusCode: 200, data: announcements, total, page: pageNum, pages: Math.ceil(total / limitNum) });
   } catch (error) {
-    console.error('[LIST ALL ANNOUNCEMENTS ERROR]', error.message);
     res.status(500).json({ success: false, statusCode: 500, message: 'Failed to fetch announcements' });
   }
 }
@@ -82,7 +80,6 @@ async function listByCreator(req, res) {
 
     res.json({ success: true, statusCode: 200, data: announcements });
   } catch (error) {
-    console.error('[LIST CREATOR ANNOUNCEMENTS ERROR]', error.message);
     res.status(500).json({ success: false, statusCode: 500, message: 'Failed to fetch announcements' });
   }
 }
@@ -125,7 +122,6 @@ async function studentFeed(req, res) {
 
     res.json({ success: true, statusCode: 200, data, unreadCount });
   } catch (error) {
-    console.error('[STUDENT FEED ERROR]', error.message);
     res.status(500).json({ success: false, statusCode: 500, message: 'Failed to fetch announcement feed' });
   }
 }
@@ -158,7 +154,6 @@ async function unreadCount(req, res) {
 
     res.json({ success: true, statusCode: 200, data: { unreadCount: Math.max(0, totalAnnouncements - readCount) } });
   } catch (error) {
-    console.error('[UNREAD COUNT ERROR]', error.message);
     res.status(500).json({ success: false, statusCode: 500, message: 'Failed to get unread count' });
   }
 }
@@ -203,7 +198,6 @@ async function create(req, res) {
 
     res.status(201).json({ success: true, statusCode: 201, message: 'Announcement created', data: announcement });
   } catch (error) {
-    console.error('[CREATE ANNOUNCEMENT ERROR]', error.message);
     res.status(500).json({ success: false, statusCode: 500, message: 'Failed to create announcement' });
   }
 }
@@ -236,7 +230,6 @@ async function update(req, res) {
 
     res.json({ success: true, statusCode: 200, message: 'Announcement updated', data: updated });
   } catch (error) {
-    console.error('[UPDATE ANNOUNCEMENT ERROR]', error.message);
     res.status(500).json({ success: false, statusCode: 500, message: 'Failed to update announcement' });
   }
 }
@@ -258,7 +251,6 @@ async function remove(req, res) {
     await prisma.announcement.delete({ where: { id } });
     res.json({ success: true, statusCode: 200, message: 'Announcement deleted' });
   } catch (error) {
-    console.error('[DELETE ANNOUNCEMENT ERROR]', error.message);
     res.status(500).json({ success: false, statusCode: 500, message: 'Failed to delete announcement' });
   }
 }
@@ -280,7 +272,6 @@ async function markAsRead(req, res) {
 
     res.json({ success: true, statusCode: 200, message: 'Marked as read' });
   } catch (error) {
-    console.error('[MARK READ ERROR]', error.message);
     res.status(500).json({ success: false, statusCode: 500, message: 'Failed to mark as read' });
   }
 }
@@ -323,7 +314,6 @@ async function markAllRead(req, res) {
 
     res.json({ success: true, statusCode: 200, message: `Marked ${unread.length} as read` });
   } catch (error) {
-    console.error('[MARK ALL READ ERROR]', error.message);
     res.status(500).json({ success: false, statusCode: 500, message: 'Failed to mark all as read' });
   }
 }

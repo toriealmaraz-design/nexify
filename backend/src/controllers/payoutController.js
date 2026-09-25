@@ -22,7 +22,6 @@ async function getPayoutHistory(req, res) {
       data: payouts,
     });
   } catch (error) {
-    console.error('[PAYOUT HISTORY ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -132,7 +131,6 @@ async function requestPayout(req, res) {
       data: payout,
     });
   } catch (error) {
-    console.error('[REQUEST PAYOUT ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -188,7 +186,6 @@ async function getBalance(req, res) {
       },
     });
   } catch (error) {
-    console.error('[GET BALANCE ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -233,7 +230,6 @@ async function listAllPayouts(req, res) {
       },
     });
   } catch (error) {
-    console.error('[LIST ALL PAYOUTS ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -286,7 +282,6 @@ async function updatePayoutStatus(req, res) {
       data: updated,
     });
   } catch (error) {
-    console.error('[UPDATE PAYOUT STATUS ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,

@@ -41,7 +41,6 @@ async function getEnrollments(req, res) {
       data,
     });
   } catch (error) {
-    console.error('[GET ENROLLMENTS ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -97,7 +96,6 @@ async function getEnrollmentProgress(req, res) {
     });
 
   } catch (error) {
-    console.error('[GET ENROLLMENT PROGRESS ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,
@@ -240,7 +238,6 @@ async function updateLessonProgress(req, res) {
     });
 
   } catch (error) {
-    console.error('[UPDATE LESSON PROGRESS ERROR]', error.message);
     return res.status(500).json({
       success: false,
       statusCode: 500,

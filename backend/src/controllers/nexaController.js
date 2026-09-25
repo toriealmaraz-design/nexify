@@ -459,7 +459,6 @@ async function chat(req, res) {
     });
 
   } catch (error) {
-    console.error('[NEXA CHAT ERROR]', error.message);
     return res.status(500).json({ success: false, statusCode: 500, error: 'INTERNAL_SERVER_ERROR', message: 'Nexa processing failed.' });
   }
 }

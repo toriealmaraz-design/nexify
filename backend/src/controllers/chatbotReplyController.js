@@ -13,7 +13,6 @@ async function listReplies(req, res) {
     const replies = await prisma.chatbotReply.findMany({ orderBy: [{ priority: 'desc' }, { key: 'asc' }] });
     return res.status(200).json({ success: true, statusCode: 200, message: 'Replies retrieved.', data: replies });
   } catch (error) {
-    console.error('[CHATBOT REPLIES LIST ERROR]', error.message);
     return res.status(500).json({ success: false, statusCode: 500, message: 'Internal server error.' });
   }
 }
@@ -27,7 +26,6 @@ async function listRepliesPublic(req, res) {
     });
     return res.json({ success: true, statusCode: 200, message: 'Replies retrieved.', data: replies });
   } catch (err) {
-    console.error('[CHATBOT REPLIES PUBLIC ERROR]', err.message);
     return res.status(500).json({ success: false, statusCode: 500, message: 'Internal server error.' });
   }
 }
@@ -48,7 +46,6 @@ async function createReply(req, res) {
     });
     return res.status(201).json({ success: true, statusCode: 201, message: 'Reply created.', data: reply });
   } catch (error) {
-    console.error('[CHATBOT REPLY CREATE ERROR]', error.message);
     return res.status(500).json({ success: false, statusCode: 500, message: 'Internal server error.' });
   }
 }
@@ -76,7 +73,6 @@ async function updateReply(req, res) {
     return res.status(200).json({ success: true, statusCode: 200, message: 'Reply updated.', data: reply });
   } catch (error) {
     if (error.code === 'P2025') return res.status(404).json({ success: false, statusCode: 404, message: 'Reply not found.' });
-    console.error('[CHATBOT REPLY UPDATE ERROR]', error.message);
     return res.status(500).json({ success: false, statusCode: 500, message: 'Internal server error.' });
   }
 }
@@ -89,7 +85,6 @@ async function deleteReply(req, res) {
     return res.status(200).json({ success: true, statusCode: 200, message: 'Reply deleted.' });
   } catch (error) {
     if (error.code === 'P2025') return res.status(404).json({ success: false, statusCode: 404, message: 'Reply not found.' });
-    console.error('[CHATBOT REPLY DELETE ERROR]', error.message);
     return res.status(500).json({ success: false, statusCode: 500, message: 'Internal server error.' });
   }
 }
@@ -201,7 +196,6 @@ async function seedReplies(req, res) {
 
     return res.status(201).json({ success: true, statusCode: 201, message: 'Seed complete.', data: { seeded: results } });
   } catch (error) {
-    console.error('[CHATBOT SEED ERROR]', error.message);
     return res.status(500).json({ success: false, statusCode: 500, message: 'Internal server error.' });
   }
 }

@@ -6,12 +6,13 @@ const express = require('express');
 const router = express.Router();
 const { authenticate } = require('../middleware/auth');
 const authController = require('../controllers/authController');
+const { registerValidation, loginValidation, forgotPasswordValidation, resetPasswordValidation } = require('../middleware/validation');
 
 // Public routes
-router.post('/register', authController.register);
-router.post('/login', authController.login);
-router.post('/forgot-password', authController.forgotPassword);
-router.post('/reset-password', authController.resetPassword);
+router.post('/register', registerValidation, authController.register);
+router.post('/login', loginValidation, authController.login);
+router.post('/forgot-password', forgotPasswordValidation, authController.forgotPassword);
+router.post('/reset-password', resetPasswordValidation, authController.resetPassword);
 
 // Google OAuth — redirect to Google, callback issues JWT and redirects to frontend
 router.get('/google', (req, res, next) => {

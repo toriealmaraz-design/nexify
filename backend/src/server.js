@@ -13,6 +13,7 @@ const { PrismaClient } = require('@prisma/client');
 const express = require('express');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
 const config = require('./config/env');
 const constants = require('./config/constants');
 
@@ -45,6 +46,9 @@ const authLimiter = rateLimit({
   legacyHeaders: false,
 });
 app.use('/api/v1/auth/', authLimiter);
+
+// ─── Security Headers ──────────────────────────────
+app.use(helmet());
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));

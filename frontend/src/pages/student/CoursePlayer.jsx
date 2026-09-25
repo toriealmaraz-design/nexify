@@ -6,6 +6,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Navigate, Link } from 'react-router-dom';
 import axios from 'axios';
+import DOMPurify from 'dompurify';
 import {
   Play, ChevronDown, ChevronRight, Video, FileText, HelpCircle,
   CheckCircle2, Circle, ChevronLeft, ChevronRight as ChevronRightIcon,
@@ -368,7 +369,7 @@ function TextLesson({ lesson, onComplete }) {
   }, [read, onComplete]);
   return (
     <div onScroll={handleScroll} className="bg-[#1E1B4B] border border-white/10 rounded-xl p-6 text-sm text-white/70 leading-relaxed max-h-64 overflow-y-auto">
-      <div dangerouslySetInnerHTML={{ __html: lesson.content || '' }} />
+      <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(lesson.content || '') }} />
     </div>
   );
 }

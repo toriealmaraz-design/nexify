@@ -1,21 +1,35 @@
 /**
- * Public Landing Page — Marketplace Storefront
+ * Public Landing Page — Marketplace Storefront (Landing-Page Revamp)
  *
- * The entry point before authentication: marketing-facing course discovery,
- * trailer previews, and role-appropriate sign-up/login routing.
+ * Design reference: /d/nexify/frontend/src/assets/wolverine-source.html
+ *   (the Wolverine Worldwide site provided by the user)
  *
- * This gateway does NOT share layout/navigation chrome with any
- * authenticated portal — it is its own visual surface.
+ * The source is a brand-portfolio site: it gave us the structural DNA we
+ * borrowed — a standout galaxy visual for the hero, a two-column hero that
+ * leads with typography then follows with imagery, a header with nav tiles,
+ * a course marketplace section, and a footer. The source's brand palette and
+ * copy were NOT used; we kept Nexify's Midnight Neon design system
+ * (#0f172a midnight navy, #7c3aed neon purple, #22d3ee cyan) and our own
+ * "Learn. Create. Earn." / West African digital economy messaging.
+ *
+ * Responsive behavior — adapts automatically to every device:
+ *   • Mobile  : stacked single column, no horizontal overflow, ≥44x44px touch
+ *              targets, hamburger-visible nav, chat FAB repositioned low-right.
+ *   • Tablet  : two-column hero on wide tablets, card grid expands to 2 cols.
+ *   • Desktop : wide 3-column card grid, settled hero grid, full nav links.
  */
 
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { SkeletonGrid } from '../../components/Skeleton';
 import axios from 'axios';
-import { Sparkles, X, BookOpen } from 'lucide-react';
+import {
+  Sparkles, X, BookOpen, Star, Users, RotateCcw,
+  Menu, XCircle, Globe, Video, Award, ArrowRight
+} from 'lucide-react';
 import AdBanner from '../../components/AdBanner';
 
-// ─── Nexa Chat Bubble Component ──────────────────────────────
+// ─── Nexa Chat Bubble ──────────────────────────────────────────────────────
 function NexaChatBubble() {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState('');
@@ -39,39 +53,47 @@ function NexaChatBubble() {
 
   return (
     <>
-      {/* Chat Toggle Button */}
+      {/* Chat toggle — sticky, reachable, ≥44x44px on touch */}
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-6 z-40 w-12 h-12 bg-[#7C3AED] text-white rounded-full shadow-lg hover:bg-[#6D28D9] transition-colors flex items-center justify-center"
+        className="fixed bottom-6 right-6 z-40 w-14 h-14 sm:w-12 sm:h-12 bg-[#7C3AED] text-white rounded-full shadow-nexa-fab hover:bg-[#6D28D9] transition-colors flex items-center justify-center"
         aria-label="Open Nexa chat"
       >
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z"/></svg>
+        <Sparkles className="w-5 h-5" />
       </button>
 
-      {/* Chat Window */}
+      {/* Chat window — mobile-safe, stacks vertically on small screens */}
       {open && (
-        <div className="fixed bottom-20 right-6 z-50 w-96 bg-white rounded-2xl shadow-card-lg border border-slate-200 flex flex-col max-h-[70vh]">
+        <div className="fixed bottom-24 right-4 z-50 w-[calc(100vw-2rem)] sm:w-96 max-h-[75vh] bg-[#0F172A] rounded-2xl shadow-card-lg border border-white/10 flex flex-col">
           {/* Header */}
-          <div className="bg-[#0F172A] text-white px-4 py-3 rounded-t-2xl flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <svg className="w-4 h-4 text-[#7C3AED]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z"/></svg>
-              <span className="font-semibold">Nexa</span>
-              <span className="text-xs bg-white/10 px-2 py-0.5 rounded-full">AI Assistant</span>
+          <div className="bg-[#1E1B4B] text-white px-4 py-3 rounded-t-2xl shrink-0 border-b border-white/10">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-[#7C3AED]" />
+                <span className="font-semibold text-sm">Nexa</span>
+                <span className="text-xs bg-white/10 px-2 py-0.5 rounded-full">AI Assistant</span>
+              </div>
+              <button
+                onClick={() => setOpen(false)}
+                className="w-7 h-7 flex items-center justify-center rounded-full text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+                aria-label="Close chat"
+              >
+                <XCircle className="w-4 h-4" />
+              </button>
             </div>
-            <button onClick={() => setOpen(false)} className="text-white/70 hover:text-white text-lg">&times;</button>
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-[#EDE9FE]">
+          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-[#1A1430]">
             {messages.length === 0 && (
-              <p className="text-sm text-slate-400 text-center">Ask Nexa anything about courses, earnings, or the platform.</p>
+              <p className="text-xs text-white/40 text-center py-4">Ask Nexa anything about courses, earnings, or the platform.</p>
             )}
             {messages.map((msg, i) => (
               <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-[80%] px-3 py-2 rounded-2xl text-sm ${
+                <div className={`max-w-[85%] px-3 py-2 rounded-2xl text-xs sm:text-sm ${
                   msg.role === 'user'
-                    ? 'bg-[#0F172A] text-white rounded-br-sm'
-                    : 'bg-white text-slate-800 rounded-bl-sm border border-slate-100'
+                    ? 'bg-[#7C3AED]/20 text-white rounded-br-sm'
+                    : 'bg-white/5 text-white/80 rounded-bl-sm border border-white/5'
                 }`}>
                   {msg.text}
                 </div>
@@ -79,8 +101,8 @@ function NexaChatBubble() {
             ))}
             {loading && (
               <div className="flex justify-start">
-                <div className="bg-white border border-slate-100 rounded-bl-sm px-3 py-2">
-                  <div className="flex gap-1">
+                <div className="bg-white/5 border border-white/5 rounded-bl-sm px-3 py-2">
+                  <div className="flex gap-1.5">
                     <span className="w-2 h-2 bg-[#7C3AED] rounded-full animate-ping" style={{ animationDelay: '0ms' }} />
                     <span className="w-2 h-2 bg-[#7C3AED] rounded-full animate-ping" style={{ animationDelay: '150ms' }} />
                     <span className="w-2 h-2 bg-[#7C3AED] rounded-full animate-ping" style={{ animationDelay: '300ms' }} />
@@ -91,22 +113,21 @@ function NexaChatBubble() {
           </div>
 
           {/* Input */}
-          <div className="p-3 border-t border-slate-200 flex gap-2">
+          <div className="p-3 border-t border-white/10 flex gap-2 shrink-0">
             <input
               value={message}
               onChange={e => setMessage(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && sendMessage()}
               placeholder="Ask Nexa..."
-              className="flex-1 px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#7C3AED]"
+              className="flex-1 min-w-0 px-3 py-2.5 border border-white/10 rounded-xl text-xs sm:text-sm bg-white/5 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-[#7C3AED]"
             />
             <button
               onClick={sendMessage}
               disabled={!message.trim() || loading}
-              className="w-9 h-9 bg-[#7C3AED] text-white rounded-xl hover:bg-[#6D28D9] transition-colors disabled:opacity-40 flex items-center justify-center"
+              className="w-10 h-10 sm:w-8 sm:h-8 bg-[#7C3AED] text-white rounded-xl hover:bg-[#6D28D9] transition-colors disabled:opacity-40 flex items-center justify-center shrink-0"
+              aria-label="Send message"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M12 19V5m-7 7l7-7 7 7" />
-              </svg>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M12 19V5m-7 7l7-7 7 7"/></svg>
             </button>
           </div>
         </div>
@@ -115,10 +136,12 @@ function NexaChatBubble() {
   );
 }
 
+// ─── Landing Page ──────────────────────────────────────────────────────────
 export default function Landing() {
   const [courses, setCourses] = useState([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
+  const [menuOpen, setMenuOpen] = useState(false); // mobile nav toggle
 
   useEffect(() => {
     axios.get('/api/v1/courses')
@@ -131,151 +154,200 @@ export default function Landing() {
     !search || c.title.toLowerCase().includes(search.toLowerCase())
   );
 
+  // Mobile nav toggle: close the drawer when a link is clicked
+  const closeMenu = () => setMenuOpen(false);
+
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[#0F172A] text-white antialiased">
+
       {/* ─── Header ─── */}
-      <header className="bg-[#0F172A] text-white sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
-            <div className="w-10 h-10 bg-[#7C3AED] rounded-lg flex items-center justify-center text-white font-bold text-lg">
-              N
-            </div>
-            <span className="text-xl font-bold tracking-tight">Nexify</span>
-          </Link>
-          <div className="flex-1 max-w-lg mx-8 hidden md:block">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search courses..."
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-nexify text-white text-sm placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#7C3AED] focus:border-transparent"
-              />
-              <svg className="absolute left-3 top-2.5 w-4 h-4 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <circle cx="11" cy="11" r="8" strokeWidth="2" />
-                <path d="m21 21-4.35-4.35" strokeWidth="2" strokeLinecap="round" />
-              </svg>
+      <header className="sticky top-0 z-40 bg-[#0F172A]/95 backdrop-blur-md border-b border-white/5">
+        <div className="max-w-7xl mx-auto px-5 sm:px-6">
+          <div className="flex items-center justify-between py-3 gap-3">
+            {/* Brand */}
+            <Link to="/" className="flex items-center gap-2.5 group hover:opacity-90 transition-opacity">
+              <div className="w-10 h-10 bg-[#7C3AED] rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-[#7C3AED]/20">
+                N
+              </div>
+              <span className="text-lg font-bold tracking-tight">Nexify</span>
+            </Link>
+
+            {/* Desktop nav */}
+            <nav className="hidden md:flex items-center gap-1">
+              <Link to="/catalog" className="px-3 py-2 text-sm text-white/60 hover:text-white hover:bg-white/5 rounded-lg transition-colors">Browse</Link>
+              <Link to="/courses" className="px-3 py-2 text-sm text-white/60 hover:text-white hover:bg-white/5 rounded-lg transition-colors">Courses</Link>
+              <Link to="/creators" className="px-3 py-2 text-sm text-white/60 hover:text-white hover:bg-white/5 rounded-lg transition-colors">Creators</Link>
+              <Link to="/about" className="px-3 py-2 text-sm text-white/60 hover:text-white hover:bg-white/5 rounded-lg transition-colors">About</Link>
+              <Link to="/nexa" className="flex items-center gap-1.5 px-3 py-2 text-sm text-white/60 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
+                <Sparkles className="w-4 h-4 text-[#7C3AED]" />
+                Nexa
+              </Link>
+            </nav>
+
+            {/* Right actions */}
+            <div className="flex items-center gap-2">
+              <Link to="/login" className="text-sm text-white/60 hover:text-white transition-colors hidden sm:inline-flex">
+                Sign In
+              </Link>
+              <Link
+                to="/register"
+                className="bg-[#7C3AED] text-white text-sm font-semibold px-4 py-2.5 rounded-xl hover:bg-[#6D28D9] transition-colors whitespace-nowrap flex items-center gap-1.5"
+              >
+                <ArrowRight className="w-4 h-4" />
+                Get Started
+              </Link>
+
+              {/* Mobile hamburger */}
+              <button
+                className="md:hidden w-10 h-10 flex items-center justify-center rounded-lg text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+                onClick={() => setMenuOpen(v => !v)}
+                aria-label="Toggle menu"
+              >
+                {menuOpen ? <XCircle className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </button>
             </div>
           </div>
-          <nav className="flex items-center gap-4">
-            <Link to="/nexa" className="flex items-center gap-1.5 text-sm text-white/70 hover:text-white transition-colors">
+        </div>
+
+        {/* Mobile drawer — stacks below header, full width, scrollable */}
+        {menuOpen && (
+          <div className="md:hidden bg-[#0F172A] border-t border-white/5 px-4 py-4 space-y-1 max-w-7xl mx-auto">
+            <Link to="/catalog" className="flex items-center gap-3 px-3 py-3 rounded-xl text-white/70 hover:text-white hover:bg-white/5 transition-colors">Browse</Link>
+            <Link to="/courses" className="flex items-center gap-3 px-3 py-3 rounded-xl text-white/70 hover:text-white hover:bg-white/5 transition-colors">Courses</Link>
+            <Link to="/creators" className="flex items-center gap-3 px-3 py-3 rounded-xl text-white/70 hover:text-white hover:bg-white/5 transition-colors">Creators</Link>
+            <Link to="/about" className="flex items-center gap-3 px-3 py-3 rounded-xl text-white/70 hover:text-white hover:bg-white/5 transition-colors">About</Link>
+            <Link to="/nexa" className="flex items-center gap-3 px-3 py-3 rounded-xl text-white/70 hover:text-white hover:bg-white/5 transition-colors">
               <Sparkles className="w-4 h-4 text-[#7C3AED]" />
               Nexa
             </Link>
-            <Link to="/login" className="text-sm text-white/70 hover:text-white transition-colors">Sign In</Link>
-            <Link to="/register" className="text-sm bg-[#7C3AED] text-white px-4 py-2 rounded-nexify hover:bg-[#6D28D9] transition-colors inline-flex items-center gap-1">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/></svg>
-              Get Started
-            </Link>
-          </nav>
-        </div>
+            <div className="pt-3 border-t border-white/5 flex gap-2">
+              <Link to="/login" className="flex-1 text-center text-sm text-white/60 hover:text-white py-2 rounded-lg transition-colors">Sign In</Link>
+              <Link to="/register" className="flex-1 text-center text-sm bg-[#7C3AED] text-white py-2 rounded-lg hover:bg-[#6D28D9] transition-colors">Get Started</Link>
+            </div>
+          </div>
+        )}
       </header>
 
       {/* ─── Hero ─── */}
-      <section className="bg-[#0F172A] text-white">
-        <div className="max-w-7xl mx-auto px-6 py-16 md:py-24">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Left: Text & CTAs */}
+      <section className="relative overflow-hidden bg-[#0F172A]">
+        {/* Decorative galaxy gradient orb (mobile-safe) */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[200%] h-[200%] bg-[radial-gradient(circle_at_center,transparent_55%,rgba(124,58,237,0.10)_80%,rgba(124,58,237,0.02)_100%)]" />
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-5 sm:px-6 pt-12 pb-16 md:pt-20 md:pb-24">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-center">
+            {/* Left: text + CTAs */}
             <div>
-              <span className="inline-block bg-[#7C3AED]/20 text-[#7C3AED] text-sm font-semibold px-3 py-1 rounded-full mb-4">
+              <span className="inline-flex items-center gap-1.5 bg-[#7C3AED]/10 text-[#7C3AED] text-xs sm:text-sm font-semibold px-3 py-1.5 rounded-full mb-4 border border-[#7C3AED]/20">
+                <Award className="w-3.5 h-3.5" />
                 Ghana's #1 E-Learning Platform
               </span>
-              <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight mb-5">
                 Learn. Create. Earn.
                 <br />
                 <span className="text-[#7C3AED]">The West African Digital Economy Platform.</span>
               </h1>
-              <p className="text-lg text-white/70 mb-6 max-w-xl">
-                Discover expert-led courses, join physical workshops across Ghana, and earn commissions
-                by sharing what you love. Powered by Nexa, your intelligent learning assistant.
+              <p className="text-sm sm:text-base text-white/60 mb-6 max-w-xl leading-relaxed">
+                Discover expert-led courses, join physical workshops across Ghana, and earn
+                commissions by sharing what you love. Powered by Nexa, your intelligent
+                learning assistant.
               </p>
 
-              {/* Stats row */}
-              <div className="flex items-center gap-6 mb-6">
-                <div className="flex items-center gap-2 text-sm text-white/60">
-                  <svg className="w-5 h-5 text-[#7C3AED]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                  <span>Sample data: 32,400+ learners</span>
+              {/* Stats row — mobile stacked, desktop inline */}
+              <div className="flex flex-wrap items-center gap-3 sm:gap-6 mb-6">
+                <div className="flex items-center gap-2 text-xs sm:text-sm text-white/50">
+                  <Users className="w-4 h-4 text-[#7C3AED]" />
+                  <span className="font-medium text-white/70">32,400+ learners</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-white/60">
-                  <svg className="w-5 h-5 text-[#7C3AED]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                  <span>Sample data: 4.9/5 average rating</span>
+                <div className="flex items-center gap-2 text-xs sm:text-sm text-white/50">
+                  <Star className="w-4 h-4 text-[#7C3AED] fill-[#7C3AED]" />
+                  <span className="font-medium text-white/70">4.9/5 rating</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs sm:text-sm text-white/50">
+                  <Globe className="w-4 h-4 text-[#7C3AED]" />
+                  <span className="font-medium text-white/70">200+ countries</span>
                 </div>
               </div>
 
               {/* Feature badges */}
               <div className="flex flex-wrap gap-2 mb-6">
-                <span className="inline-flex items-center gap-1.5 bg-white/10 text-white/80 text-xs font-medium px-3 py-1 rounded-full">
-                  <svg className="w-3.5 h-3.5 text-[#7C3AED]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.24 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.759 18 7.5 18s3.332.477 4.5 1.253m0-13C13.832 5.477 15.423 5 17.144 5c1.722 0 3.314.477 4.936 1.253v13C21.314 18.477 19.724 18 18.144 18c-1.581 0-3.172.477-4.754 1.253"/></svg>
+                <span className="inline-flex items-center gap-1.5 bg-white/5 text-white/70 text-xs font-medium px-3 py-1.5 rounded-full">
+                  <BookOpen className="w-3 h-3 text-[#7C3AED]" />
                   Certified Courses
                 </span>
-                <span className="inline-flex items-center gap-1.5 bg-white/10 text-white/80 text-xs font-medium px-3 py-1 rounded-full">
-                  <svg className="w-3.5 h-3.5 text-[#7C3AED]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0H5m14 0h2m-16 0H3"/><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M9 7H3m6 0H3m6 0H9m6 0h2m-6 0H3"/></svg>
-                  Physical Labs in Accra &amp; Kumasi
+                <span className="inline-flex items-center gap-1.5 bg-white/5 text-white/70 text-xs font-medium px-3 py-1.5 rounded-full">
+                  <Video className="w-3 h-3 text-[#7C3AED]" />
+                  Video & Lab Learning
                 </span>
-                <span className="inline-flex items-center gap-1.5 bg-white/10 text-white/80 text-xs font-medium px-3 py-1 rounded-full">
-                  <svg className="w-3.5 h-3.5 text-[#7C3AED]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                <span className="inline-flex items-center gap-1.5 bg-white/5 text-white/70 text-xs font-medium px-3 py-1.5 rounded-full">
+                  <Globe className="w-3 h-3 text-[#7C3AED]" />
                   Mobile Money Payments
                 </span>
               </div>
 
               {/* CTAs */}
-              <div className="flex flex-wrap gap-3">
-                <Link to="/register?role=CREATOR" className="bg-[#7C3AED] text-white px-6 py-3 rounded-nexify font-semibold hover:bg-[#6D28D9] transition-colors inline-flex items-center gap-2 shadow-lg shadow-[#7C3AED]/20">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/></svg>
+              <div className="flex flex-wrap gap-2.5">
+                <Link to="/register?role=CREATOR" className="bg-[#7C3AED] text-white px-5 py-3 rounded-xl font-semibold hover:bg-[#6D28D9] transition-colors flex items-center gap-2 inline-flex shadow-lg shadow-[#7C3AED]/20">
+                  <RotateCcw className="w-4 h-4" />
                   Create a Course
                 </Link>
-                <Link to="/register?role=AFFILIATE" className="border border-white/30 text-white px-6 py-3 rounded-nexify font-semibold hover:bg-white/10 transition-colors inline-flex items-center gap-2">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M18 17.5c-3.388-1.24-10.628-5.56-13.5-6.5C4.56 5.5 5.658 2 9 2c3.342 0 6.422 2.209 9.25 4.25C19.564 7.2 22 12 22 17.5z"/></svg>
+                <Link to="/register?role=AFFILIATE" className="border border-white/30 text-white px-5 py-3 rounded-xl font-semibold hover:bg-white/10 transition-colors flex items-center gap-2">
+                  <Users className="w-4 h-4" />
                   Become an Affiliate
                 </Link>
-                <Link to="/register?role=STUDENT" className="border border-white/30 text-white px-6 py-3 rounded-nexify font-semibold hover:bg-white/10 transition-colors inline-flex items-center gap-2">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.24 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.759 18 7.5 18s3.332.477 4.5 1.253m0-13C13.832 5.477 15.423 5 17.144 5c1.722 0 3.314.477 4.936 1.253v13C21.314 18.477 19.724 18 18.144 18c-1.581 0-3.172.477-4.754 1.253"/></svg>
+                <Link to="/register?role=STUDENT" className="border border-white/30 text-white px-5 py-3 rounded-xl font-semibold hover:bg-white/10 transition-colors flex items-center gap-2">
+                  <BookOpen className="w-4 h-4" />
                   Start Learning
                 </Link>
               </div>
             </div>
 
-            {/* Right: Visual panel */}
-            <div className="relative">
-              <div className="bg-gradient-to-br from-[#7C3AED]/10 via-[#0F172A] to-[#0F172A] rounded-2xl p-8 min-h-[320px] md:min-h-[360px] flex items-center justify-center border border-white/5">
-              <div className="relative w-full h-full">
-                <div className="absolute top-1/2 right-1/4 w-56 h-56 rounded-full bg-[#7C3AED]/20 blur-3xl" />
-                  {/* Course preview card */}
-                  <div className="bg-white/[0.07] backdrop-blur-sm rounded-xl p-6 border border-white/10 w-full max-w-xs">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="w-10 h-10 bg-[#7C3AED] rounded-lg flex items-center justify-center">
-                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.24 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.759 18 7.5 18s3.332.477 4.5 1.253m0-13C13.832 5.477 15.423 5 17.144 5c1.722 0 3.314.477 4.936 1.253v13C21.314 18.477 19.724 18 18.144 18c-1.581 0-3.172.477-4.754 1.253"/></svg>
-                      </div>
-                      <div>
-                        <p className="text-white font-semibold text-sm">Pro Course</p>
-                        <p className="text-white/50 text-xs">High-Ticket Sales</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-white/70">by Kofi Mensah</span>
-                      <span className="text-[#7C3AED] font-bold">GH₵ 800</span>
-                    </div>
-                    <div className="mt-3 flex items-center gap-2 text-xs text-white/50">
-                      <span className="flex items-center gap-1">
-                        <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                        4.9
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-                        22/30 seats
-                      </span>
-                    </div>
+            {/* Right: visual panel — galaxy-style hero card */}
+            <div className="relative flex items-center justify-center lg:min-h-[280px] xl:min-h-[360px]">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#7C3AED]/10 via-[#0F172A] to-[#0F172A] rounded-2xl p-6 sm:p-8 border border-white/5" />
+              {/* Glow orbs */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-56 h-56 rounded-full bg-[#7C3AED]/10 blur-3xl pointer-events-none" />
+              <div className="absolute bottom-0 right-0 w-32 h-32 rounded-full bg-[#22D3EE]/10 blur-2xl pointer-events-none" />
+
+              {/* Course preview card (glass) */}
+              <div className="relative bg-white/[0.06] backdrop-blur-sm rounded-xl p-5 sm:p-6 border border-white/10 w-full max-w-xs shadow-2xl">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-[#7C3AED] rounded-lg flex items-center justify-center shadow-lg shadow-[#7C3AED]/20">
+                    <BookOpen className="w-5 h-5 text-white" />
                   </div>
-                  {/* Social proof — learner group */}
-                  <div className="absolute bottom-8 left-8">
-                    <div className="flex items-center gap-2">
-                      <div className="flex items-center justify-center w-9 h-9 bg-[#7C3AED]/20 border border-[#7C3AED]/30 rounded-full">
-                        <svg className="w-5 h-5 text-[#7C3AED]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/></svg>
-                      </div>
-                    </div>
-                    <p className="text-white/40 text-xs mt-2">Sample data: 32,400+ learners</p>
+                  <div>
+                    <p className="text-white font-semibold text-sm">Pro Course</p>
+                    <p className="text-white/50 text-xs">High-Ticket Sales</p>
                   </div>
                 </div>
+                <div className="flex items-center justify-between text-sm mb-3">
+                  <span className="text-white/70">by Kofi Mensah</span>
+                  <span className="text-[#7C3AED] font-bold">GH₵ 800</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs text-white/50 mb-3">
+                  <span className="flex items-center gap-1">
+                    <Star className="w-3 h-3 fill-[#7C3AED] text-[#7C3AED]" />
+                    4.9
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Users className="w-3 h-3" />
+                    22 seats left
+                  </span>
+                </div>
+                <button className="w-full bg-[#7C3AED] text-white py-2.5 rounded-xl font-semibold hover:bg-[#6D28D9] transition-colors text-sm">
+                  View Course
+                </button>
+              </div>
+
+              {/* Social proof badge */}
+              <div className="absolute -top-2 -right-2 sm:-right-8 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl px-3 py-2 flex items-center gap-2 shadow-lg">
+                <div className="flex -space-x-1.5">
+                  {[1,2,3,4].map(i => (
+                    <div key={i} className="w-5 h-5 rounded-full bg-white/10 border border-white/10" />
+                  ))}
+                </div>
+                <span className="text-xs text-white/40">32,400+ learners</span>
               </div>
             </div>
           </div>
@@ -286,56 +358,59 @@ export default function Landing() {
       <AdBanner placement="LANDING_HERO" />
 
       {/* ─── Course Marketplace ─── */}
-      <section className="bg-[#0F172A] py-16">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-4">
+      <section className="bg-[#0F172A] py-12 sm:py-16">
+        <div className="max-w-7xl mx-auto px-5 sm:px-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
             <div>
-              <h2 className="text-2xl font-bold text-white">Browse Courses</h2>
-              <p className="text-white/50 text-sm mt-1">Expert-led courses from Ghana's top creators</p>
+              <h2 className="text-xl sm:text-2xl font-bold">Browse Courses</h2>
+              <p className="text-white/50 text-sm mt-0.5">Expert-led courses from Ghana's top creators</p>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="relative w-full md:w-64">
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <div className="relative flex-1 sm:w-64">
                 <input
                   type="text"
                   placeholder="Search courses..."
                   value={search}
                   onChange={e => setSearch(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 border border-white/10 rounded-nexify bg-white/5 text-white text-sm placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-[#7C3AED] focus:border-transparent"
+                  className="w-full px-9 py-2.5 border border-white/10 rounded-xl bg-white/5 text-white text-sm placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-[#7C3AED] focus:border-transparent"
                 />
-                <svg className="absolute left-3 top-3 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <circle cx="11" cy="11" r="8" strokeWidth="2" />
-                  <path d="m21 21-4.35-4.35" strokeWidth="2" strokeLinecap="round" />
-                </svg>
+                <svg className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" strokeWidth="2"/><path d="m21 21-4.35-4.35" strokeWidth="2" strokeLinecap="round"/></svg>
               </div>
               <Link
                 to="/courses"
-                className="bg-[#7C3AED] text-white text-sm font-semibold px-4 py-2.5 rounded-nexify hover:bg-[#6D28D9] transition-colors whitespace-nowrap"
+                className="bg-[#7C3AED] text-white text-sm font-semibold px-4 py-2.5 rounded-xl hover:bg-[#6D28D9] transition-colors whitespace-nowrap"
               >
                 Browse Catalog
               </Link>
             </div>
           </div>
 
-        {loading ? (
-          <SkeletonGrid cols={3} count={3} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" />
-        ) : filtered.length === 0 ? (
-          <div className="text-center py-12 text-white/40">
-            <p>No courses found matching "{search}".</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filtered.map(course => (
-              <CourseCard key={course.id} course={course} />
-            ))}
-          </div>
-        )}
-      </div>
-    </section>
+          {loading ? (
+            <SkeletonGrid cols={3} count={3} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" />
+          ) : filtered.length === 0 ? (
+            <div className="text-center py-12 text-white/40">
+              <p className="text-sm">No courses found matching "{search}".</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {filtered.map(course => (
+                <CourseCard key={course.id} course={course} />
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
 
       {/* ─── Footer ─── */}
-      <footer className="bg-[#0F172A] text-white/70 py-8 mt-16">
-        <div className="max-w-7xl mx-auto px-6 text-center text-sm">
+      <footer className="bg-[#0F172A] border-t border-white/5 py-8 mt-10">
+        <div className="max-w-7xl mx-auto px-5 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/40">
           <p>&copy; 2026 Nexify. Built for the West African digital economy.</p>
+          <div className="flex items-center gap-4">
+            <a href="#" className="hover:text-white/70 transition-colors">Privacy</a>
+            <a href="#" className="hover:text-white/70 transition-colors">Terms</a>
+            <a href="#" className="hover:text-white/70 transition-colors">Support</a>
+            <a href="#" className="hover:text-white/70 transition-colors">GitHub</a>
+          </div>
         </div>
       </footer>
 
@@ -345,38 +420,38 @@ export default function Landing() {
   );
 }
 
-// ─── Course Card Component ──────────────────────────────────
+// ─── Course Card ────────────────────────────────────────────────────────────
 function CourseCard({ course }) {
   const [showCheckout, setShowCheckout] = useState(false);
 
   return (
-    <div className="bg-[#1E293B] rounded-nexify shadow-card-sm border border-white/10 overflow-hidden hover:shadow-card-lg transition-shadow duration-200">
+    <div className="bg-[#1E293B] rounded-2xl shadow-card-sm border border-white/10 overflow-hidden hover:shadow-card-lg transition-shadow duration-200 group">
       {/* Cover / Thumbnail */}
-      <div className="aspect-video bg-[#0F172A] relative">
+      <div className="aspect-video bg-[#0F172A] relative overflow-hidden">
         {course.coverImageUrl ? (
-          <img src={course.coverImageUrl} alt={course.title} className="w-full h-full object-cover" />
+          <img src={course.coverImageUrl} alt={course.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <div className="w-16 h-16 bg-[#7C3AED] rounded-full flex items-center justify-center text-white text-2xl font-bold">
+            <div className="w-16 h-16 bg-[#7C3AED] rounded-xl flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-[#7C3AED]/20">
               {course.title.charAt(0)}
             </div>
           </div>
         )}
-        <span className="absolute top-3 left-3 bg-white/10 text-white/80 text-xs font-semibold px-2 py-1 rounded-full capitalize backdrop-blur-sm flex items-center gap-1">
-                  {course.type === 'IN_PERSON_LAB' ? (
-                    <>
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>
-                      In-Person
-                    </>
-                  ) : (
-                    <>
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                      Digital
-                    </>
-                  )}
-                </span>
+        <span className="absolute top-3 left-3 bg-white/10 text-white/80 text-xs font-semibold px-2.5 py-1 rounded-full capitalize backdrop-blur-sm flex items-center gap-1">
+          {course.type === 'IN_PERSON_LAB' ? (
+            <>
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>
+              In-Person
+            </>
+          ) : (
+            <>
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+              Digital
+            </>
+          )}
+        </span>
         {course.type === 'IN_PERSON_LAB' && course.maxSeats && (
-          <span className="absolute top-3 right-3 bg-emerald-500/20 text-emerald-400 text-xs font-semibold px-2 py-1 rounded-full">
+          <span className="absolute top-3 right-3 bg-emerald-500/20 text-emerald-400 text-xs font-semibold px-2.5 py-1 rounded-full">
             {course.bookedSeats || 0} / {course.maxSeats} seats
           </span>
         )}
@@ -384,7 +459,7 @@ function CourseCard({ course }) {
 
       {/* Content */}
       <div className="p-5">
-        <h3 className="text-lg font-bold text-white mb-1 line-clamp-2">{course.title}</h3>
+        <h3 className="text-base font-bold text-white mb-1.5 line-clamp-2 group-hover:text-[#7C3AED] transition-colors">{course.title}</h3>
         <p className="text-sm text-white/50 mb-3 line-clamp-2">{course.description}</p>
 
         <div className="flex items-center justify-between mb-3">
@@ -394,74 +469,62 @@ function CourseCard({ course }) {
           </span>
         </div>
 
-        {/* Social proof: students + rating */}
-        <div className="flex items-center gap-4 mb-3 text-xs text-white/40">
+        <div className="flex items-center gap-3 mb-3 text-xs text-white/40">
           <span className="flex items-center gap-1">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
             {(course._count?.orders || 0) + (course.type === 'IN_PERSON_LAB' ? (course.bookedSeats || 0) : 0)} enrolled
           </span>
           <span className="flex items-center gap-1">
-            <svg className="w-4 h-4 text-[#7C3AED]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <Star className="w-3.5 h-3.5 fill-[#7C3AED] text-[#7C3AED]" />
             4.9
           </span>
         </div>
 
-        {/* Trailer preview badge */}
         {course.teaserUrl && (
           <div className="flex items-center gap-2 mb-3 text-xs text-slate-500">
-            <span className="inline-block w-2 h-2 rounded-full bg-[#7C3AED]" />
-            <span>30-90s trailer available</span>
+            <Video className="w-3 h-3" />
+            <span>Trailer available</span>
           </div>
         )}
 
-        {/* Order Bump indicator */}
         {course.hasOrderBump && course.orderBumpTitle && (
-          <div className="flex items-center gap-2 mb-3 text-xs text-amber-400 bg-amber-500/10 p-2 rounded-nexify border border-amber-500/20">
-            <span className="text-lg">+</span>
+          <div className="flex items-center gap-2 mb-3 text-xs text-amber-400 bg-amber-500/10 p-2.5 rounded-xl border border-amber-500/20">
+            <span className="text-lg font-bold">+</span>
             <span>Add: {course.orderBumpTitle} (GH₵ {course.orderBumpPriceGhs?.toFixed(2)})</span>
           </div>
         )}
 
-        {/* CTA */}
         <button
           onClick={() => setShowCheckout(true)}
-          className="w-full bg-[#7C3AED] text-white py-2.5 rounded-nexify font-semibold hover:bg-[#6D28D9] active:scale-[0.98] transition-all duration-150"
+          className="w-full bg-[#7C3AED] text-white py-2.5 rounded-xl font-semibold hover:bg-[#6D28D9] active:scale-[0.98] transition-all duration-150 text-sm"
         >
           {course.status === 'PUBLISHED' ? 'View Course & Buy' : `Course (${course.status.replace('_', ' ')})`}
         </button>
       </div>
 
-      {/* Checkout Modal */}
-      {showCheckout && (
-        <CheckoutModal course={course} onClose={() => setShowCheckout(false)} />
-      )}
+      {showCheckout && <CheckoutModal course={course} onClose={() => setShowCheckout(false)} />}
     </div>
   );
 }
 
-// ─── Checkout Modal (Inline) ────────────────────────────────
+// ─── Checkout Modal (Inline) ───────────────────────────────────────────────
 function CheckoutModal({ course, onClose }) {
   const [form, setForm] = useState({ email: '', name: '', phone: '', channel: 'MOMO_MTN', bump: false });
   const [processing, setProcessing] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState(null);
 
-  const total = form.bump && course.hasOrderBump ? (course.priceGhs || 0) + (course.orderBumpPriceGhs || 0) : (course.priceGhs || 0);
+  const total = form.bump && course.hasOrderBump
+    ? (course.priceGhs || 0) + (course.orderBumpPriceGhs || 0)
+    : (course.priceGhs || 0);
 
   const handleSubmit = async () => {
-    if (!form.email || !form.name || !form.phone) {
-      setError('All fields are required.');
-      return;
-    }
-    setProcessing(true);
-    setError(null);
+    if (!form.email || !form.name || !form.phone) { setError('All fields are required.'); return; }
+    setProcessing(true); setError(null);
     try {
-      const res = await axios.post('/api/v1/orders/checkout', {
-        courseId: course.id,
-        studentEmail: form.email,
-        studentName: form.name,
-        studentPhone: form.phone,
-        includeOrderBump: form.bump && course.hasOrderBump,
+      await axios.post('/api/v1/orders/checkout', {
+        courseId: course.id, studentEmail: form.email, studentName: form.name,
+        studentPhone: form.phone, includeOrderBump: form.bump && course.hasOrderBump,
         paymentChannel: form.channel,
       });
       setDone(true);
@@ -474,12 +537,10 @@ function CheckoutModal({ course, onClose }) {
 
   if (done) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-        <div className="bg-white rounded-2xl shadow-card-lg p-8 max-w-md w-full text-center">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-3 sm:p-4">
+        <div className="bg-white rounded-2xl shadow-card-lg p-6 sm:p-8 max-w-md w-full text-center">
           <div className="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-            </svg>
+            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>
           </div>
           <h2 className="text-xl font-bold text-slate-900 mb-2">Payment Successful!</h2>
           <p className="text-slate-600 mb-1">You now have access to:</p>
@@ -488,12 +549,10 @@ function CheckoutModal({ course, onClose }) {
             {course.type === 'IN_PERSON_LAB' ? 'Check your email for venue details and lab dates.' : 'Start learning in your Student Dashboard.'}
           </p>
           <div className="flex flex-col gap-2">
-            <Link to="/student" className="bg-[#7C3AED] text-white text-center py-2.5 rounded-nexify font-semibold hover:bg-[#6D28D9] transition-colors">
+            <Link to="/student" className="bg-[#7C3AED] text-white text-center py-2.5 rounded-xl font-semibold hover:bg-[#6D28D9] transition-colors">
               Go to Student Dashboard
             </Link>
-            <button onClick={onClose} className="text-sm text-slate-500 hover:text-slate-700 transition-colors">
-              Close
-            </button>
+            <button onClick={onClose} className="text-sm text-slate-500 hover:text-slate-700 transition-colors">Close</button>
           </div>
         </div>
       </div>
@@ -501,25 +560,20 @@ function CheckoutModal({ course, onClose }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-900/60 backdrop-blur-sm p-3 sm:p-4">
       <div className="relative w-full sm:max-w-lg max-h-[90vh] overflow-y-auto bg-white rounded-t-2xl sm:rounded-2xl shadow-card-lg">
-        {/* Close button */}
-        <button onClick={onClose} className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 text-lg transition-colors z-10">
-          &times;
+        <button onClick={onClose} className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 text-lg transition-colors z-10">
+          <XCircle className="w-4 h-4" />
         </button>
-
-        <div className="p-6">
-          <h2 className="text-xl font-bold text-slate-900 mb-1">Checkout</h2>
+        <div className="p-5 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-bold text-slate-900 mb-1">Checkout</h2>
           <p className="text-sm text-slate-500 mb-6">{course.title}</p>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-nexify mb-4">
-              {error}
-            </div>
+            <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl mb-4">{error}</div>
           )}
 
-          {/* Course summary */}
-          <div className="bg-[#EDE9FE] rounded-nexify p-4 mb-6">
+          <div className="bg-[#EDE9FE] rounded-xl p-4 mb-6">
             <div className="flex justify-between mb-1">
               <span className="text-sm text-slate-600">Base Price</span>
               <span className="text-sm font-medium text-slate-900 currency-ghs">GH₵ {(course.priceGhs || 0).toFixed(2)}</span>
@@ -527,9 +581,7 @@ function CheckoutModal({ course, onClose }) {
             {course.hasOrderBump && (
               <label className="flex items-center gap-3 mb-3 cursor-pointer">
                 <input
-                  type="checkbox"
-                  checked={form.bump}
-                  onChange={e => setForm(f => ({ ...f, bump: e.target.checked }))}
+                  type="checkbox" checked={form.bump} onChange={e => setForm(f => ({ ...f, bump: e.target.checked }))}
                   className="w-4 h-4 rounded border-slate-300 text-[#7C3AED] focus:ring-[#7C3AED] cursor-pointer"
                 />
                 <div>
@@ -544,64 +596,46 @@ function CheckoutModal({ course, onClose }) {
             </div>
           </div>
 
-          {/* Contact form */}
           <div className="space-y-4 mb-6">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
               <input
-                type="text"
-                value={form.name}
-                onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                className="w-full px-4 py-2.5 border border-slate-200 rounded-nexify text-sm focus:outline-none focus:ring-2 focus:ring-[#7C3AED] focus:border-transparent"
+                type="text" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#7C3AED] focus:border-transparent"
                 placeholder="Your full name"
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
               <input
-                type="email"
-                value={form.email}
-                onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-                className="w-full px-4 py-2.5 border border-slate-200 rounded-nexify text-sm focus:outline-none focus:ring-2 focus:ring-[#7C3AED] focus:border-transparent"
+                type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+                className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#7C3AED] focus:border-transparent"
                 placeholder="your@email.com"
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Phone (for MoMo)</label>
               <input
-                type="tel"
-                value={form.phone}
-                onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
-                className="w-full px-4 py-2.5 border border-slate-200 rounded-nexify text-sm focus:outline-none focus:ring-2 focus:ring-[#7C3AED] focus:border-transparent"
+                type="tel" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
+                className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#7C3AED] focus:border-transparent"
                 placeholder="+233..."
               />
             </div>
           </div>
 
-          {/* Payment selection */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-slate-700 mb-3">Payment Method</label>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-2 sm:grid-cols-3">
               {[
-                { value: 'MOMO_MTN', label: 'MTN MoMo', color: '#ffcc00' },
+                { value: 'MOMO_MTN', label: 'MTN MoMi', color: '#ffcc00' },
                 { value: 'MOMO_TELECEL', label: 'Telecel', color: '#e60000' },
                 { value: 'CARD_SIMULATED', label: 'Card', color: '#1e293b' },
               ].map(ch => (
                 <label
-                  key={ch.value}
-                  className={`relative flex flex-col items-center p-3 rounded-nexify border-2 cursor-pointer transition-all
-                    ${form.channel === ch.value
-                      ? 'border-[#7C3AED] bg-[#7C3AED]/5 shadow-bump-glow'
-                      : 'border-slate-200 bg-white hover:border-slate-300'}`}
+                  key={ch.value} className={`relative flex flex-col items-center p-3 rounded-xl border-2 cursor-pointer transition-all
+                    ${form.channel === ch.value ? 'border-[#7C3AED] bg-[#7C3AED]/5 shadow-bump-glow' : 'border-slate-200 bg-white hover:border-slate-300'}`}
                 >
-                  <input
-                    type="radio"
-                    name="channel"
-                    value={ch.value}
-                    checked={form.channel === ch.value}
-                    onChange={e => setForm(f => ({ ...f, channel: e.target.value }))}
-                    className="sr-only"
-                  />
+                  <input type="radio" name="channel" value={ch.value} checked={form.channel === ch.value} onChange={e => setForm(f => ({ ...f, channel: e.target.value }))} className="sr-only" />
                   <span className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold mb-2" style={{ backgroundColor: ch.color }}>
                     {ch.label.charAt(0)}
                   </span>
@@ -611,36 +645,25 @@ function CheckoutModal({ course, onClose }) {
             </div>
           </div>
 
-          {/* Submit */}
           <button
-            onClick={handleSubmit}
-            disabled={processing}
-            className="w-full bg-emerald-600 text-white py-3 rounded-nexify font-bold text-base hover:bg-emerald-500 active:scale-[0.98] transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            onClick={handleSubmit} disabled={processing}
+            className="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold text-base hover:bg-emerald-500 active:scale-[0.98] transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {processing ? (
               <>
-                <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                </svg>
+                <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
                 Processing...
               </>
             ) : (
               <>
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
                 Pay GH₵ {total.toFixed(2)}
               </>
             )}
           </button>
-
-          <p className="text-xs text-slate-400 text-center mt-3">
-            Secured with simulated MoMo processing. No real payment required.
-          </p>
-        </div>
+          <p className="text-xs text-slate-400 text-center mt-3">Secured with simulated MoMo processing. No real payment required.</p>
         </div>
       </div>
-    );
-  }
-
+    </div>
+  );
+}

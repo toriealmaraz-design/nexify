@@ -47,6 +47,8 @@ model User {
   announcements   Announcement[]
   nexaConversations NexaConversation[]
 
+  waitlists Waitlist[] @relation("WaitlistUser")
+
   @@map("users")
 }
 
@@ -102,6 +104,7 @@ model Course {
   certificates   Certificate[]
   wishlists      Wishlist[]
   announcements  Announcement[]
+  waitlists      Waitlist[] @relation("WaitlistCourse")
 
   @@map("courses")
 }
@@ -393,8 +396,8 @@ model Waitlist {
   joinedAt  DateTime @default(now())
   notified  Boolean  @default(false)
 
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user   User   @relation("WaitlistUser", fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation("WaitlistCourse", fields: [courseId], references: [id], onDelete: Cascade)
 
   @@unique([userId, courseId])
   @@map("waitlist")

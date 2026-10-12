@@ -237,7 +237,7 @@ function TooltipCard({ step, stepIndex, totalSteps, onNext, onPrev, onSkip, onJu
             whileHover={{ scale: 1.04, boxShadow: '0 0 24px rgba(124,58,237,0.5)' }}
             whileTap={{ scale: 0.96 }}
             onClick={onNext}
-            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-extrabold text-white bg-gradient-to-r from-purple-600 to-purple-500 shadow-lg shadow-purple-500/25"
+            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-extrabold text-white bg-gradient-to-r from-[#7C3AED] to-[#6D28D9] shadow-lg shadow-purple-500/25"
           >
             {isLast ? (
               <>All done! <Sparkles className="w-4 h-4" /></>
@@ -258,7 +258,7 @@ function ChecklistSidebar({ steps, currentIndex, onJump }) {
       {/* Header */}
       <div className="p-5 border-b border-white/10">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-purple-600 to-purple-800 flex items-center justify-center flex-shrink-0">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#7C3AED] to-[#6D28D9] flex items-center justify-center flex-shrink-0">
             <Sparkles className="w-4 h-4 text-white" />
           </div>
           <div>

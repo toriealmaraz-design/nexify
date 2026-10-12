@@ -210,8 +210,8 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#7C3AED] text-black py-2.5 rounded-xl font-semibold hover:brightness-110 active:scale-[0.97] active:brightness-95 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed animate-fade-slide-up delay-400 relative overflow-hidden group"
-                style={{ transition: 'transform 200ms cubic-bezier(0.34,1.56,0.64,1), filter 150ms ease' }}
+                className="w-full bg-[#7C3AED] text-white py-2.5 rounded-xl font-semibold hover:brightness-110 active:scale-[0.97] active:brightness-95 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed animate-fade-slide-up delay-400 relative overflow-hidden group"
+                style={{ transition: 'transform 200ms ease-out, filter 150ms ease' }}
               >
                 {loading ? (
                   <span className="flex items-center justify-center gap-2">
